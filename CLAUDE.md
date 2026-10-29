@@ -1,6 +1,6 @@
 # Speed Reader
 
-A speed-reading web app (PWA) for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/.
+A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/.
 
 ## Working together
 - Product decisions are the owner's. When SPEC.md doesn't answer a product question, ask instead of guessing. Technical choices are yours; put the significant ones in the plan with their reasons.
