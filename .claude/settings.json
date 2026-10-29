@@ -1,16 +1,16 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "autoMemoryEnabled": false,
+  "env": {
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+  },
   "attribution": {
     "commit": "",
     "pr": "",
     "sessionUrl": false
   },
   "permissions": {
-    "deny": [
-      "Bash(gh pr merge *)",
-      "Bash(gh api *merge*)"
-    ]
+    "deny": ["Bash(gh pr merge *)", "Bash(gh api *merge*)"]
   },
   "hooks": {
     "Stop": [
