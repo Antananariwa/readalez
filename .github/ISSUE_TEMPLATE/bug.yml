@@ -1,0 +1,32 @@
+name: Bug
+description: Something behaves wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: Exact steps from a fresh start. They become the failing test, so be specific.
+      placeholder: |
+        1. Open ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: Paste screenshots or screen recordings here.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Device / browser / build
+      placeholder: "iPhone Safari (installed app), preview of PR #12"
