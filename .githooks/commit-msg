@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Removes AI attribution lines (Co-Authored-By, "Generated with", Claude-Session) from commit messages.
+sed -i -E \
+  -e '/^co-authored-by:.*(claude|anthropic)/Id' \
+  -e '/generated with \[?claude code/Id' \
+  -e '/^claude-session:/Id' \
+  "$1"
