@@ -1,4 +1,4 @@
-# Speed Reader
+# Readalez
 
 A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. Early days: the build setup is in place, and the app comes next.
 

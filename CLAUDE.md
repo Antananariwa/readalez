@@ -1,9 +1,10 @@
-# Speed Reader
+# Readalez
 
 A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/.
 
 ## Working together
 - Product decisions are the owner's. When SPEC.md doesn't answer a product question, ask instead of guessing. Technical choices are yours; put the significant ones in the plan with their reasons.
+- Before offering options on a product question, research how established apps and open-source projects solve it, and recommend that convention in its simplest working form. Propose a departure only with a reason.
 - Some changes need the owner: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For these, say exactly what to change rather than working around the limit.
 - SPEC.md and the ADRs record current decisions. If a task or review comment contradicts one, point out the conflict and let the owner decide. When a decision changes, update the doc that records it (SPEC.md, ARCHITECTURE.md or a new ADR) in the same PR, so the reason travels with it.
 - If the owner has to correct the same thing twice, propose a line for this file in the current PR.
