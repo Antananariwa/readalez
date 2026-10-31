@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "ignorePatterns": ["dist"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/core/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["react", "react/*", "react-dom", "react-dom/*"],
+                "message": "src/core is plain TypeScript: no React (ARCHITECTURE.md, ADR 0003)."
+              },
+              {
+                "group": ["**/ui", "**/ui/**"],
+                "message": "src/core never imports from src/ui (ARCHITECTURE.md, ADR 0003)."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

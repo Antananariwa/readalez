@@ -1,0 +1,28 @@
+{
+  // Reading logic: plain TypeScript, no DOM, React or Node (ADR 0003, ADR 0005).
+  // Leaving out the DOM lib and all ambient types makes `document`, `window`,
+  // `localStorage` and every other browser global a type error here.
+  // Imports of React or src/ui are banned by .oxlintrc.json.
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.core.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "types": [],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src/core"]
+}

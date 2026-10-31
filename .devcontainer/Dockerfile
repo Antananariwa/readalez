@@ -82,9 +82,21 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 
+# Playwright's Chromium and WebKit, with their system libraries (ADR 0004, ADR 0005).
+# Installed here because the firewall blocks Playwright's download host at run time
+# and the system libraries need root. PLAYWRIGHT_VERSION must equal the exact
+# @playwright/test version in package.json; `npm run check` fails if they differ.
+# --only-shell: headless Chromium only, since the container has no display.
+ARG PLAYWRIGHT_VERSION
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+USER root
+RUN test -n "$PLAYWRIGHT_VERSION" && \
+  npx -y "playwright@${PLAYWRIGHT_VERSION}" install --with-deps --only-shell chromium webkit && \
+  chmod -R a+rX "$PLAYWRIGHT_BROWSERS_PATH" && \
+  rm -rf /root/.npm /var/lib/apt/lists/*
+
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
-USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall
