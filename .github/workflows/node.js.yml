@@ -1,0 +1,56 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [24.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npx playwright install --with-deps --only-shell chromium webkit
+      - run: npm run e2e
+- Click Commit changes…, choose Commit directly to the issue-4-scaffold branch, then click Commit changes.
+
+2. Wait for the first CI run
+- Open PR #25 and watch the checks at the bottom. Wait until build (24.x) finishes.
+- Red is fine for now: Claude fixes it in step 8.
+
+3. Make CI required on main
+- Go to Settings, then Rules, then Rulesets, then New ruleset, then New branch ruleset.
+- Ruleset name: main. Enforcement status: Active.
+- Under Target branches, click Add target, then Include default branch.
+- Tick Require status checks to pass. Click Add checks, type build (24.x) and select it.
+- Leave the other defaults as they are. Click Create.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npx playwright install --with-deps --only-shell chromium webkit
+      - run: npm run e2e
