@@ -8,3 +8,5 @@ Closes #
 
 ## How to test
 <!-- What the owner should try on the preview, and on which devices. -->
+
+Feedback: comment on lines in Files changed or in Conversation, then ask Claude in a session to address the review on this PR. Or give it in the session directly.
