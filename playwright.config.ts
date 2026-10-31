@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 4173;
 
 // Browsers come from the dev container image (ADR 0004, ADR 0005), or from
-// `npx playwright install --with-deps chromium webkit` in CI.
+// `npx playwright install --with-deps --only-shell chromium webkit` in CI.
 export default defineConfig({
   testDir: "e2e",
   forbidOnly: !!process.env.CI,
