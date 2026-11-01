@@ -10,6 +10,8 @@ A text is split into words and timed. The UI shows the words one at a time with 
 
 - `src/core/`: the reading logic in plain TypeScript: splitting text, focus position, timing, parsing imported texts.
 - `src/ui/`: React components and everything that touches the browser. It asks `src/core/` what to show and when.
+  `src/ui/registerServiceWorker.ts` registers the service worker that `vite-plugin-pwa` builds from `vite.config.ts`, which also writes the web app manifest (ADR 0006).
+- `public/`: files served as they are, including the app icons. `npm run icons` renders the PNGs from `public/icon.svg` with `scripts/render-icons.ts`.
 
 ## Invariants
 

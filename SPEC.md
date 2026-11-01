@@ -345,7 +345,7 @@ A check that needs a later feature moves to that feature's issue: for example, f
 
 - **Final timing values:** set after tuning on the iPhone (feature 11). The table in feature 6 holds starting values.
 - **App icon and visual style:** not decided, apart from no Warner Bros. references.
-- **Hosting:** a static host with HTTPS and PR previews (the bug form already mentions previews). The scaffold PR picks the provider and records why in an ADR, and it needs the owner's account.
+- **Hosting:** decided: Cloudflare Pages, with a preview on its own origin for each PR. Why: [ADR 0006](docs/adr/0006-host-on-cloudflare-pages.md).
 - **Paragraph pacer (after v1):** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone (continuously or a screen at a time), and whether it shares the single-word speed.
 - **Catalog (after v1):** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
 - **The next format after EPUB:** TXT or PDF.

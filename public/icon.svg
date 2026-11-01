@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Placeholder icon until the owner decides the design (SPEC.md, Open questions).
+       The letter stays inside the central 80% circle, so the same image works as a maskable icon.
+       After editing, run `npm run icons` to render the PNGs. -->
+  <rect width="512" height="512" fill="#1f2937"/>
+  <text x="256" y="362" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="300" fill="#ffffff">R</text>
+</svg>
