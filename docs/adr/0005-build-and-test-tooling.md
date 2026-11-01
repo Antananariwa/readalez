@@ -12,18 +12,19 @@ The issue planned to start from Vite's official `react-ts` template and expected
 ## Decision
 
 - **Build:** Vite with the React plugin, from the `react-ts` template of create-vite 9.3.3. `npm run build` typechecks, then writes a static site to `dist/`.
-- **Typecheck:** TypeScript 7 with `tsc -b` over three projects, each with incremental build info cached in `node_modules/.tmp`:
+- **Typecheck:** TypeScript 7 with `tsc -b` over four projects, each with incremental build info cached in `node_modules/.tmp`:
   - `tsconfig.core.json` for `src/core`;
   - `tsconfig.app.json` for `src/ui`;
-  - `tsconfig.node.json` for configs, `e2e/` and `tests/`.
+  - `tsconfig.node.json` for configs and `tests/`;
+  - `tsconfig.e2e.json` for `e2e/`, which also has the DOM library, because callbacks passed to `page.evaluate` run in the browser.
 - **Lint:** Oxlint, as the template ships it, with `--deny-warnings`. It reads TypeScript itself, so it works with TypeScript 7, and it's fast enough that the Stop hook doesn't notice it. The owner chose it over ESLint with TypeScript 6.0. The dev container's editor uses the Oxc extension (`oxc.oxc-vscode`) and fixes on save with `source.fixAll.oxc`.
 - **Formatting:** Prettier with its defaults, the formatter VS Code runs on save in the dev container. `npm run check` runs `prettier --check`, so code written outside the editor stays formatted too.
-- **Unit tests:** Vitest in plain Node, without DOM emulation, so tests start fast.
+- **Unit tests:** Vitest in plain Node, without DOM emulation, so tests start fast. It runs tests only in `src/core`, `src/ui` and `tests/`, the folders a tsconfig project typechecks, so no test runs without a typecheck.
 - **`npm run check`** runs the typecheck, lint, format check and unit tests, with no build and no browser. `npm test` runs `npm run check`, so GitHub's Node.js workflow (`npm ci`, `npm run build`, `npm test`) covers all of it.
 - **Core/UI boundary, enforced in two layers, because each catches what the other can't:**
   - `tsconfig.core.json` has `lib: ["ES2023"]` without `DOM`, and `types: []`. `document`, `window`, `localStorage` and every other browser or Node global fail the typecheck in `src/core`. This covers all browser APIs, not a hand-kept list.
   - `.oxlintrc.json` applies `no-restricted-imports` to `src/core/**`: no `react`, `react-dom` or any path into `ui/`. TypeScript alone would resolve those imports without complaint.
-- **Browser tests:** Playwright runs `e2e/` against the production build served by `vite preview`, in two projects:
+- **Browser tests:** Playwright runs `e2e/` against the production build served by `vite preview`, in two projects. It builds and starts the server itself on every run and never reuses one already on the port, which might serve an old build:
   - headless Chromium (Desktop Chrome);
   - WebKit with Playwright's iPhone 16 emulation (viewport, touch, mobile user agent).
 - **Why WebKit:** the owner chose it. It's the closest automated stand-in for iPhone Safari, so it catches engine-level differences: CSS and layout, JavaScriptCore, missing or different web APIs. It doesn't catch iOS-only behaviour: the Home Screen app, the on-screen keyboard, safe areas, touch feel, storage limits, the Files picker or device speed. Playwright's Linux WebKit is also newer than Safari on iOS 18.4, so it can pass a feature the phone lacks. Device checks stay the final word.

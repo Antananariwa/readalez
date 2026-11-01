@@ -8,6 +8,11 @@ export default defineConfig({
   test: {
     // Unit tests run in plain Node, with no DOM emulation, to keep `npm run check` fast.
     environment: "node",
-    include: ["src/**/*.test.ts", "tests/**/*.test.ts"],
+    // Only folders a tsconfig project typechecks, so no test runs unchecked.
+    include: [
+      "src/core/**/*.test.ts",
+      "src/ui/**/*.test.ts",
+      "tests/**/*.test.ts",
+    ],
   },
 });

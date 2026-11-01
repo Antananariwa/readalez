@@ -22,6 +22,7 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npm run preview -- --port ${port} --strictPort`,
     url: `http://localhost:${port}`,
-    reuseExistingServer: !process.env.CI,
+    // Never reuse a server already on the port: it may serve an old build.
+    reuseExistingServer: false,
   },
 });
