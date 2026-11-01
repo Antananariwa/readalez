@@ -13,7 +13,8 @@
     "format:check": "prettier --check --cache .",
     "check": "npm run -s typecheck && npm run -s lint && npm run -s format:check && vitest run",
     "test": "npm run check",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "icons": "node scripts/render-icons.ts"
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -29,6 +30,7 @@
     "prettier": "^3.9.10",
     "typescript": "~7.0.2",
     "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"
   }
 }
