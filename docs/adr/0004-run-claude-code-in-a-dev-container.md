@@ -30,7 +30,7 @@ Claude Code's own setup:
 - Allowed IPs are resolved once at start. A host whose IPs change during a long session can become unreachable until a restart.
 - The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume. Log in again after each rebuild.
 - Changes to `.devcontainer/` take effect only when the owner rebuilds.
-- Chromium for Playwright will be baked into the image in the scaffold PR, pinned to the Playwright version: the firewall blocks Playwright's download host and Chromium needs root to install its libraries, but the image build runs outside the firewall.
+- Playwright's Chromium and WebKit are baked into the image, pinned to the Playwright version (ADR 0005): the firewall blocks Playwright's download host and the browsers need root to install their libraries, but the image build runs outside the firewall.
 - The user settings above live outside the repo; this record is where they're written down.
 - Before adopting Anthropic's updates, compare them with these changes. Run this from Ubuntu, not the container, whose firewall blocks raw.githubusercontent.com:
   `for f in Dockerfile devcontainer.json init-firewall.sh; do curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/.devcontainer/$f | diff - .devcontainer/$f; done`
