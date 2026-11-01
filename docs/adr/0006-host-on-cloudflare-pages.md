@@ -46,7 +46,7 @@ Free plans as documented on 2026-11-01.
 ## Consequences
 
 - The owner creates the Cloudflare account and connects the repo. The dev container's firewall blocks Cloudflare, so the agent can't check a deployment itself. Device checks on the preview are the owner's.
-- **Main risk:** Cloudflare puts new features into Workers rather than Pages. Pages is still supported, and a static site needs none of the Workers-only features. If Pages is retired, Cloudflare documents a migration to Workers static assets.
+- **Main risk:** Cloudflare puts new features into Workers rather than Pages. Since at least 2026-11-01, its dashboard sends new projects to Workers and calls Pages "the legacy Pages workflow". Pages still works and is still supported, and a static site needs none of the Workers-only features. If Pages is retired, Cloudflare documents a migration to Workers static assets: a `wrangler` config file in the repo and new preview and production addresses.
 - `e2e/pwa.spec.ts` checks the manifest and icons, the offline reload, that every request stays on the app's origin, and that `sw.js` never skips waiting or claims pages outside that `SKIP_WAITING` listener. `tests/tooling/service-worker.test.ts` fails `npm run check` if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`. Code that sends that message (#22) must update both tests on purpose.
 - `vite-plugin-pwa` pulls in `workbox-build`, which brings build-time packages with open npm advisories (in `ejs`, `jake`, `minimatch`, `glob` and `deepmerge`: 2 low and 8 moderate on 2026-11-01). They run only at build time, on the project's own config. None of them ship to users. Revisit when `workbox-build` updates them.
 - A new icon: edit `public/icon.svg`, run `npm run icons` and commit the PNGs.
