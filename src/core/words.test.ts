@@ -76,6 +76,12 @@ describe("splitWords", () => {
     ]);
   });
 
+  it("keeps symbols after a waiting opening mark in order", () => {
+    expect(splitWords("said « — Bonjour »")).toEqual(["said", "« — Bonjour »"]);
+    expect(splitWords("He said ( … ) ok")).toEqual(["He", "said", "( … ) ok"]);
+    expect(splitWords("Hello « —")).toEqual(["Hello « —"]);
+  });
+
   it("shows & as a word", () => {
     expect(splitWords("Scrooge & Marley")).toEqual(["Scrooge", "&", "Marley"]);
   });

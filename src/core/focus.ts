@@ -53,8 +53,8 @@ export interface FocusSplit {
 }
 
 /**
- * Splits a word around its focus letter. A word with no letters (`&`)
- * focuses its first character.
+ * Splits a word around its focus letter. A word with no letters focuses its
+ * `&`, or else its first character.
  */
 export function splitAtFocus(word: string): FocusSplit {
   const chars = graphemes(word);
@@ -64,7 +64,9 @@ export function splitAtFocus(word: string): FocusSplit {
   });
   const letters = letterIndexes.length;
   const at =
-    letters === 0 ? 0 : (letterIndexes[focusPosition(letters) - 1] ?? 0);
+    letters === 0
+      ? Math.max(chars.indexOf("&"), 0)
+      : (letterIndexes[focusPosition(letters) - 1] ?? 0);
   return {
     before: chars.slice(0, at).join(""),
     focus: chars[at] ?? "",

@@ -78,4 +78,29 @@ describe("splitLongWord", () => {
       { before: "sib", focus: "i", after: "lities", letters: 10 },
     ]);
   });
+
+  it("doesn't double a hyphen when an even split lands next to one", () => {
+    expect(
+      splitLongWord(
+        "https://standardebooks.org/ebooks/charles-dickens/a-christmas-carol",
+      ),
+    ).toEqual([
+      "https://",
+      "standar-",
+      "debooks.",
+      "org/ebooks/",
+      "charles-",
+      "dickens/",
+      "a-christm-",
+      "as-carol",
+    ]);
+  });
+
+  it("recognises a web address without http or www", () => {
+    expect(splitLongWord("gutenberg.org/files/46/46-h/46-h.htm")).toEqual([
+      "gutenberg.org/",
+      "files/46/46-h/46-h.",
+      "htm",
+    ]);
+  });
 });

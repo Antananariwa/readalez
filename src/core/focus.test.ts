@@ -107,4 +107,10 @@ describe("splitAtFocus", () => {
       letters: 0,
     });
   });
+
+  it("focuses & when punctuation comes before it", () => {
+    expect(show("« & »")).toBe("« [&] »");
+    expect(show("— &")).toBe("— [&]");
+    expect(show("(&)")).toBe("([&])");
+  });
 });

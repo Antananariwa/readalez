@@ -27,9 +27,9 @@ export function isSceneBreak(line: string): boolean {
  * Text between spaces is a word, with its punctuation attached. Words joined
  * by a dash without spaces are split after the dash. A piece with no letters
  * or digits isn't shown on its own: it joins a neighbour, keeping the space
- * between them. Opening marks join the word after them; anything else joins
- * the word before it, or the word after it when there's none before. `&` is a
- * word.
+ * between them. Opening marks, and symbols after them, join the word after
+ * them; anything else joins the word before it, or the word after it when
+ * there's none before. `&` is a word.
  */
 export function splitWords(text: string): string[] {
   const words: string[] = [];
@@ -39,7 +39,9 @@ export function splitWords(text: string): string[] {
     if (hasLetter(piece) || piece.includes("&")) {
       words.push(prefix + piece);
       prefix = "";
-    } else if (words.length === 0 || isOpener(piece)) {
+    } else if (words.length === 0 || prefix !== "" || isOpener(piece)) {
+      // Waits for the next word. Symbols after an opening mark wait with it,
+      // so the text keeps its order.
       prefix += `${piece} `;
     } else {
       words[words.length - 1] += ` ${piece}`;

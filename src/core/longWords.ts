@@ -7,7 +7,9 @@ export const MAX_LETTERS = 13;
 
 const HYPHENS = new Set(["-", "‐"]);
 const WEB_MARKS = new Set(["/", "."]);
-const WEB_ADDRESS = /^[^\p{L}\p{N}]*(?:https?:\/\/|www\.)/iu;
+/** Starts with `http://`, `https://`, `www.` or a domain and a slash. */
+const WEB_ADDRESS =
+  /^[^\p{L}\p{N}]*(?:https?:\/\/|www\.|[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)+\/)/iu;
 
 /**
  * Splits a word over 13 letters into parts of at most 13 letters.
@@ -85,7 +87,8 @@ function packPieces(pieces: string[]): string[] {
 
 /**
  * Splits a piece into the fewest even parts of at most 13 letters. Earlier
- * parts get the spare letters, and each cut comes right after a letter.
+ * parts get the spare letters, and each cut comes right after a letter (and
+ * any hyphens that follow it).
  */
 function splitEvenly(piece: string): string[] {
   const chars = graphemes(piece);
@@ -99,13 +102,20 @@ function splitEvenly(piece: string): string[] {
   let seen = 0;
   let partIndex = 0;
   let limit = base + (extra > 0 ? 1 : 0);
+  let cutDue = false;
   for (const c of chars) {
+    // A hyphen right after the cut stays on the part before it, so the
+    // part isn't given a second one.
+    if (cutDue && !HYPHENS.has(c)) {
+      parts.push(current);
+      current = "";
+      cutDue = false;
+    }
     current += c;
     if (!isLetter(c)) continue;
     seen += 1;
     if (seen === limit && partIndex < count - 1) {
-      parts.push(current);
-      current = "";
+      cutDue = true;
       partIndex += 1;
       limit += base + (partIndex < extra ? 1 : 0);
     }
