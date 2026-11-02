@@ -2,8 +2,6 @@
 
 What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). When a decision here changes, change this file in the same PR, with the new reason.
 
-This is a working plan, not a contract. It was drafted before the details were known, so its details (how words are split and timed, the values, the wording of checks) are starting points to refine as the work shows what's right. A PR that finds a better way changes them here and gives the reason. The owner decides what's marked as the owner's choice and what's in or out of scope. The hard rules are privacy, security and licensing: [Everything stays on the device](#ground-rules) and [Legal and licensing](#legal-and-licensing).
-
 ## What Readalez is
 
 A free, open-source speed-reading web app for practicing on real, meaningful texts. v1 shows one word at a time with a highlighted focus letter; guided reading through full paragraphs comes later. It's a PWA (ADR 0002), so it installs from the browser on iPhone and desktop.
