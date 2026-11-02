@@ -2,8 +2,6 @@
 
 Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
 
-When a PR accepts an issue instead of fixing it, it adds an entry here. When a PR fixes one, it removes the entry.
-
 ## Timing and sentences
 
 Code: `src/core/sentences.ts`. Tests: `src/core/sentences.test.ts`. Added in #7.
