@@ -36,6 +36,20 @@ describe("splitText", () => {
     ]);
   });
 
+  it("marks every part of a split word but the last as continuing", () => {
+    const words = splitText([
+      {
+        paragraphs: [{ kind: "prose", text: "an incomprehensibilities, yes" }],
+      },
+    ]);
+    expect(words.map((w) => [label(w), w.continues])).toEqual([
+      ["an", false],
+      ["incomprehen-", true],
+      ["sibilities,", false],
+      ["yes|paragraph", false],
+    ]);
+  });
+
   it("indexes each part of a long word, and marks only the last part", () => {
     const words = splitText([
       { paragraphs: [{ kind: "prose", text: "the establishments" }] },
