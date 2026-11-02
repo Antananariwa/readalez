@@ -40,6 +40,16 @@ Code: `src/core/schedule.ts`. Added in #7.
 - **Why:** time left stays the same whether you're paused or playing.
 - **Possible fix:** add the start factor to time left while paused.
 
+## Reader
+
+Code: `src/ui/App.tsx`. Added in #8.
+
+### The browser's Back leaves the app
+
+- **What happens:** the Add text screen and the reader are React state, not history entries. So the browser's Back button, or a swipe back, leaves Readalez instead of returning from the reader to Add text. The reader's own Back button works.
+- **Why:** two screens with one way between them don't need a router, and the library (#12) reshapes the navigation.
+- **Possible fix:** push a history entry when the reader opens and close it on `popstate`, or a router once there are more screens.
+
 ## Build and tests
 
 Added in #26.

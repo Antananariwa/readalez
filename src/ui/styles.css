@@ -1,0 +1,166 @@
+/* Plain look until the visual style is decided (SPEC.md, Open questions).
+   System fonts only, nothing loaded from other sites (feature 13). The text
+   size and highlight settings come in #18. */
+
+:root {
+  color-scheme: light dark;
+  --background: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --line: #9ca3af;
+  --highlight: #c8102e;
+  --word-size: 2.25rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121212;
+    --text: #e8e8e8;
+    --muted: #9ca3af;
+    --line: #6b7280;
+    --highlight: #ff6b6b;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  box-sizing: border-box;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+button {
+  font: inherit;
+}
+
+.add-text form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.add-text textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 50vh;
+  /* At least 16px, so iPhone Safari doesn't zoom in on focus. */
+  font: inherit;
+  font-size: 1rem;
+  color: inherit;
+  background: transparent;
+}
+
+.add-text button {
+  align-self: flex-start;
+}
+
+.reader {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.back {
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+}
+
+/* The word frame: one big tap target. */
+.frame {
+  display: block;
+  width: 100%;
+  margin-top: 25vh;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.frame-line {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--line);
+}
+
+/* The ticks and the focus letter share this point: a third of the way across. */
+.tick,
+.anchor {
+  position: absolute;
+  left: calc(100% / 3);
+}
+
+.tick {
+  width: 2px;
+  height: 0.5rem;
+  margin-left: -1px;
+  background: var(--line);
+}
+
+.frame-line:first-child .tick {
+  top: 0;
+}
+
+.frame-line:last-child .tick {
+  bottom: 0;
+}
+
+.word-area {
+  position: relative;
+  display: block;
+  height: calc(var(--word-size) * 2);
+  font-size: var(--word-size);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.anchor {
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  width: 0;
+}
+
+/* Centred on the anchor; the text before and after hangs off its sides. */
+.focus {
+  position: relative;
+  flex: none;
+  transform: translateX(-50%);
+  color: var(--highlight);
+}
+
+.before,
+.after {
+  position: absolute;
+  top: 0;
+  color: var(--text);
+}
+
+.before {
+  right: 100%;
+}
+
+.after {
+  left: 100%;
+}
