@@ -32,24 +32,24 @@ const sections: Section[] = [
 /** Each word with its duration at 300 wpm (200 ms per ordinary word). */
 const expected: [string, number][] = [
   ["Stave", 200],
-  ["I", 800], // ends a heading: 4×
+  ["I", 1000], // ends a heading: 5×
   ["Marley", 200],
   ["was", 200],
-  ["dead:", 400], // colon: 2×
+  ["dead:", 300], // colon: 1.5×
   ["to", 200],
   ["begin", 200],
-  ["with.", 600], // ends a sentence: 3×
-  ["“Bah,”", 400], // comma inside a closing quote: 2×
+  ["with.", 400], // ends a sentence: 2×
+  ["“Bah,”", 300], // comma inside a closing quote: 1.5×
   ["said", 200],
-  ["Scrooge,", 400], // 7 letters, not long; comma: 2×
-  ["“Humbug!”", 600], // sentence end followed by a closing quote: 3×
+  ["Scrooge,", 300], // 7 letters, not long; comma: 1.5×
+  ["“Humbug!”", 400], // sentence end followed by a closing quote: 2×
   ["Extraordinary", 260], // 13 letters: 1.3×
-  ["circumstances—", 520], // long and a dash: 2 × 1.3
+  ["circumstances—", 390], // long and a dash: 1.5 × 1.3
   ["incomprehen-", 260], // a split part: long only, the added hyphen isn't a dash
-  ["sibilities.", 780], // the last part: long word ending a sentence, 3 × 1.3
+  ["sibilities.", 520], // the last part: long word ending a sentence, 2 × 1.3
   ["Old", 200],
-  ["Scrooge", 800], // ends a paragraph: 4×
-  ["Hark!", 600], // ends a sentence inside a verse line: 3×
+  ["Scrooge", 1000], // ends a paragraph: 5×
+  ["Hark!", 400], // ends a sentence inside a verse line: 2×
   ["the", 200],
   ["herald", 200],
   ["angels", 200],
@@ -58,12 +58,12 @@ const expected: [string, number][] = [
   ["to", 200],
   ["the", 200],
   ["new-born", 200], // 7 letters: the hyphen doesn't count
-  ["King;", 800], // ends the paragraph right before a heading: 4×
+  ["King;", 1000], // ends the paragraph right before a heading: 5×
   ["Stave", 200], // a chapter title follows on without stopping
-  ["II", 800],
+  ["II", 1000],
   ["The", 200],
   ["Ghost", 200],
-  ["spoke.", 800], // a paragraph end beats a sentence end: 4×
+  ["spoke.", 1000], // a paragraph end beats a sentence end: 5×
 ];
 
 describe("wordDuration", () => {
@@ -76,7 +76,7 @@ describe("wordDuration", () => {
     ).toEqual(expected);
   });
 
-  it("shows the first word after play for the larger of 3× and its usual time", () => {
+  it("shows the first word after play for the larger of 1.5× and its usual time", () => {
     const first = (text: string) =>
       wordDuration(
         timing,
@@ -84,10 +84,10 @@ describe("wordDuration", () => {
         300,
         true,
       );
-    expect(first("Marley")).toBe(600);
-    expect(first("Extraordinary")).toBe(600);
-    expect(first("sibilities.")).toBe(780);
-    expect(first("Scrooge")).toBe(800);
+    expect(first("Marley")).toBe(300);
+    expect(first("Extraordinary")).toBe(300);
+    expect(first("sibilities.")).toBe(520);
+    expect(first("Scrooge")).toBe(1000);
   });
 
   it("scales with the speed: an ordinary word shows for 60,000 ÷ wpm ms", () => {

@@ -47,9 +47,9 @@ describe("timeLeft", () => {
       chapter: sum(0, chapterEnd, 600),
       book: sum(0, words.length, 600),
     });
-    // At 300 wpm: Stave, I (heading), Marley, was, dead: (2×), to, begin,
-    // with. (paragraph) = 200 + 800 + 200 + 200 + 400 + 200 + 200 + 800.
-    expect(timeLeft(timing, 0, 300).chapter).toBe(3000);
+    // At 300 wpm: Stave, I (heading), Marley, was, dead: (1.5×), to, begin,
+    // with. (paragraph) = 200 + 1000 + 200 + 200 + 300 + 200 + 200 + 1000.
+    expect(timeLeft(timing, 0, 300).chapter).toBe(3300);
   });
 
   it("is zero past the end", () => {

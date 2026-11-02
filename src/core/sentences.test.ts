@@ -145,52 +145,52 @@ describe("sentence pauses", () => {
     [
       "English titles",
       "Mr. Utterson the lawyer was a man of a rugged countenance that was never lighted by a smile. He was austere.",
-      "Mr. Utterson@260 the lawyer was a man of a rugged countenance@260 that was never lighted by a smile.@600 He was austere.@600",
+      "Mr. Utterson@260 the lawyer was a man of a rugged countenance@260 that was never lighted by a smile.@400 He was austere.@400",
     ],
     [
       "English e.g., i.e. and U.S.",
       "Fruit, e.g. apples, i.e. food from the U.S. and more. Yes.",
-      "Fruit,@400 e.g. apples,@400 i.e. food from the U.S. and more.@600 Yes.@600",
+      "Fruit,@300 e.g. apples,@300 i.e. food from the U.S. and more.@400 Yes.@400",
     ],
     [
       "initials",
       "A book by J. R. R. Smith. Read it.",
-      "A book by J. R. R. Smith.@600 Read it.@600",
+      "A book by J. R. R. Smith.@400 Read it.@400",
     ],
     [
       "decimals",
       "Pi is about 3.14 and e is 2.72. True.",
-      "Pi is about 3.14 and e is 2.72.@600 True.@600",
+      "Pi is about 3.14 and e is 2.72.@400 True.@400",
     ],
     [
       "French",
       "En 1815, M. Charles-François-Bienvenu Myriel était évêque de Digne. « Entrez ! » dit-il.",
-      "En 1815,@400 M. Charles- François-@260 Bienvenu@260 Myriel était évêque de Digne.@600 « Entrez ! »@600 dit-il.@600",
+      "En 1815,@300 M. Charles- François-@260 Bienvenu@260 Myriel était évêque de Digne.@400 « Entrez ! »@400 dit-il.@400",
     ],
     [
       "German",
       "Er kam z. B. gestern. „Ja“, sagte er, d. h. Nein. Gut.",
-      "Er kam z. B. gestern.@600 „Ja“,@400 sagte er,@400 d. h. Nein.@600 Gut.@600",
+      "Er kam z. B. gestern.@400 „Ja“,@300 sagte er,@300 d. h. Nein.@400 Gut.@400",
     ],
     [
       "Spanish",
       "En un lugar de la Mancha, de cuyo nombre no quiero acordarme. ¿Qué tal, Sra. García? ¡Bien!",
-      "En un lugar de la Mancha,@400 de cuyo nombre no quiero acordarme.@780 ¿Qué tal,@400 Sra. García?@600 ¡Bien!@600",
+      "En un lugar de la Mancha,@300 de cuyo nombre no quiero acordarme.@520 ¿Qué tal,@300 Sra. García?@400 ¡Bien!@400",
     ],
     [
       "Polish",
       "Kupił np. chleb, tj. bułki. Prof. Nowak wrócił w 1990 r. Potem spał.",
-      "Kupił np. chleb,@400 tj. bułki.@600 Prof. Nowak wrócił w 1990 r.@600 Potem spał.@600",
+      "Kupił np. chleb,@300 tj. bułki.@400 Prof. Nowak wrócił w 1990 r.@400 Potem spał.@400",
     ],
     [
       "Russian",
       "Все счастливые семьи похожи друг на друга, каждая несчастливая семья несчастлива по-своему. Он пришёл, т. е. вернулся.",
-      "Все счастливые@260 семьи похожи друг на друга,@400 каждая несчастливая@260 семья несчастлива@260 по-своему.@780 Он пришёл,@400 т. е. вернулся.@780",
+      "Все счастливые@260 семьи похожи друг на друга,@300 каждая несчастливая@260 семья несчастлива@260 по-своему.@520 Он пришёл,@300 т. е. вернулся.@520",
     ],
     [
       "Greek, with `;` as a question mark",
       "Τι κάνεις; Καλά, ευχαριστώ. Ο κ. Παπαδόπουλος ήρθε.",
-      "Τι κάνεις;@600 Καλά,@400 ευχαριστώ.@780 Ο κ. Παπαδόπουλος@260 ήρθε.@600",
+      "Τι κάνεις;@400 Καλά,@300 ευχαριστώ.@520 Ο κ. Παπαδόπουλος@260 ήρθε.@400",
     ],
   ])("%s", (_, text, expected) => {
     expect(timed(text)).toBe(expected);

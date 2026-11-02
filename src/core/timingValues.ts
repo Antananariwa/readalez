@@ -24,11 +24,11 @@ export interface TimingValues {
 export const DEFAULT_TIMING: Readonly<TimingValues> = Object.freeze({
   longWordLetters: 8,
   longWord: 1.3,
-  clause: 2,
+  clause: 1.5,
   verseLine: 2,
-  sentence: 3,
-  paragraph: 4,
-  start: 3,
+  sentence: 2,
+  paragraph: 5,
+  start: 1.5,
 });
 
 export const MIN_WPM = 100;

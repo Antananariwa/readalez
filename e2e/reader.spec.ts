@@ -90,15 +90,15 @@ test("tapping the frame plays and pauses at #7's durations", async ({
   const advanceTo = stopwatch(page);
   await expect(page.getByRole("button", { name: "Pause" })).toBeVisible();
 
-  // At 300 wpm: the first word 3× (600 ms), a comma 2× (400 ms), a sentence
-  // end 3× (600 ms). Each change is checked 30 ms before and after.
+  // At 300 wpm: the first word 1.5× (300 ms), a comma 1.5× (300 ms), a
+  // sentence end 2× (400 ms). Each change is checked 30 ms before and after.
   for (const [at, text] of [
-    [570, "Hello"],
-    [630, "there,"],
-    [970, "there,"],
-    [1030, "friend."],
-    [1570, "friend."],
-    [1630, "Go"],
+    [270, "Hello"],
+    [330, "there,"],
+    [570, "there,"],
+    [630, "friend."],
+    [970, "friend."],
+    [1030, "Go"],
   ] as const) {
     await advanceTo(at);
     await expect(word).toHaveText(text);
@@ -133,6 +133,7 @@ for (const colorScheme of ["light", "dark"] as const) {
       const advanceTo = stopwatch(page);
       const durations: number[] = [];
       const centres: number[] = [];
+      let frame = { left: 0, right: 0 };
       let start = 0;
       for (let i = 0; i < timing.words.length; i++) {
         const duration = wordDuration(timing, i, DEFAULT_WPM, i === 0);
@@ -141,14 +142,17 @@ for (const colorScheme of ["light", "dark"] as const) {
           await advanceTo(at);
           await expect(word).toHaveText(wordText(timing.words[i]!));
         }
-        const { focus, ticks } = await measure(page);
-        centres.push(focus, ...ticks);
+        const measures = await measure(page);
+        centres.push(measures.focus, ...measures.ticks);
+        frame = measures.frame;
         durations.push(duration);
         start += duration;
       }
 
+      // Every centre sits on the focus point, 40% of the way across.
+      const point = frame.left + 0.4 * (frame.right - frame.left);
       for (const centre of centres) {
-        expect(Math.abs(centre - centres[0]!)).toBeLessThanOrEqual(1);
+        expect(Math.abs(centre - point)).toBeLessThanOrEqual(1);
       }
 
       // Paragraph ends pause longer than sentence ends.
@@ -186,6 +190,8 @@ test.describe("in a narrow viewport", () => {
 
     await expect(word).toHaveText("comprehension");
     const normal = await measure(page);
+    // A 13-letter word fits at the default size (2.25rem) on an iPhone SE.
+    expect(normal.fontSize).toBe(36);
     expect(normal.word.left).toBeGreaterThanOrEqual(normal.frame.left);
     expect(normal.word.right).toBeLessThanOrEqual(normal.frame.right);
 

@@ -16,11 +16,11 @@ describe("DEFAULT_TIMING", () => {
     expect(DEFAULT_TIMING).toEqual({
       longWordLetters: 8, // has 8 or more letters…
       longWord: 1.3, // …shows for 1.3×
-      clause: 2, // ends with , ; : a dash or a closing bracket
+      clause: 1.5, // ends with , ; : a dash or a closing bracket
       verseLine: 2, // ends a line of verse
-      sentence: 3, // ends a sentence
-      paragraph: 4, // ends a paragraph or a heading, or comes before a heading
-      start: 3, // the first after play or a jump: at least 3×
+      sentence: 2, // ends a sentence
+      paragraph: 5, // ends a paragraph or a heading, or comes before a heading
+      start: 1.5, // the first after play or a jump: at least 1.5×
     });
   });
 });
