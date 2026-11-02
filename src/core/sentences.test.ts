@@ -72,6 +72,7 @@ describe("punctuation", () => {
     expect(punctuation("κάνεις;")).toBe("sentence");
     expect(punctuation("word;")).toBe("clause");
     expect(punctuation("слово;")).toBe("clause");
+    expect(punctuation("1821\u037E")).toBe("clause");
   });
 
   it("reads the Greek raised dot as a clause end", () => {
@@ -107,12 +108,35 @@ describe("isAbbreviation", () => {
     expect(isAbbreviation(text)).toBe(true);
   });
 
-  it.each(["end.", "I.", "etc.", "usw.", "r.", "г.", "3.14", "1914.", "so..."])(
-    "%s isn't",
-    (text) => {
-      expect(isAbbreviation(text)).toBe(false);
-    },
-  );
+  it("looks through closing brackets and quotes", () => {
+    expect(isAbbreviation("(U.S.)")).toBe(true);
+    expect(isAbbreviation("(e.g.)")).toBe(true);
+    expect(isAbbreviation("Mr.”")).toBe(true);
+  });
+
+  it("keeps French MM. but not the interjection Mm.", () => {
+    expect(isAbbreviation("MM.")).toBe(true);
+    expect(isAbbreviation("Mm.")).toBe(false);
+  });
+
+  it.each([
+    "end.",
+    "I.",
+    "etc.",
+    "usw.",
+    "r.",
+    "г.",
+    "3.14",
+    "1914.",
+    "so...",
+    // Common words that often end a sentence
+    "im.",
+    "им.",
+    "ok.",
+    "Ok.",
+  ])("%s isn't", (text) => {
+    expect(isAbbreviation(text)).toBe(false);
+  });
 });
 
 describe("sentence pauses", () => {
@@ -181,6 +205,30 @@ describe("endsSentence", () => {
     );
     const ends = all.filter(endsSentence).map(wordText);
     expect(ends).toEqual(["home.", "U.S.", "Next."]);
+  });
+
+  it("doesn't end a sentence at an abbreviation in brackets", () => {
+    const all = words({
+      kind: "prose",
+      text: "Sales in the (U.S.) rose. Then fell.",
+    });
+    expect(all.filter(endsSentence).map(wordText)).toEqual(["rose.", "fell."]);
+  });
+
+  it("ends a sentence at common words that look like abbreviations", () => {
+    const all = words(
+      { kind: "prose", text: "Я сказал им. Они ушли." },
+      { kind: "prose", text: "Dałem im. Potem spał." },
+      { kind: "prose", text: "That is ok. Fine then." },
+    );
+    expect(all.filter(endsSentence).map(wordText)).toEqual([
+      "им.",
+      "ушли.",
+      "im.",
+      "spał.",
+      "ok.",
+      "then.",
+    ]);
   });
 
   it("never ends a sentence on a split word's earlier part", () => {
