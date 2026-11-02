@@ -6,6 +6,7 @@
       "TZ": "${localEnv:TZ:Europe/London}",
       "CLAUDE_CODE_VERSION": "latest",
       "GIT_DELTA_VERSION": "0.18.2",
+      "GH_VERSION": "2.103.3",
       "ZSH_IN_DOCKER_VERSION": "1.2.0",
       "PLAYWRIGHT_VERSION": "1.64.1"
     }

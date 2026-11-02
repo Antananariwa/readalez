@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   man-db \
   unzip \
   gnupg2 \
-  gh \
   iptables \
   ipset \
   iproute2 \
@@ -53,6 +52,14 @@ RUN ARCH=$(dpkg --print-architecture) && \
   wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
   sudo dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
   rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
+
+# GitHub CLI from its own releases: Debian's package (2.23.0) still asks for
+# classic project cards, which GitHub removed, so `gh issue view` fails.
+ARG GH_VERSION
+RUN test -n "$GH_VERSION" && ARCH=$(dpkg --print-architecture) && \
+  wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH}.deb" && \
+  sudo dpkg -i "gh_${GH_VERSION}_linux_${ARCH}.deb" && \
+  rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
 # Set up non-root user
 USER node
