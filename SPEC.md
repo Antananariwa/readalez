@@ -82,7 +82,7 @@ Three books are always in the library:
 - _Alice's Adventures in Wonderland_ by Lewis Carroll (died 1898)
 - _The Strange Case of Dr Jekyll and Mr Hyde_ by Robert Louis Stevenson (died 1894)
 
-Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: a new reader can start at once, the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
+Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: the owner's choice, so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
 
 - **Editions:** Standard Ebooks, with the images, the frontispiece page and the list of illustrations removed. Why: proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0), so there's no license text to carry. Their sources are on GitHub (for example `standardebooks/charles-dickens_a-christmas-carol`), which the dev container can reach.
 - **Copyright:** all three authors died over 100 years ago, so the texts are public domain almost everywhere (see [Legal and licensing](#legal-and-licensing)).
