@@ -8,23 +8,17 @@ When a PR accepts an issue instead of fixing it, it adds an entry here. When a P
 
 Code: `src/core/sentences.ts`. Tests: `src/core/sentences.test.ts`. Added in #7.
 
-### Abbreviations that often end a sentence get a sentence pause
+### An abbreviation before a capitalised word ends the sentence
 
-- **What happens:** `etc.`, German `usw.`, Polish `itd.`, Polish `r.` and Russian `г.` after a year ("w 1990 r.") always end a sentence. So "apples, pears, etc. and more" pauses after `etc.`, and back and forward treat the rest as a new sentence.
-- **Why:** SPEC.md feature 6 says a known abbreviation ends a sentence only as the last word of a paragraph. If these were on the list, a sentence that really ends with them would merge with the next one. A wrong pause costs less than a merged sentence.
-- **Possible fix:** let a listed abbreviation end a sentence when the next word starts with a capital letter, as established sentence splitters do (NLTK's Punkt, pySBD). That changes SPEC.md feature 6's rule, so it's the owner's call.
-
-### Common words that look like abbreviations are left off the list
-
-- **What happens:** `ok.`, Polish `im.` and Russian `им.` ("them") always end a sentence, so their abbreviation meanings (Polish `ok.` for "about", `im.` and `им.` for "named after") get a sentence pause. English `ex.` (as in "my ex.") is on the list for French `p. ex.`, so it never ends a sentence.
-- **Why:** each word has two meanings, and the abbreviation rule can't tell which one is meant.
-- **Possible fix:** same as above, using the next word's capital letter.
+- **What happens:** an abbreviation that often ends a sentence ends one whenever the next word starts with a capital letter. So "the U.S. Army" pauses after `U.S.`, and so do Polish `im.` and Russian `им.` before a name ("named after": "im. Mickiewicza", "им. Ленина"). German capitalises every noun, so "usw. Äpfel" pauses too.
+- **Why:** the capital-letter test is the simplest form of what sentence splitters do (SPEC.md feature 6). Each abbreviation is listed either as one that never ends a sentence mid-paragraph or as one that may end one.
+- **Possible fix:** Punkt-style statistics learned from real text, or a short list of words that commonly follow each abbreviation (`Army`, `Navy`).
 
 ### A sentence ending in a single capital letter gets no sentence pause
 
 - **What happens:** a capital letter followed by a dot counts as an initial (`J. R. R.`), so "It was plan A. Then B came." has no pause after `A.` and no sentence start at `Then`. This also affects appendix letters, vitamins and Roman numerals. `I.` is the one exception, as in "It was I."
-- **Why:** initials are far more common in books than sentences ending in a single capital.
-- **Possible fix:** the next word's capital letter, as above.
+- **Why:** initials are far more common in books than sentences ending in a single capital. The capital-letter test doesn't help here, since a name follows an initial too.
+- **Possible fix:** treat a single capital as an initial only when another initial or a name follows, which needs a list of names or Punkt-style statistics.
 
 ### German ordinals get a sentence pause
 

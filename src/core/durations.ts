@@ -13,20 +13,25 @@ export interface Timing {
 }
 
 /**
- * A word's factor. Of the punctuation rows only the largest applies, and the
+ * A word's factor, given the word after it (for sentence ends after an
+ * abbreviation). Of the punctuation rows only the largest applies, and the
  * long-word factor multiplies it. The parts of a split word before the last
  * get no punctuation pause: the hyphen added at a split isn't a dash. The
  * word right before a heading always ends its own paragraph, so it gets the
  * paragraph pause through that rule.
  */
-export function wordFactor(word: Word, values: Readonly<TimingValues>): number {
+export function wordFactor(
+  word: Word,
+  next: Word | undefined,
+  values: Readonly<TimingValues>,
+): number {
   const long = word.letters >= values.longWordLetters ? values.longWord : 1;
   if (word.continues) return long;
   const pauses = [1];
   if (word.end === "paragraph" || word.end === "heading") {
     pauses.push(values.paragraph);
   }
-  if (endsSentence(word)) pauses.push(values.sentence);
+  if (endsSentence(word, next)) pauses.push(values.sentence);
   if (word.end === "line") pauses.push(values.verseLine);
   if (punctuation(wordText(word)) === "clause") pauses.push(values.clause);
   return Math.max(...pauses) * long;
@@ -37,7 +42,11 @@ export function timeWords(
   words: readonly Word[],
   values: Readonly<TimingValues> = DEFAULT_TIMING,
 ): Timing {
-  return { words, values, factors: words.map((w) => wordFactor(w, values)) };
+  return {
+    words,
+    values,
+    factors: words.map((w, i) => wordFactor(w, words[i + 1], values)),
+  };
 }
 
 /**

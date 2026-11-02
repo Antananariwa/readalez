@@ -55,73 +55,113 @@ export function punctuation(text: string): Punctuation {
   return bracket ? "clause" : null;
 }
 
+/** How an abbreviation's dot is read at the end of a word. */
+export type Abbreviation =
+  /** Never a full stop mid-paragraph: titles and the like (`Mr.`, `z.`). */
+  | "never"
+  /** A full stop when the next word starts with a capital (`etc.`). */
+  | "capital";
+
 /**
- * Abbreviations that rarely end a sentence, as usually written; a capital
- * first letter also matches. Ones that often end a sentence are left out, so
- * they keep the sentence pause, since a listed one never ends a sentence
- * mid-paragraph: `etc.`, `usw.`, `itd.`, Polish `r.` and Russian `г.` after a
- * year, and common words such as `ok.`, Polish `im.` and Russian `им.`
- * ("them"). French `MM.` is listed in capitals so the interjection `Mm.`
- * doesn't match.
+ * Splits a list of abbreviations as usually written. A capital first letter
+ * also matches, so `mr.` covers `Mr.`.
  */
-const ABBREVIATIONS = new Set(
-  [
-    // English
-    "mr. mrs. ms. dr. st. jr. sr. prof. rev. hon. gen. col. capt. lt. sgt.",
-    "mt. messrs. vs. cf. viz. approx. p. pp.",
-    // French
-    "MM. mme. mlle. mgr. ste. ex. env.",
-    // German (z. B., d. h.)
-    "z. d. h. nr. vgl. bzw. ca. hr. hrn.",
-    // Spanish (p. ej.)
-    "sra. srta. sres. dra. ud. uds. vd. vds. dña. ej. pág. núm.",
-    // Polish
-    "np. tzn. tj. m.in. mgr. inż. ul. św. ks. płk.",
-    // Russian (т. е.)
-    "т. е. см. стр. ул. напр. проф. тов.",
-    // Greek
-    "κ. κα. δηλ. βλ. σελ. αρ.",
-  ]
-    .join(" ")
-    .split(" "),
+function list(...groups: string[]): Set<string> {
+  return new Set(groups.join(" ").split(" "));
+}
+
+/**
+ * Titles, and abbreviations that almost never end a sentence: names,
+ * numbers or more words follow them. French `MM.` is listed in capitals so
+ * the interjection `Mm.` doesn't match.
+ */
+const NEVER_ENDS = list(
+  // English
+  "mr. mrs. ms. dr. st. sr. prof. rev. hon. gen. col. capt. lt. sgt. mt.",
+  "messrs. vs. cf. viz. approx. p. pp. e.g. i.e.",
+  // French
+  "MM. mme. mlle. mgr. ste. ex. env.",
+  // German (z. B., d. h.)
+  "z. d. h. nr. vgl. bzw. ca. hr. hrn.",
+  // Spanish (p. ej.)
+  "sra. srta. sres. dra. ud. uds. vd. vds. dña. ej. pág. núm.",
+  // Polish
+  "np. tzn. tj. m.in. mgr. inż. ul. św. ks. płk.",
+  // Russian (т. е.)
+  "т. е. т.е. см. стр. ул. напр. проф. тов.",
+  // Greek
+  "κ. κα. δηλ. βλ. σελ. αρ. π.χ.",
+);
+
+/**
+ * Abbreviations that often end a sentence, and common words that look like
+ * one (`ok.`, Polish `im.` and Russian `им.`, "them").
+ */
+const MAY_END = list(
+  // English
+  "etc. jr. no. inc. ltd. co. ok.",
+  // German
+  "usw.",
+  // Polish (after a year: w 1990 r.)
+  "itd. itp. r. im.",
+  // Russian (и т. д.; after a year: в 1812 г.)
+  "д. г. им.",
 );
 
 /** One capital and a dot: an initial. `I.` is left out, as in "It was I." */
 const INITIAL = /^\p{Lu}\.$/u;
-/** Single letters with dots: `e.g.`, `i.e.`, `U.S.`, `т.е.`, `π.χ.`. */
+/** Single letters with dots: `U.S.`, `a.m.`. */
 const DOTTED = /^(?:\p{L}\.){2,}$/u;
+/** Starts with a capital letter, after any opening quotes or brackets. */
+const CAPITAL = /^[^\p{L}\p{N}]*\p{Lu}/u;
 
 /**
- * True for an abbreviation or initial that ends in a dot, so its dot isn't a
- * full stop, looking through brackets and quotes around it (`(U.S.)`).
+ * How a word ending in an abbreviation's dot is read, looking through
+ * brackets and quotes around it (`(U.S.)`), or null for any other word.
+ * Initials never end a sentence mid-paragraph, since a name follows them.
  * Decimals (`3.14`) don't end in a dot and need no rule.
  */
-export function isAbbreviation(text: string): boolean {
+export function abbreviation(text: string): Abbreviation | null {
   const core = stripClosing(text).core.replace(/^[^\p{L}\p{N}]+/u, "");
-  if (!core.endsWith(".") || core.endsWith("..")) return false;
-  if (DOTTED.test(core)) return true;
-  if (INITIAL.test(core)) return core !== "I.";
+  if (!core.endsWith(".") || core.endsWith("..")) return null;
   const lower = core.charAt(0).toLowerCase() + core.slice(1);
-  return ABBREVIATIONS.has(core) || ABBREVIATIONS.has(lower);
+  const listed = (set: Set<string>) => set.has(core) || set.has(lower);
+  if (listed(NEVER_ENDS)) return "never";
+  // Before the next list, so the initial `R.` isn't read as Polish `r.`.
+  if (INITIAL.test(core)) return core === "I." ? null : "never";
+  if (listed(MAY_END)) return "capital";
+  if (DOTTED.test(core)) return "capital";
+  return null;
 }
 
 /**
  * True when a sentence ends with this word: at the end of a paragraph or a
- * heading, or at `.` `!` `?` `…` (and Greek `;`) that isn't an abbreviation's
- * dot. A split word's parts before the last never end one.
+ * heading, or at `.` `!` `?` `…` (and Greek `;`). An abbreviation's dot ends
+ * one only when the abbreviation may end a sentence and the next word starts
+ * with a capital. A split word's parts before the last never end one.
  */
-export function endsSentence(word: Word): boolean {
+export function endsSentence(word: Word, next: Word | undefined): boolean {
   if (word.end === "paragraph" || word.end === "heading") return true;
   if (word.continues) return false;
   const text = wordText(word);
-  return punctuation(text) === "sentence" && !isAbbreviation(text);
+  if (punctuation(text) !== "sentence") return false;
+  switch (abbreviation(text)) {
+    case "never":
+      return false;
+    case "capital":
+      return next !== undefined && CAPITAL.test(wordText(next));
+    default:
+      return true;
+  }
 }
 
 /** The index of each sentence's first word, in order. */
 export function sentenceStarts(words: readonly Word[]): number[] {
   const starts: number[] = words.length > 0 ? [0] : [];
   words.forEach((word, i) => {
-    if (i + 1 < words.length && endsSentence(word)) starts.push(i + 1);
+    if (i + 1 < words.length && endsSentence(word, words[i + 1])) {
+      starts.push(i + 1);
+    }
   });
   return starts;
 }

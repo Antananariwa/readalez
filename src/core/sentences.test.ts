@@ -7,15 +7,15 @@
 import { describe, expect, it } from "vitest";
 import { timeWords, wordDuration } from "./durations.ts";
 import {
+  abbreviation,
   endsSentence,
-  isAbbreviation,
   nextSentenceStart,
   previousSentenceStart,
   punctuation,
   sentenceStart,
   sentenceStarts,
 } from "./sentences.ts";
-import { splitText, wordText, type Paragraph } from "./text.ts";
+import { splitText, wordText, type Paragraph, type Word } from "./text.ts";
 
 function words(...paragraphs: Paragraph[]) {
   return splitText([{ paragraphs }]);
@@ -80,18 +80,18 @@ describe("punctuation", () => {
   });
 });
 
-describe("isAbbreviation", () => {
+describe("abbreviation", () => {
   it.each([
     "Mr.",
     "Mrs.",
     "Dr.",
     "e.g.",
     "i.e.",
-    "U.S.",
     "(e.g.",
     "J.",
     "R.",
     "M.",
+    "MM.",
     "z.",
     "B.",
     "np.",
@@ -104,39 +104,40 @@ describe("isAbbreviation", () => {
     "κ.",
     "π.χ.",
     "Sra.",
-  ])("%s is an abbreviation", (text) => {
-    expect(isAbbreviation(text)).toBe(true);
-  });
-
-  it("looks through closing brackets and quotes", () => {
-    expect(isAbbreviation("(U.S.)")).toBe(true);
-    expect(isAbbreviation("(e.g.)")).toBe(true);
-    expect(isAbbreviation("Mr.”")).toBe(true);
-  });
-
-  it("keeps French MM. but not the interjection Mm.", () => {
-    expect(isAbbreviation("MM.")).toBe(true);
-    expect(isAbbreviation("Mm.")).toBe(false);
+  ])("%s never ends a sentence mid-paragraph", (text) => {
+    expect(abbreviation(text)).toBe("never");
   });
 
   it.each([
-    "end.",
-    "I.",
     "etc.",
     "usw.",
+    "itd.",
     "r.",
     "г.",
-    "3.14",
-    "1914.",
-    "so...",
-    // Common words that often end a sentence
-    "im.",
-    "им.",
+    "д.",
+    "U.S.",
+    "a.m.",
+    "No.",
     "ok.",
     "Ok.",
-  ])("%s isn't", (text) => {
-    expect(isAbbreviation(text)).toBe(false);
+    "im.",
+    "им.",
+  ])("%s ends a sentence before a capital", (text) => {
+    expect(abbreviation(text)).toBe("capital");
   });
+
+  it("looks through closing brackets and quotes", () => {
+    expect(abbreviation("(U.S.)")).toBe("capital");
+    expect(abbreviation("(e.g.)")).toBe("never");
+    expect(abbreviation("Mr.”")).toBe("never");
+  });
+
+  it.each(["end.", "I.", "Mm.", "OK.", "3.14", "1914.", "so..."])(
+    "%s isn't one",
+    (text) => {
+      expect(abbreviation(text)).toBeNull();
+    },
+  );
 });
 
 describe("sentence pauses", () => {
@@ -197,14 +198,49 @@ describe("sentence pauses", () => {
 });
 
 describe("endsSentence", () => {
-  it("ends a sentence at a known abbreviation only as a paragraph's last word", () => {
+  /** The words that end a sentence. */
+  function ends(all: Word[]): string[] {
+    return all.filter((w, i) => endsSentence(w, all[i + 1])).map(wordText);
+  }
+
+  it("ends a sentence at a title or initial only as a paragraph's last word", () => {
+    const all = words(
+      { kind: "prose", text: "I met Mr. Hyde and J. R. R. Smith there." },
+      { kind: "prose", text: "So did Dr." },
+      { kind: "prose", text: "Next." },
+    );
+    expect(ends(all)).toEqual(["there.", "Dr.", "Next."]);
+  });
+
+  it("ends a sentence at other abbreviations when the next word starts with a capital", () => {
     const all = words(
       { kind: "prose", text: "He went to the U.S. Then home." },
+      { kind: "prose", text: "Pears, etc. and apples, etc. “Then” we ate." },
+      { kind: "prose", text: "W 1990 r. ojciec wrócił w 1991 r. Potem spał." },
+      { kind: "prose", text: "He lives at No. 5 and said no. He left." },
+      { kind: "prose", text: "Kupił ok. 5 kg. Było ok. Dobrze." },
+    );
+    expect(ends(all)).toEqual([
+      "U.S.",
+      "home.",
+      "etc.",
+      "ate.",
+      "r.",
+      "spał.",
+      "no.",
+      "left.",
+      "kg.",
+      "ok.",
+      "Dobrze.",
+    ]);
+  });
+
+  it("ends a sentence at a known abbreviation as a paragraph's last word", () => {
+    const all = words(
       { kind: "prose", text: "He lived in the U.S." },
       { kind: "prose", text: "Next." },
     );
-    const ends = all.filter(endsSentence).map(wordText);
-    expect(ends).toEqual(["home.", "U.S.", "Next."]);
+    expect(ends(all)).toEqual(["U.S.", "Next."]);
   });
 
   it("doesn't end a sentence at an abbreviation in brackets", () => {
@@ -212,7 +248,7 @@ describe("endsSentence", () => {
       kind: "prose",
       text: "Sales in the (U.S.) rose. Then fell.",
     });
-    expect(all.filter(endsSentence).map(wordText)).toEqual(["rose.", "fell."]);
+    expect(ends(all)).toEqual(["rose.", "fell."]);
   });
 
   it("ends a sentence at common words that look like abbreviations", () => {
@@ -220,13 +256,16 @@ describe("endsSentence", () => {
       { kind: "prose", text: "Я сказал им. Они ушли." },
       { kind: "prose", text: "Dałem im. Potem spał." },
       { kind: "prose", text: "That is ok. Fine then." },
+      { kind: "prose", text: "Mm. Fine then." },
     );
-    expect(all.filter(endsSentence).map(wordText)).toEqual([
+    expect(ends(all)).toEqual([
       "им.",
       "ушли.",
       "im.",
       "spał.",
       "ok.",
+      "then.",
+      "Mm.",
       "then.",
     ]);
   });
@@ -236,7 +275,9 @@ describe("endsSentence", () => {
       kind: "prose",
       text: "See https://example.org/averyveryverylongpage now",
     });
-    expect(all.filter((w) => w.continues).some(endsSentence)).toBe(false);
+    expect(all.some((w, i) => w.continues && endsSentence(w, all[i + 1]))).toBe(
+      false,
+    );
   });
 });
 

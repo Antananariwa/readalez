@@ -2,6 +2,8 @@
 
 What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). When a decision here changes, change this file in the same PR, with the new reason.
 
+This is a working plan, not a contract. It was drafted before the details were known, so its details (how words are split and timed, the values, the wording of checks) are starting points to refine as the work shows what's right. A PR that finds a better way changes them here and gives the reason. The owner decides what's marked as the owner's choice and what's in or out of scope. The hard rules are privacy, security and licensing: [Everything stays on the device](#ground-rules) and [Legal and licensing](#legal-and-licensing).
+
 ## What Readalez is
 
 A free, open-source speed-reading web app for practicing on real, meaningful texts. v1 shows one word at a time with a highlighted focus letter; guided reading through full paragraphs comes later. It's a PWA (ADR 0002), so it installs from the browser on iPhone and desktop.
@@ -166,7 +168,7 @@ Checks:
 
   Of the punctuation rows, only the largest applies; the long-word factor multiplies it, so a long word ending a sentence gets 3.9×. The first word after play or a jump shows for the larger of 3× and its usual time. Each part of a split word is timed by its own length, with punctuation pauses on the last part; the hyphen added at a split isn't a dash. Why: these follow the open-source Spritz-style readers (speedread uses 2× for commas and 3× for full stops; Speeedy about 1.8× and 3×, plus a pause between paragraphs), and timing feels robotic until tuned by feel on a device.
 
-- **Abbreviations don't end sentences.** "Mr.", "Dr.", "e.g.", "i.e.", "U.S.", initials ("J. R. R.") and decimals ("3.14") get no sentence pause, and neither do common abbreviations in the other European languages (French "M.", German "z. B.", Polish "np." and so on). A known abbreviation ends a sentence only as the last word of a paragraph.
+- **Abbreviations.** Titles, initials ("J. R. R.") and abbreviations that rarely end a sentence ("Mr.", "Dr.", "e.g.", "i.e.", French "M.", German "z. B.", Polish "np." and so on) get no sentence pause unless they end a paragraph, and neither do decimals ("3.14"). Abbreviations that often end a sentence ("etc.", "U.S.", Polish "r." after a year) end one when the next word starts with a capital letter. Why: the convention of sentence splitters such as pySBD and NLTK's Punkt, in its simplest form. Pausing at every "etc." or never pausing at one both read wrong. Known gaps: docs/known-issues.md.
 - **Languages.** English, plus European languages written in Latin, Greek or Cyrillic script. Their quote marks and punctuation (« », „ “, ‹ ›, ¿ ¡) count as punctuation, not letters, and after a Greek word `;` is a question mark that ends the sentence. Rules are tuned on English first. Why: the owner's choice.
 - **Chapter titles** show as words, with the paragraph pause around them, and reading flows on into the next chapter without stopping.
 - **No drift, no skipped words.** Words follow a fixed schedule, so small timer delays don't add up. If the device falls behind (in Low Power Mode, for example), reading slows down rather than skipping words: every word is on screen for at least one refresh.
@@ -176,7 +178,7 @@ Checks:
 Checks:
 
 - Unit: at 300 wpm, every word of a fixed passage gets exactly the duration in the table (the passage has commas, sentence ends, a paragraph end, a heading, a line of verse and long words).
-- Unit: abbreviations, initials and decimals get no sentence pause, and sample sentences in English, French, German, Spanish, Polish, Russian and Greek get the right pauses.
+- Unit: titles, initials and decimals get no sentence pause, abbreviations such as "etc." end a sentence only before a capital letter, and sample sentences in English, French, German, Spanish, Polish, Russian and Greek get the right pauses.
 - Unit: with a fake clock, 1,000 words at 1,000 wpm finish within 1% of their computed total; with frames arriving only every 33 ms (30 Hz) and one 250 ms stall, every word still shows, in order, with none skipped.
 - Unit: time left equals the sum of the remaining words' durations.
 - Device: at 300 and at 600 wpm on iPhone, a chapter takes the time left shown at its start, within 2% by stopwatch.
