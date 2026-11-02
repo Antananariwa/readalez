@@ -1,6 +1,6 @@
 # Readalez
 
-A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/.
+A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md.
 
 ## Working together
 
@@ -8,7 +8,7 @@ A speed-reading web app for practicing on real, meaningful texts: one word at a 
 - Before offering options on a product question, research how established apps and open-source projects solve it, and recommend that convention in its simplest working form. Propose a departure only with a reason.
 - Some changes need the owner: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For these, say exactly what to change rather than working around the limit.
 - SPEC.md and the ADRs record current decisions. If a task or review comment contradicts one, point out the conflict and let the owner decide. When a decision changes, update the doc that records it (SPEC.md, ARCHITECTURE.md or a new ADR) in the same PR, so the reason travels with it.
-- When a PR accepts a known problem, limit or edge case instead of fixing it, record it in docs/known-limitations.md in the same PR. A PR that fixes one removes its entry.
+- When a PR accepts a known problem, limit or edge case instead of fixing it, record it in docs/known-issues.md in the same PR. A PR that fixes one removes its entry.
 - If the owner has to correct the same thing twice, propose a line for this file in the current PR.
 
 ## Commands

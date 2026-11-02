@@ -1,8 +1,8 @@
-# Known limitations
+# Known issues
 
-Known problems, limits and edge cases that are accepted for now: what happens, why it was left, and what would fix it. Addressing any of them is optional. Undecided product questions live in SPEC.md's Open questions, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
+Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
 
-When a PR accepts a limitation, it adds an entry here. When a PR fixes one, it removes the entry.
+When a PR accepts an issue instead of fixing it, it adds an entry here. When a PR fixes one, it removes the entry.
 
 ## Timing and sentences
 
@@ -47,3 +47,19 @@ Code: `src/core/schedule.ts`. Added in #7.
 - **What happens:** the first word after play or a jump shows for at least 3×, but time left counts it at its usual time. Time left is up to 2 ordinary words short each time you press play.
 - **Why:** time left stays the same whether you're paused or playing.
 - **Possible fix:** add the start factor to time left while paused.
+
+## Build and tests
+
+Added in #26.
+
+### Build-time packages have open npm advisories
+
+- **What happens:** `npm audit` reports 2 low and 8 moderate advisories (on 2026-11-01). They're in `ejs`, `jake`, `filelist`, `minimatch`, `glob` and `deepmerge`, which `vite-plugin-pwa` brings in through `workbox-build`.
+- **Why:** they run only during `vite build`, on the project's own config, and none of them ship to users (ADR 0006).
+- **Possible fix:** update `vite-plugin-pwa` once `workbox-build` updates them.
+
+### WebKit tests don't see the service worker's own requests
+
+- **What happens:** in WebKit, Playwright doesn't report requests the service worker makes itself, such as the precache fetches. So the WebKit run of "requests only the app's own origin" (`e2e/pwa.spec.ts`) misses them.
+- **Why:** it's a Playwright limit. The Chromium run of the same test covers those requests.
+- **Possible fix:** none needed while the Chromium run stays. Recheck if Playwright adds service worker requests for WebKit.
