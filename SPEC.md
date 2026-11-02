@@ -1,6 +1,6 @@
 # Spec
 
-What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). When a decision here changes, change this file in the same PR, with the new reason.
+What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan: when a detail changes, change it here in the same PR, with the new reason. Lines marked "Why: the owner's choice" change only with the owner's agreement.
 
 ## What Readalez is
 
@@ -10,13 +10,13 @@ A free, open-source speed-reading web app for practicing on real, meaningful tex
 - **Free and open source (MIT).** Why: the owner's choice for a public portfolio piece; it also keeps the patent risk low (see [Legal and licensing](#legal-and-licensing)).
 - **Named Readalez**, a nod to Speedy Gonzales. Why: catchy and original (no app or GitHub repo used the name in October 2026), its 8 letters fit under an iPhone icon, and it avoids the Project Gutenberg and Spritz names. The nod stays in the name only: no mouse, sombrero, "¡Ándale!" or other reference to the Warner Bros. character in the icon or the app's text. That keeps clear of their trademark and of the criticism the character has drawn as a stereotype.
 
-## Ground rules
+## Principles
 
 These apply to every feature.
 
 - **iPhone first.** Every v1 feature works in the installed Home Screen app on iOS 18.4 or later, and in a Safari tab. Why: the owner reads on an iPhone, and Safari is how a PWA installs there (ADR 0002).
 - **Everything stays on the device.** No accounts, no server of our own, no analytics, no cookies, no ads. Texts, progress, settings and reading sessions live in the browser's storage, and a backup file moves them between devices. Why: privacy without paperwork (see [Legal and licensing](#legal-and-licensing)), nothing to host or pay for, and the app works offline.
-- **Established designs, simplest version first.** Where speed-reading apps share a convention (the focus letter, pause lengths), Readalez follows it, and departures need a reason. Each feature starts as the simplest version that works. Why: the owner's direction; proven conventions need less tuning than new designs.
+- **Established designs, simplest version first.** Where speed-reading apps share a convention (the focus letter, pause lengths), Readalez follows it, and departures need a reason. Each feature starts as the simplest version that works. Why: the owner's choice; proven conventions need less tuning than new designs.
 
 ## Devices and browsers
 
@@ -131,8 +131,8 @@ One word at a time, in the layout Spritz introduced in 2014 and open-source read
 - **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, about a third of the way across the word area, since most of a word sits to the right of its focus letter. Why: the eyes never have to move.
 - **Look.** The focus letter is drawn in the highlight colour (red by default) and the rest of the word in the text colour. Thin lines run above and below the word area, each with a short tick at the focus point; Spritz calls this frame the "redicle".
 - **Highlight settings.** The highlight can be turned off: the focus letter then takes the text colour, and nothing moves. Five highlight colours are offered, each readable on both the light and the dark theme. Why: some readers find the colour distracting, and colour-blind readers and dark mode need choices.
-- **Long words.** A word longer than 13 letters is split at its own hyphens first (or at slashes and dots in a web address); only as many of those cuts are kept as needed, so neighbouring pieces rejoin while they fit in 13 letters ("twenty-seven-", then "year-old"). Any part still longer than 13 letters is then split into the fewest even parts of at most 13 letters. Every part but the last ends with a hyphen, unless it already ends in one of those marks, and every part gets its own focus letter. Why: the established approach; 13 letters is what fits. Rejoining follows SpritzerTextView, which cuts at a hyphen only while a part is still too long, and gives fewer, fuller flashes than cutting at every hyphen as speedread does (the owner's choice).
-- **Words.** Text between spaces is a word, with its punctuation attached. Hyphenated words stay whole ("well-known"); words joined by a dash without spaces are split ("yes—no" shows "yes—", then "no"); numbers stay whole ("1,000.50"). Gutenberg's `--` counts as a dash, and so do `―`, `⸺` and `⸻`; an en dash (`–`) doesn't split, so ranges such as "1914–1918" stay whole. A dash splits only where both sides have a letter or digit. A piece with no letters or digits isn't shown on its own: a spaced dash or ellipsis joins the word before it as its punctuation, keeping its space ("paused —"), and a line of only symbols (such as `* * *`) is a scene break that counts as a paragraph end. Opening quotes and brackets, `¿` and `¡`, and a symbol with no word before it (a dialogue dash at the start of a paragraph) join the word after them instead ("« Bonjour »", "— Привет,"). The exception is `&`, which shows as a word. Why: the space keeps the text as written (the owner's choice), and an opening mark belongs to the word it opens, as in French, Spanish and Russian dialogue.
+- **Long words.** A word longer than 13 letters is split at its own hyphens first (or at slashes and dots in a web address); only as many of those cuts are kept as needed, so neighbouring pieces rejoin while they fit in 13 letters ("twenty-seven-", then "year-old"). Any part still longer than 13 letters is then split into the fewest even parts of at most 13 letters. Every part but the last ends with a hyphen, unless it already ends in one of those marks, and every part gets its own focus letter. Why: the established approach; 13 letters is what fits. Rejoining follows SpritzerTextView, which cuts at a hyphen only while a part is still too long, and gives fewer, fuller flashes than cutting at every hyphen as speedread does.
+- **Words.** Text between spaces is a word, with its punctuation attached. Hyphenated words stay whole ("well-known"); words joined by a dash without spaces are split ("yes—no" shows "yes—", then "no"); numbers stay whole ("1,000.50"). Gutenberg's `--` counts as a dash, and so do `―`, `⸺` and `⸻`; an en dash (`–`) doesn't split, so ranges such as "1914–1918" stay whole. A dash splits only where both sides have a letter or digit. A piece with no letters or digits isn't shown on its own: a spaced dash or ellipsis joins the word before it as its punctuation, keeping its space ("paused —"), and a line of only symbols (such as `* * *`) is a scene break that counts as a paragraph end. Opening quotes and brackets, `¿` and `¡`, and a symbol with no word before it (a dialogue dash at the start of a paragraph) join the word after them instead ("« Bonjour »", "— Привет,"). The exception is `&`, which shows as a word. Why: the space keeps the text as written, and an opening mark belongs to the word it opens, as in French, Spanish and Russian dialogue.
 - **Accents and scripts.** A letter with accents counts and highlights as one letter, however it's encoded. Greek and Cyrillic words follow the same rules.
 - **Text size** goes up to the largest size at which a 13-letter word such as "comprehension" still fits on a 375-px-wide screen (iPhone SE) in portrait. A word that still doesn't fit, such as one in wide capitals, shrinks to fit while it shows and is never clipped.
 
@@ -150,7 +150,7 @@ Checks:
 
 ### 6. Timing
 
-- **Speed:** 100–1,000 words per minute, in steps of 10, starting at 300. One speed applies to all books, the owner's choice as the simplest. Why this range: it's the common one in speed-reading apps. Above about 1,000 wpm a word gets fewer than 4 screen refreshes, and iPhone's Low Power Mode halves the refresh rate for web pages, so timing turns uneven.
+- **Speed:** 100–1,000 words per minute, in steps of 10, starting at 300. One speed applies to all books, as the simplest. Why this range: it's the common one in speed-reading apps. Above about 1,000 wpm a word gets fewer than 4 screen refreshes, and iPhone's Low Power Mode halves the refresh rate for web pages, so timing turns uneven.
 - **What the number means:** the base speed. An ordinary word shows for 60,000 ÷ wpm milliseconds (200 ms at 300 wpm), and pauses come on top, so the real average runs below the setting. Why: the convention (OpenSpritz, speedread, Speeedy), and time left stays accurate because it uses the same rules.
 - **Starting values,** to be tuned on the owner's iPhone with the tuning screen (feature 11):
 
@@ -304,7 +304,7 @@ Checks:
 - **Long-word settings:** later. An adjustable letter limit instead of the fixed 13, and showing numbers, email addresses and web addresses whole (smaller, or on two lines) instead of splitting them. Why later: v1's split (feature 5) works, and a reader takes in a big number as one shape, so this is worth revisiting once the reader is in use.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
 - **An Android store app** through Capacitor: later (ADR 0002).
-- **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's decision.
+- **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's choice.
 - **Right-to-left texts and Chinese, Japanese or Korean texts:** they need a mirrored layout or a different way of splitting words, which is much more work. Interface languages other than English are out too.
 - **Extras other apps have:** per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate product decision.
 - **Removing or replacing the built-in books.**
@@ -346,7 +346,6 @@ A check that needs a later feature moves to that feature's issue: for example, f
 
 - **Final timing values:** set after tuning on the iPhone (feature 11). The table in feature 6 holds starting values.
 - **App icon and visual style:** not decided, apart from no Warner Bros. references.
-- **Hosting:** decided: Cloudflare Pages, with a preview on its own origin for each PR. Why: [ADR 0006](docs/adr/0006-host-on-cloudflare-pages.md).
 - **Paragraph pacer (after v1):** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone (continuously or a screen at a time), and whether it shares the single-word speed.
 - **Catalog (after v1):** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
 - **The next format after EPUB:** TXT or PDF.

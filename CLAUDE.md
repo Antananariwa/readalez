@@ -4,11 +4,9 @@ A speed-reading web app for practicing on real, meaningful texts: one word at a 
 
 ## Working together
 
-- Product decisions are the owner's. When SPEC.md doesn't answer a product question, ask instead of guessing. Technical choices are yours; put the significant ones in the plan with their reasons.
-- Before offering options on a product question, research how established apps and open-source projects solve it, and recommend that convention in its simplest working form. Propose a departure only with a reason.
-- Some changes need the owner: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For these, say exactly what to change rather than working around the limit.
-- SPEC.md and the ADRs record current decisions. If a task or review comment contradicts one, point out the conflict and let the owner decide. When a decision changes, update the doc that records it (SPEC.md, ARCHITECTURE.md or a new ADR) in the same PR, so the reason travels with it.
-- When a PR accepts a known problem, limit or edge case instead of fixing it, record it in docs/known-issues.md in the same PR. A PR that fixes one removes its entry.
+- **Never:** expose secrets or tokens (in code, logs, commits or PRs); send readers' texts or data off the device, add tracking, or lose saved data; ship a dependency outside the license allowlist (SPEC.md feature 13).
+- **Ask the owner first:** adding, dropping or reshaping a feature, or anything in SPEC.md's Out of scope; changing a line marked "Why: the owner's choice"; and anything that needs the owner's access: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For access changes, say exactly what to change rather than working around the limit. When you ask, research how established apps and open-source projects do it and recommend that convention.
+- **Decide everything else,** including details SPEC.md doesn't cover or gets wrong: take the established convention in its simplest working form, record the reason where the decision lives (SPEC.md, ARCHITECTURE.md, or a new ADR that supersedes an old one) in the same PR, and call it out in the PR. Problems you accept instead of fixing go in docs/known-issues.md; a fix removes its entry.
 - If the owner has to correct the same thing twice, propose a line for this file in the current PR.
 
 ## Commands
