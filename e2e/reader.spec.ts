@@ -160,10 +160,17 @@ for (const colorScheme of ["light", "dark"] as const) {
       expect(sentenceEnd).toBeGreaterThan(durations[1]!);
       expect(paragraphEnd).toBeGreaterThan(sentenceEnd!);
 
-      // Tapping again pauses on the current word.
+      // Reading stops on the last word. Until the Finished card (#11), a tap
+      // starts again from the first word, and tapping again pauses there.
+      await advanceTo(start + 100);
+      await expect(word).toHaveText(wordText(timing.words.at(-1)!));
+      await page.getByRole("button", { name: "Play" }).click();
+      await expect(word).toHaveText(wordText(timing.words[0]!));
+      await page.clock.runFor(wordDuration(timing, 0, DEFAULT_WPM, true) + 100);
+      await expect(word).toHaveText(wordText(timing.words[1]!));
       await page.getByRole("button", { name: "Pause" }).click();
       await page.clock.runFor(5000);
-      await expect(word).toHaveText(wordText(timing.words.at(-1)!));
+      await expect(word).toHaveText(wordText(timing.words[1]!));
     });
   });
 }

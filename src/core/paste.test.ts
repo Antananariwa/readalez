@@ -26,6 +26,14 @@ describe("pastedSections", () => {
     );
   });
 
+  it("counts a line of non-breaking spaces as blank, as web pages copy them", () => {
+    expect(paragraphs("One.\n\u00a0\nTwo.\n \u00a0\u2009\n\nThree.")).toEqual([
+      "One.",
+      "Two.",
+      "Three.",
+    ]);
+  });
+
   it("reads Windows and old Mac line breaks", () => {
     expect(paragraphs("One.\r\n\r\nTwo.\r\rThree.")).toEqual([
       "One.",

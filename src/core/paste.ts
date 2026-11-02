@@ -4,8 +4,11 @@
 
 import type { Section } from "./text.ts";
 
-/** A blank line, or a run of them; lines of only spaces and tabs count. */
-const BLANK_LINES = /\n[ \t]*(?:\n[ \t]*)*\n/;
+/**
+ * A blank line, or a run of them. A line of only whitespace counts, such as
+ * the non-breaking spaces text copied from web pages can hold.
+ */
+const BLANK_LINES = /\n[^\S\n]*(?:\n[^\S\n]*)*\n/u;
 
 /**
  * Splits pasted text into paragraphs at blank lines, as one section. Single
