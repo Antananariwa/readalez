@@ -300,7 +300,8 @@ Checks:
 - **TXT, PDF, Word and other formats:** later, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
 - **Importing from a web link:** not planned. It needs a server that fetches any page, which invites abuse and copyright trouble.
 - **Stats screens:** later. Sessions are recorded from v1 (feature 10).
-- **Word chunks** (two or three words at a time): later.
+- **Word chunks:** later. Modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings. Speeedy has a words-per-flash setting; speedread joins neighbouring words of 3 letters or fewer.
+- **Long-word settings:** later. An adjustable letter limit instead of the fixed 13, and showing numbers, email addresses and web addresses whole (smaller, or on two lines) instead of splitting them. Why later: v1's split (feature 5) works, and a reader takes in a big number as one shape, so this is worth revisiting once the reader is in use.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
 - **An Android store app** through Capacitor: later (ADR 0002).
 - **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's decision.
