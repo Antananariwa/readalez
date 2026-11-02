@@ -1,6 +1,6 @@
 # Spec
 
-What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan: when a detail changes, change it here in the same PR, with the new reason. Lines marked "Why: the owner's choice" change only with the owner's agreement.
+What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan. Lines marked "Why: the owner's choice" change only with the owner's agreement.
 
 ## What Readalez is
 
@@ -8,7 +8,7 @@ A free, open-source speed-reading web app for practicing on real, meaningful tex
 
 - **Public.** Anyone with the link can use it, and it's a portfolio piece. Why: the owner's choice. So privacy, copyright and polish are judged for strangers, not only for the owner.
 - **Free and open source (MIT).** Why: the owner's choice for a public portfolio piece; it also keeps the patent risk low (see [Legal and licensing](#legal-and-licensing)).
-- **Named Readalez**, a nod to Speedy Gonzales. Why: catchy and original (no app or GitHub repo used the name in October 2026), its 8 letters fit under an iPhone icon, and it avoids the Project Gutenberg and Spritz names. The nod stays in the name only: no mouse, sombrero, "¡Ándale!" or other reference to the Warner Bros. character in the icon or the app's text. That keeps clear of their trademark and of the criticism the character has drawn as a stereotype.
+- **Named Readalez**, a nod to Speedy Gonzales. Why: the owner's choice; catchy and original (no app or GitHub repo used the name in October 2026), its 8 letters fit under an iPhone icon, and it avoids the Project Gutenberg and Spritz names. The nod stays in the name only: no mouse, sombrero, "¡Ándale!" or other reference to the Warner Bros. character in the icon or the app's text. That keeps clear of their trademark and of the criticism the character has drawn as a stereotype.
 
 ## Principles
 
