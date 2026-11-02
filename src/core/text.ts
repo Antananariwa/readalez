@@ -45,6 +45,16 @@ export interface Word {
   /** Letters and digits in the word. */
   letters: number;
   end: WordEnd | null;
+  /**
+   * True for every part of a split long word except the last, so the part
+   * is timed without punctuation pauses (SPEC.md feature 6).
+   */
+  continues: boolean;
+}
+
+/** The word as shown, punctuation included. */
+export function wordText(word: Word): string {
+  return word.before + word.focus + word.after;
 }
 
 /** Splits sections and paragraphs into the words the reader shows, in order. */
@@ -52,13 +62,14 @@ export function splitText(sections: readonly Section[]): Word[] {
   const words: Word[] = [];
   sections.forEach((section, s) => {
     section.paragraphs.forEach((paragraph, p) => {
-      paragraphWords(paragraph).forEach(({ text, end }, w) => {
+      paragraphWords(paragraph).forEach(({ text, end, continues }, w) => {
         words.push({
           section: s,
           paragraph: p,
           word: w,
           ...splitAtFocus(text),
           end,
+          continues,
         });
       });
     });
@@ -69,6 +80,7 @@ export function splitText(sections: readonly Section[]): Word[] {
 interface Shown {
   text: string;
   end: WordEnd | null;
+  continues: boolean;
 }
 
 function paragraphWords(paragraph: Paragraph): Shown[] {
@@ -76,8 +88,14 @@ function paragraphWords(paragraph: Paragraph): Shown[] {
 
   // Splits a run of text into shown words and marks the last one.
   const addUnit = (text: string, end: WordEnd | null) => {
-    const parts = splitWords(text).flatMap(splitLongWord);
-    for (const part of parts) shown.push({ text: part, end: null });
+    const parts = splitWords(text).flatMap((word) =>
+      splitLongWord(word).map((part, i, all) => ({
+        text: part,
+        end: null,
+        continues: i < all.length - 1,
+      })),
+    );
+    shown.push(...parts);
     const last = shown.at(-1);
     if (last && parts.length > 0 && end) last.end = end;
   };
