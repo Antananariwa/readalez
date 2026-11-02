@@ -53,8 +53,8 @@ describe("splitLongWord", () => {
   });
 
   it("splits by letters, so accents and digits count once", () => {
-    const parts = splitLongWord("Départementalisation");
-    expect(parts).toEqual(["Départemen-", "talisation"]);
+    const parts = splitLongWord("De\u0301partementalisation");
+    expect(parts).toEqual(["De\u0301partemen-", "talisation"]);
     expect(splitLongWord("12345678901234567890")).toEqual([
       "1234567890-",
       "1234567890",

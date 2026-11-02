@@ -68,23 +68,32 @@ describe("splitAtFocus", () => {
   });
 
   it("counts and highlights an accented letter as one, however it's encoded", () => {
-    const composed = "rêve";
-    const decomposed = "rêve";
-    expect(splitAtFocus(composed)).toMatchObject({ focus: "ê", letters: 4 });
+    const composed = "r\u00eave";
+    const decomposed = "re\u0302ve";
+    expect(splitAtFocus(composed)).toMatchObject({
+      focus: "\u00ea",
+      letters: 4,
+    });
     expect(splitAtFocus(decomposed)).toMatchObject({
       before: "r",
-      focus: "ê",
+      focus: "e\u0302",
       after: "ve",
       letters: 4,
     });
-    expect(splitAtFocus("é")).toMatchObject({ focus: "é", letters: 1 });
-    expect(splitAtFocus("é")).toMatchObject({ focus: "é", letters: 1 });
-    expect(countLetters("café")).toBe(4);
+    expect(splitAtFocus("\u00e9")).toMatchObject({
+      focus: "\u00e9",
+      letters: 1,
+    });
+    expect(splitAtFocus("e\u0301")).toMatchObject({
+      focus: "e\u0301",
+      letters: 1,
+    });
+    expect(countLetters("cafe\u0301")).toBe(4);
   });
 
   it("follows the table for Greek and Cyrillic words", () => {
     expect(show("λόγος")).toBe("λ[ό]γος");
-    expect(show("λόγος")).toBe("λ[ό]γος");
+    expect(show("λο\u0301γος")).toBe("λ[ο\u0301]γος");
     expect(show("άνθρωπος")).toBe("άν[θ]ρωπος");
     expect(show("Привет")).toBe("Пр[и]вет");
     expect(show("достопримечательность")).toBe("дост[о]примечательность");
