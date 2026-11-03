@@ -1,14 +1,14 @@
 # Spec
 
-What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan. Lines marked "Why: the owner's choice" change only with the owner's agreement.
+What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan.
 
 ## What Readalez is
 
 A free, open-source speed-reading web app for practicing on real, meaningful texts. v1 shows one word at a time with a highlighted focus letter; guided reading through full paragraphs comes later. It's a PWA (ADR 0002), so it installs from the browser on iPhone and desktop.
 
-- **Public.** Anyone with the link can use it, and it's a portfolio piece. Why: the owner's choice. So privacy, copyright and polish are judged for strangers, not only for the owner.
-- **Free and open source (MIT).** Why: the owner's choice for a public portfolio piece; it also keeps the patent risk low (see [Legal and licensing](#legal-and-licensing)).
-- **Named Readalez**, a nod to Speedy Gonzales. Why: the owner's choice; catchy and original (no app or GitHub repo used the name in October 2026), its 8 letters fit under an iPhone icon, and it avoids the Project Gutenberg and Spritz names. The nod stays in the name only: no mouse, sombrero, "¡Ándale!" or other reference to the Warner Bros. character in the icon or the app's text. That keeps clear of their trademark and of the criticism the character has drawn as a stereotype.
+- **Public.** Anyone with the link can use it. Why: it's a portfolio piece (#44). So privacy, copyright and polish are judged for strangers, not only for the owner.
+- **Free and open source (MIT).** Why: a public portfolio piece; it also keeps the patent risk low (see [Legal and licensing](#legal-and-licensing)).
+- **Named Readalez**, a nod to Speedy Gonzales. Why: catchy and original (no app or GitHub repo used the name in October 2026), its 8 letters fit under an iPhone icon, and it avoids the Project Gutenberg and Spritz names. The nod stays in the name only: no mouse, sombrero, "¡Ándale!" or other reference to the Warner Bros. character in the icon or the app's text. That keeps clear of their trademark and of the criticism the character has drawn as a stereotype.
 
 ## Principles
 
@@ -16,12 +16,12 @@ These apply to every feature.
 
 - **iPhone first.** Every v1 feature works in the installed Home Screen app on iOS 18.4 or later, and in a Safari tab. Why: the owner reads on an iPhone, and Safari is how a PWA installs there (ADR 0002).
 - **Everything stays on the device.** No accounts, no server of our own, no analytics, no cookies, no ads. Texts, progress, settings and reading sessions live in the browser's storage, and a backup file moves them between devices. Why: privacy without paperwork (see [Legal and licensing](#legal-and-licensing)), nothing to host or pay for, and the app works offline.
-- **Established designs, simplest version first.** Where speed-reading apps share a convention (the focus letter, pause lengths), Readalez follows it, and departures need a reason. Each feature starts as the simplest version that works. Why: the owner's choice; proven conventions need less tuning than new designs.
+- **Established designs, simplest version first.** Where speed-reading apps share a convention (the focus letter, pause lengths), Readalez follows it, and departures need a reason. Each feature starts as the simplest version that works. Why: proven conventions need less tuning than new designs.
 
 ## Devices and browsers
 
 - **iPhone:** iOS 18.4 and later, in the installed app and in Safari. Why: 18.4 is the first version where an installed web app can keep the screen awake while you read; on earlier versions the screen dims and locks mid-chapter. It covers iPhone XS and XR (2018) and newer. MDN's compatibility data lists that fix in 18.4 while caniuse still flags the bug, so feature 7's screen-awake device check runs as early as possible.
-- **Desktop:** current Chrome, Edge and Firefox. Chrome and Edge can install the app; Firefox runs it in a tab. Why: the owner's choice.
+- **Desktop:** current Chrome, Edge and Firefox. Chrome and Edge can install the app; Firefox runs it in a tab. Why: together they cover most desktop users (#44).
 - **Not checked in v1:** Safari on Mac, Android Chrome and iPad. They run the same engines and will likely work, but nobody checks them. Why: every checked browser adds a manual check per release. An Android store app through Capacitor comes later (ADR 0002).
 - Portrait and landscape both work. The interface is in English.
 
@@ -82,11 +82,11 @@ Three books are always in the library:
 - _Alice's Adventures in Wonderland_ by Lewis Carroll (died 1898)
 - _The Strange Case of Dr Jekyll and Mr Hyde_ by Robert Louis Stevenson (died 1894)
 
-Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: the owner's choice, so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
+Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
 
 - **Editions:** Standard Ebooks, with the images, the frontispiece page and the list of illustrations removed. Why: proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0), so there's no license text to carry. Their sources are on GitHub (for example `standardebooks/charles-dickens_a-christmas-carol`), which the dev container can reach.
 - **Copyright:** all three authors died over 100 years ago, so the texts are public domain almost everywhere (see [Legal and licensing](#legal-and-licensing)).
-- **Permanent:** they can't be deleted or renamed. Their progress works like any book's, and Delete all data resets it. Why: the owner's choice, so there's always something to read and to tune with.
+- **Permanent:** they can't be deleted or renamed. Their progress works like any book's, and Delete all data resets it. Why: so there's always something to read and to tune with.
 - **One code path:** they ship as EPUB files and go through the same import as the reader's own books.
 - **Offline:** they work without a network after the first visit.
 - **Backups** hold their progress, not their text.
@@ -128,7 +128,7 @@ One word at a time, in the layout Spritz introduced in 2014 and open-source read
 
   Words over 13 letters are split first (see Long words), so the convention's last row, the 5th letter for 14 letters or more, never applies.
 
-- **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, 40% of the way across the word area: left of centre, since most of a word sits to the right of its focus letter. Why: the eyes never have to move. 40% rather than the third that speedread and most Spritz-style layouts come close to: the owner's choice after trying it on the iPhone, where a third left 5- and 6-letter words wholly in the left half of the screen.
+- **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, 40% of the way across the word area: left of centre, since most of a word sits to the right of its focus letter. Why: the eyes never have to move. 40% rather than the third that speedread and most Spritz-style layouts come close to: in the first device trial, a third left 5- and 6-letter words wholly in the left half of the screen, and the owner preferred 40% (#36).
 - **Look.** The focus letter is drawn in the highlight colour (red by default) and the rest of the word in the text colour. Thin lines run above and below the word area, each with a short tick at the focus point; Spritz calls this frame the "redicle".
 - **Highlight settings.** The highlight can be turned off: the focus letter then takes the text colour, and nothing moves. Five highlight colours are offered, each readable on both the light and the dark theme. Why: some readers find the colour distracting, and colour-blind readers and dark mode need choices.
 - **Long words.** A word longer than 13 letters is split at its own hyphens first (or at slashes and dots in a web address); only as many of those cuts are kept as needed, so neighbouring pieces rejoin while they fit in 13 letters ("twenty-seven-", then "year-old"). Any part still longer than 13 letters is then split into the fewest even parts of at most 13 letters. Every part but the last ends with a hyphen, unless it already ends in one of those marks, and every part gets its own focus letter. Why: the established approach; 13 letters is what fits. Rejoining follows SpritzerTextView, which cuts at a hyphen only while a part is still too long, and gives fewer, fuller flashes than cutting at every hyphen as speedread does.
@@ -167,7 +167,7 @@ Checks:
   Of the punctuation rows, only the largest applies; the long-word factor multiplies it, so a long word ending a sentence gets 2.6×. The first word after play or a jump shows for the larger of 1.5× and its usual time. Each part of a split word is timed by its own length, with punctuation pauses on the last part; the hyphen added at a split isn't a dash. Why: these follow the open-source Spritz-style readers, nearest to Speeedy (2× for sentence ends and 1.4× for commas, scaled by its sentence-pause setting, plus a paragraph pause); speedread uses 2× for commas and 3× for full stops. The owner tried 2× commas, 3× sentence ends, 4× paragraph ends and a 3× start on the iPhone (#36): stopping at every sentence felt unnatural, paragraph ends felt no longer, and the start felt broken, since the word is already on screen while paused. So sentence ends come down, paragraph ends go up to leave a clear break to blink, and the start pause is shorter. Timing still gets tuned by feel on a device.
 
 - **Abbreviations.** Titles, initials ("J. R. R.") and abbreviations that rarely end a sentence ("Mr.", "Dr.", "e.g.", "i.e.", French "M.", German "z. B.", Polish "np." and so on) get no sentence pause unless they end a paragraph, and neither do decimals ("3.14"). Abbreviations that often end a sentence ("etc.", "U.S.", Polish "r." after a year) end one when the next word starts with a capital letter. Why: the convention of sentence splitters such as pySBD and NLTK's Punkt, in its simplest form. Pausing at every "etc." or never pausing at one both read wrong. Known gaps: docs/known-issues.md.
-- **Languages.** English, plus European languages written in Latin, Greek or Cyrillic script. Their quote marks and punctuation (« », „ “, ‹ ›, ¿ ¡) count as punctuation, not letters, and after a Greek word `;` is a question mark that ends the sentence. Rules are tuned on English first. Why: the owner's choice.
+- **Languages.** English, plus European languages written in Latin, Greek or Cyrillic script. Their quote marks and punctuation (« », „ “, ‹ ›, ¿ ¡) count as punctuation, not letters, and after a Greek word `;` is a question mark that ends the sentence. Rules are tuned on English first. Why: the owner cares about a few European languages, and this group was the option offered instead of English only (#44).
 - **Chapter titles** show as words, with the paragraph pause around them, and reading flows on into the next chapter without stopping.
 - **No drift, no skipped words.** Words follow a fixed schedule, so small timer delays don't add up. If the device falls behind (in Low Power Mode, for example), reading slows down rather than skipping words: every word is on screen for at least one refresh.
 - **Speed changes** take effect from the next word.
@@ -299,7 +299,7 @@ Ideas for after v1, from the paragraph pacer to stats and more formats, live in 
 
 - **Importing from a web link:** not planned. It needs a server that fetches any page, which invites abuse and copyright trouble.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
-- **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's choice.
+- **Accessibility conformance** (WCAG): not a v1 goal. Why: too much work for v1 (#44).
 - **Right-to-left texts and Chinese, Japanese or Korean texts:** they need a mirrored layout or a different way of splitting words, which is much more work. Interface languages other than English are out too.
 - **Removing or replacing the built-in books.**
 
