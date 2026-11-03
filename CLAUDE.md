@@ -11,16 +11,16 @@ A speed-reading web app for practicing on real, meaningful texts: one word at a 
 
 ## Writing docs
 
-This covers every doc, and any code comment or test name that states a fact.
+This covers every doc, and any code comment or test name that states a fact. Text written before #42 hasn't been checked against it; #48 rechecks it.
 
 - An entry has a subject (what it's about), context (what is known about it: what was seen, what happened, a decision and its reason) and, if there are any, suggestions (a possible cause, fix or other idea).
-- Subject and context are strict. Each statement has a source and says no more than that source. A source is something a reader can go back to and check; link it unless it's in the same doc. Code is a source for what the code says, not for how it behaves when it runs.
+- Subject and context are strict. Each statement has a source and says no more than that source. A source is something a reader can go back to and check; link it unless it's in the same doc. Code and its tests are a source for what the app's own logic does; how a browser, device, tool or outside service behaves needs a run, an observation or a cited source.
 - Anything that goes beyond its source is a suggestion: a conclusion drawn from the source, or a claim nobody has checked, whoever wrote it. When someone checks it, it moves into context, with the check as its source.
 - Suggestions are welcome, each in its own labelled field or sentence, never in the subject or the context.
 - Anything not known yet is written as open, not guessed.
-- A decision stands on its reasons, not on who made it. A preference is a reason too, written as one. If the reason isn't known, it's written as open.
+- A decision stands on its reasons, not on who made it. It needs no reason to be recorded, but a reason that's given follows the rules for context. A preference is a reason too, written as one.
 - Each fact lives in one doc. Other places name it and link to it rather than repeat it.
-- Rules about who may do what live only in this file. A doc's intro says how that doc itself works.
+- Rules about who may do what live only in this file and in the agent briefs in `.claude/agents/`. A doc's intro says how that doc itself works.
 
 ## Commands
 
