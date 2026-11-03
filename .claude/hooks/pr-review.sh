@@ -3,13 +3,16 @@
 # (or -F) has a filled-in "## Review" section (CLAUDE.md, Workflow). Exit 2
 # blocks the command and sends the message back to Claude. It checks that the
 # section has text, not what the text says. An inline body can't be checked
-# exactly, so it's blocked too.
+# exactly, so it's blocked too. A relative --body-file path is read from the
+# hook's working directory, not after a `cd` earlier in the command.
 input="$(cat)"
 cmd="$(printf '%s' "$input" | jq -r '.tool_input.command // ""')"
 
-# Only a command that starts with `gh pr create` (or its alias `gh pr new`),
-# at the start or after ; & | ( — not the phrase inside a quoted message.
-start='(^|[;&|(][[:space:]]*)gh[[:space:]]+pr[[:space:]]+(create|new)([[:space:]]|$)'
+# Matches `gh pr create` (or its alias `gh pr new`) at the start of a line or
+# after ; & | (, with or without VAR=value prefixes. The phrase inside a
+# quoted message is matched too when it follows one of those, so such a
+# command is blocked as well.
+start='(^|[;&|(])[[:space:]]*([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*gh[[:space:]]+pr[[:space:]]+(create|new)([[:space:]]|$)'
 printf '%s\n' "$cmd" | grep -qE "$start" || exit 0
 
 # True when the file has "## Review" followed by a line that isn't blank or

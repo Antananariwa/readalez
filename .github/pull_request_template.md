@@ -10,7 +10,7 @@ Closes #
 
 ## Review
 
-<!-- Findings from the reviewer subagent (CLAUDE.md, Workflow). -->
+<!-- See CLAUDE.md, Workflow. -->
 
 ## How to test
 

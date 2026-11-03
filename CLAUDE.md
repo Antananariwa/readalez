@@ -1,6 +1,6 @@
 # Readalez
 
-A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Bugs to fix: GitHub issues. Each doc's intro says what it holds and, where its entries share a shape, what that shape is.
+A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Bugs to fix: GitHub issues. Each doc's intro says what it holds; docs/known-issues.md's and docs/roadmap.md's also give the shape of an entry, and ADR 0001 gives the ADRs'.
 
 ## Working together
 
@@ -20,6 +20,7 @@ This covers every doc, and any code comment or test name that states a fact.
 - Anything not known yet is written as open, not guessed.
 - A decision stands on its reasons, not on who made it. A preference is a reason too, written as one. If the reason isn't known, it's written as open.
 - Each fact lives in one doc. Other places name it and link to it rather than repeat it.
+- Rules about who may do what live only in this file. A doc's intro says how that doc itself works.
 
 ## Commands
 
