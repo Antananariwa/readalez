@@ -15,7 +15,7 @@ A free, open-source speed-reading web app for practicing on real, meaningful tex
 These apply to every feature.
 
 - **iPhone first.** Every v1 feature works in the installed Home Screen app on iOS 18.4 or later, and in a Safari tab. Why: the owner reads on an iPhone, and Safari is how a PWA installs there (ADR 0002).
-- **Everything stays on the device.** No accounts, no server of our own, no analytics, no cookies, no ads. Texts, progress, settings and reading sessions live in the browser's storage, and a backup file moves them between devices. Why: privacy without paperwork (see [Legal and licensing](#legal-and-licensing)), nothing to host or pay for, and the app works offline.
+- **Everything stays on the device.** No accounts, no server of our own, no analytics, no cookies, no ads. Texts, progress, settings and reading sessions live in the browser's storage, and a backup file moves them between devices. Why: privacy without paperwork (see [Legal and licensing](#legal-and-licensing)), no server to run or pay for (the app's files are hosted for free, [ADR 0006](docs/adr/0006-host-on-cloudflare-pages.md)), and the app works offline.
 - **Established designs, simplest version first.** Where speed-reading apps share a convention (the focus letter, pause lengths), Readalez follows it, and departures need a reason. Each feature starts as the simplest version that works. Why: proven conventions need less tuning than new designs.
 
 ## Devices and browsers
@@ -151,7 +151,7 @@ Checks:
 ### 6. Timing
 
 - **Speed:** 100–1,000 words per minute, in steps of 10, starting at 300. One speed applies to all books, as the simplest. Why this range: it's the common one in speed-reading apps. Above about 1,000 wpm a word gets fewer than 4 screen refreshes, and iPhone's Low Power Mode halves the refresh rate for web pages, so timing turns uneven.
-- **What the number means:** the base speed. An ordinary word shows for 60,000 ÷ wpm milliseconds (200 ms at 300 wpm), and pauses come on top, so the real average runs below the setting. Why: the convention (OpenSpritz, speedread, Speeedy), and time left stays accurate because it uses the same rules.
+- **What the number means:** the base speed. An ordinary word shows for 60,000 ÷ wpm milliseconds (200 ms at 300 wpm), and pauses come on top, so the real average runs below the setting. Why: the convention (OpenSpritz, speedread, Speeedy), and time left uses the same rules, apart from [the pause after play](docs/known-issues.md#time-left-leaves-out-the-pause-after-play).
 - **Starting values,** to be tuned on the owner's iPhone with the tuning screen (feature 11):
 
   | A word that…                                                       | Shows for     |
@@ -274,8 +274,8 @@ Checks:
 About shows the version, a link to the source code and its MIT license, the privacy note, the credits (Standard Ebooks for the built-in editions, and Speeedy for any code taken from it), the third-party licenses, and the way into the tuning screen.
 
 - **Privacy note.** Readalez has no accounts, analytics, cookies, ads or server of its own. Your books, progress, settings and reading sessions stay on this device unless you export a backup. The web host that serves the app's files handles requests as it does for any website; Readalez adds no logging.
-- **No requests to other sites.** Fonts are the system's, nothing loads from CDNs, and the only outside links are the help links you tap.
-- **Licenses.** Every dependency bundled into the app is listed with its license text and any NOTICE file, generated at build time. Allowed licenses: MIT, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, Apache-2.0 and CC0-1.0. Anything else fails the build until the owner adds it to the list. Why: so Readalez can stay MIT with every notice shipped.
+- **No requests to other sites.** Fonts are the system's, nothing loads from CDNs, and the only outside links are ones you tap: the source code link in About and the help links in [feature 14](#14-where-to-find-books).
+- **Licenses.** Every dependency bundled into the app is listed with its license text and any NOTICE file, generated at build time. Allowed licenses: MIT, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, Apache-2.0 and CC0-1.0. Anything else fails the build. Why: so Readalez can stay MIT with every notice shipped.
 
 Checks:
 

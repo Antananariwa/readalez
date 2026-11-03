@@ -1,6 +1,6 @@
 # Readalez
 
-A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Bugs to fix: GitHub issues. Each doc's intro says what it holds; docs/known-issues.md's and docs/roadmap.md's also give the shape of an entry, and ADR 0001 gives the ADRs'.
+What Readalez is: SPEC.md's What Readalez is. What to build and why: the rest of SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Bugs to fix: GitHub issues. Each doc's intro says what it holds; docs/known-issues.md's and docs/roadmap.md's also give the shape of an entry, and ADR 0001 gives the ADRs'.
 
 ## Working together
 
@@ -24,7 +24,7 @@ This covers every doc, and any code comment or test name that states a fact. Tex
 
 ## Commands
 
-- `npm run check`: typecheck, lint, Prettier format check and unit tests. A Stop hook runs it when you finish a turn and sends failures back to you.
+- `npm run check`: typecheck, lint, Prettier format check and unit tests. A Stop hook runs it when you finish a turn, except when `.claude/hooks/check.sh` skips it, and sends failures back to you.
 - `npm run e2e`: Playwright against the production build, in headless Chromium and in WebKit with iPhone emulation, inside the container. Run it before opening a PR that changes the UI, and use Playwright screenshots whenever you need to see the UI.
 
 ## Structure
@@ -38,7 +38,7 @@ This covers every doc, and any code comment or test name that states a fact. Tex
 - Bugs: write a failing test that reproduces the bug, then fix the cause. Don't suppress errors, weaken tests or special-case around it; the bug would come back in another form.
 - Keep each PR inside its issue so it stays reviewable. Mention unrelated problems you notice in the PR instead of fixing them.
 - Prefer the platform and packages already in use. If a new dependency is worth it, propose it in the plan with the reason: each one adds download size on phones, updates and license notices.
-- Before opening a PR, run the `reviewer` subagent (`.claude/agents/reviewer.md`) and put its findings, and what you did with each, in the PR's Review section; a hook blocks `gh pr create` unless the file passed with `--body-file` has that section filled in. Its claims are suggestions until checked. Fix real gaps and ignore style preferences, since chasing every finding leads to over-engineering.
+- Before opening a PR, run the `reviewer` subagent (`.claude/agents/reviewer.md`) and put its findings, and what you did with each, in the PR's Review section; a hook blocks `gh pr create` otherwise (`.claude/hooks/pr-review.sh`). Its claims are suggestions until checked. Fix real gaps and ignore style preferences, since chasing every finding leads to over-engineering.
 - PR body: use `.github/pull_request_template.md` and include the commands you ran with their output, so the owner reviews evidence instead of re-running everything.
 
 ## When compacting

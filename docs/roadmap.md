@@ -11,11 +11,11 @@ Idea: most reading settings could become adjustable, as in other speed-reading a
 - **What:** sliders in Settings for the sentence pause and the paragraph pause, applied on top of the defaults in [SPEC.md feature 6](../SPEC.md#6-timing). v1's [tuning screen](../SPEC.md#11-tuning-screen) already has a slider for every timing value, but it sets the defaults and isn't for readers. From the owner's first device trial (#36).
 - **Others:** [Speeedy](https://github.com/sami-29/speeedy) scales its pauses by a sentence-pause and a paragraph-pause setting (`src/services/rsvp-engine.ts`). [mthiel74's SpeedReading](https://github.com/mthiel74/SpeedReading) toggles the sentence pause between 1.5× and 2×.
 
-### Stop after a paragraph or a chapter
+### Stop after a paragraph
 
-- **What:** a toggle that pauses reading at the end of each paragraph, or of each chapter, until you tap to go on. Within the unit, reading stays automatic. The owner expects stopping after a chapter to suit most readers. From the owner's first device trial (#36).
+- **What:** an option that pauses reading at the end of each paragraph (#36, #51).
 - **Others:** [SplashReader](https://github.com/rattrayalex/splashreader)'s README says it "pauses every paragraph"; whether it waits for a tap isn't confirmed.
-- **Open:** whether it's one setting with three choices (never, after a paragraph, after a chapter), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the sentence start, which here is the next paragraph's first word).
+- **Open:** how reading goes on after the pause (a tap or a timer), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the sentence start, which here is the next paragraph's first word).
 
 ### Long-word settings
 
@@ -24,7 +24,7 @@ Idea: most reading settings could become adjustable, as in other speed-reading a
 ### Word chunks
 
 - **What:** modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings.
-- **Others:** Speeedy has a words-per-flash setting; speedread joins neighbouring words of 3 letters or fewer.
+- **Others:** [Speeedy](https://github.com/sami-29/speeedy) has a Words per flash setting from 1 to 5 words, 1 by default (`chunkSize` in [`src/components/settings-panel.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L156-L166) and [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L27)). With its `-m` switch, [speedread](https://github.com/pasky/speedread) joins two neighbouring words when each is 3 characters or fewer (`length($words[$i]) <= 3` in [`speedread`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L199-L207)).
 
 ## Reading modes
 
@@ -62,4 +62,4 @@ Idea: most reading settings could become adjustable, as in other speed-reading a
 ### Features other apps have
 
 - **What:** per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate idea.
-- **Others:** Speeedy ramps the speed up over the first 30 words (`src/services/rsvp-engine.ts`).
+- **Others:** [Speeedy](https://github.com/sami-29/speeedy)'s speed ramp is off by default. Turned on, it moves the speed from the set speed to a target speed, 500 wpm by default, over the text's first 30 words (`rampWpm` and `RAMP_WORDS` in [`src/services/rsvp-engine.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746), defaults in [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L30-L31)).
