@@ -36,7 +36,7 @@ Code: `src/core/schedule.ts`. Added in #7.
 
 ### Time left leaves out the pause after play
 
-- **What happens:** the first word after play or a jump shows for at least 3×, but time left counts it at its usual time. Time left is up to 2 ordinary words short each time you press play.
+- **What happens:** the first word after play or a jump shows for at least 1.5×, but time left counts it at its usual time. Time left is up to half an ordinary word short each time you press play.
 - **Why:** time left stays the same whether you're paused or playing.
 - **Possible fix:** add the start factor to time left while paused.
 

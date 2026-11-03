@@ -1,5 +1,5 @@
 // The word frame (SPEC.md feature 5): the focus letter's centre sits on a
-// fixed point a third of the way across, with lines above and below and a
+// fixed point, 40% of the way across, with lines above and below and a
 // tick on each at that point. Placement is pure CSS (styles.css): the focus
 // letter is centred on the point, and the text before and after it hangs off
 // its sides. A word too wide for the frame shrinks while it shows.
@@ -27,7 +27,8 @@ export default function WordFrame({ word, playing, onToggle }: Props) {
       if (!areaEl || !anchorEl || !beforeEl || !focusEl || !afterEl) return;
       anchorEl.style.fontSize = "";
       const width = areaEl.clientWidth;
-      const point = width / 3;
+      // The anchor sits on the focus point (--focus-point in styles.css).
+      const point = anchorEl.offsetLeft;
       const half = focusEl.getBoundingClientRect().width / 2;
       const left = beforeEl.getBoundingClientRect().width + half;
       const right = afterEl.getBoundingClientRect().width + half;

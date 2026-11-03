@@ -103,21 +103,21 @@ describe("schedule", () => {
   it("applies a speed change from the next word", () => {
     const timing = sampleTiming(5);
     const started = play(timing, 0, 300, 0);
-    expect(started.endsAt).toBe(600); // "The" as the first word: 3×
+    expect(started.endsAt).toBe(300); // "The" as the first word: 1.5×
     const faster = setSpeed(started, 600);
-    expect(faster.endsAt).toBe(600); // the word on screen keeps its time
-    const next = tick(timing, faster, 600);
+    expect(faster.endsAt).toBe(300); // the word on screen keeps its time
+    const next = tick(timing, faster, 300);
     expect(next.index).toBe(1);
-    expect(next.endsAt).toBe(700); // "lawyer" at 600 wpm: 100 ms
+    expect(next.endsAt).toBe(400); // "lawyer" at 600 wpm: 100 ms
   });
 
   it("starts at any word, and finishes after the last", () => {
     const timing = sampleTiming(5);
     const started = play(timing, 4, 300, 1000);
-    // "home." ends the paragraph: 4×, more than the first word's 3×.
-    expect(started).toEqual({ index: 4, endsAt: 1000 + 800, wpm: 300 });
-    expect(tick(timing, started, 1799)).toBe(started);
-    const done = tick(timing, started, 1800);
+    // "home." ends the paragraph: 5×, more than the first word's 1.5×.
+    expect(started).toEqual({ index: 4, endsAt: 1000 + 1000, wpm: 300 });
+    expect(tick(timing, started, 1999)).toBe(started);
+    const done = tick(timing, started, 2000);
     expect(isFinished(timing, done)).toBe(true);
     expect(tick(timing, done, 5000)).toBe(done);
     expect(isFinished(timing, play(timing, 5, 300, 0))).toBe(true);

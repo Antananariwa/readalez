@@ -10,6 +10,9 @@
   --line: #9ca3af;
   --highlight: #c8102e;
   --word-size: 2.25rem;
+  /* Where the focus letter sits: left of centre, as in Spritz-style readers,
+     since most of a word lies right of its focus letter (SPEC.md feature 5). */
+  --focus-point: 40%;
   font-family:
     system-ui,
     -apple-system,
@@ -103,11 +106,11 @@ button {
   background: var(--line);
 }
 
-/* The ticks and the focus letter share this point: a third of the way across. */
+/* The ticks and the focus letter share this point. */
 .tick,
 .anchor {
   position: absolute;
-  left: calc(100% / 3);
+  left: var(--focus-point);
 }
 
 .tick {

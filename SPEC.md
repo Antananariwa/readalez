@@ -128,7 +128,7 @@ One word at a time, in the layout Spritz introduced in 2014 and open-source read
 
   Words over 13 letters are split first (see Long words), so the convention's last row, the 5th letter for 14 letters or more, never applies.
 
-- **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, about a third of the way across the word area, since most of a word sits to the right of its focus letter. Why: the eyes never have to move.
+- **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, 40% of the way across the word area: left of centre, since most of a word sits to the right of its focus letter. Why: the eyes never have to move. 40% rather than the third that speedread and most Spritz-style layouts come close to: the owner's choice after trying it on the iPhone, where a third left 5- and 6-letter words wholly in the left half of the screen.
 - **Look.** The focus letter is drawn in the highlight colour (red by default) and the rest of the word in the text colour. Thin lines run above and below the word area, each with a short tick at the focus point; Spritz calls this frame the "redicle".
 - **Highlight settings.** The highlight can be turned off: the focus letter then takes the text colour, and nothing moves. Five highlight colours are offered, each readable on both the light and the dark theme. Why: some readers find the colour distracting, and colour-blind readers and dark mode need choices.
 - **Long words.** A word longer than 13 letters is split at its own hyphens first (or at slashes and dots in a web address); only as many of those cuts are kept as needed, so neighbouring pieces rejoin while they fit in 13 letters ("twenty-seven-", then "year-old"). Any part still longer than 13 letters is then split into the fewest even parts of at most 13 letters. Every part but the last ends with a hyphen, unless it already ends in one of those marks, and every part gets its own focus letter. Why: the established approach; 13 letters is what fits. Rejoining follows SpritzerTextView, which cuts at a hyphen only while a part is still too long, and gives fewer, fuller flashes than cutting at every hyphen as speedread does.
@@ -154,17 +154,17 @@ Checks:
 - **What the number means:** the base speed. An ordinary word shows for 60,000 ÷ wpm milliseconds (200 ms at 300 wpm), and pauses come on top, so the real average runs below the setting. Why: the convention (OpenSpritz, speedread, Speeedy), and time left stays accurate because it uses the same rules.
 - **Starting values,** to be tuned on the owner's iPhone with the tuning screen (feature 11):
 
-  | A word that…                                                       | Shows for   |
-  | ------------------------------------------------------------------ | ----------- |
-  | is ordinary                                                        | 1×          |
-  | has 8 or more letters                                              | 1.3×        |
-  | ends with `,` `;` `:` a dash or a closing bracket                  | 2×          |
-  | ends a line of verse                                               | 2×          |
-  | ends a sentence (`.` `!` `?` `…`, also when closing quotes follow) | 3×          |
-  | ends a paragraph or a heading, or comes right before a heading     | 4×          |
-  | is the first after you press play or jump                          | at least 3× |
+  | A word that…                                                       | Shows for     |
+  | ------------------------------------------------------------------ | ------------- |
+  | is ordinary                                                        | 1×            |
+  | has 8 or more letters                                              | 1.3×          |
+  | ends with `,` `;` `:` a dash or a closing bracket                  | 1.5×          |
+  | ends a line of verse                                               | 2×            |
+  | ends a sentence (`.` `!` `?` `…`, also when closing quotes follow) | 2×            |
+  | ends a paragraph or a heading, or comes right before a heading     | 5×            |
+  | is the first after you press play or jump                          | at least 1.5× |
 
-  Of the punctuation rows, only the largest applies; the long-word factor multiplies it, so a long word ending a sentence gets 3.9×. The first word after play or a jump shows for the larger of 3× and its usual time. Each part of a split word is timed by its own length, with punctuation pauses on the last part; the hyphen added at a split isn't a dash. Why: these follow the open-source Spritz-style readers (speedread uses 2× for commas and 3× for full stops; Speeedy about 1.8× and 3×, plus a pause between paragraphs), and timing feels robotic until tuned by feel on a device.
+  Of the punctuation rows, only the largest applies; the long-word factor multiplies it, so a long word ending a sentence gets 2.6×. The first word after play or a jump shows for the larger of 1.5× and its usual time. Each part of a split word is timed by its own length, with punctuation pauses on the last part; the hyphen added at a split isn't a dash. Why: these follow the open-source Spritz-style readers, nearest to Speeedy (2× for sentence ends and 1.4× for commas, scaled by its sentence-pause setting, plus a paragraph pause); speedread uses 2× for commas and 3× for full stops. The owner tried 2× commas, 3× sentence ends, 4× paragraph ends and a 3× start on the iPhone (#36): stopping at every sentence felt unnatural, paragraph ends felt no longer, and the start felt broken, since the word is already on screen while paused. So sentence ends come down, paragraph ends go up to leave a clear break to blink, and the start pause is shorter. Timing still gets tuned by feel on a device.
 
 - **Abbreviations.** Titles, initials ("J. R. R.") and abbreviations that rarely end a sentence ("Mr.", "Dr.", "e.g.", "i.e.", French "M.", German "z. B.", Polish "np." and so on) get no sentence pause unless they end a paragraph, and neither do decimals ("3.14"). Abbreviations that often end a sentence ("etc.", "U.S.", Polish "r." after a year) end one when the next word starts with a capital letter. Why: the convention of sentence splitters such as pySBD and NLTK's Punkt, in its simplest form. Pausing at every "etc." or never pausing at one both read wrong. Known gaps: docs/known-issues.md.
 - **Languages.** English, plus European languages written in Latin, Greek or Cyrillic script. Their quote marks and punctuation (« », „ “, ‹ ›, ¿ ¡) count as punctuation, not letters, and after a Greek word `;` is a question mark that ends the sentence. Rules are tuned on English first. Why: the owner's choice.
