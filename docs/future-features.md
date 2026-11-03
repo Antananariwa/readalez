@@ -1,6 +1,6 @@
 # Future features
 
-Features and ideas planned for after v1, grouped by area, so they're easy to find and plan around. What v1 builds lives in SPEC.md; what v1 leaves out for good is in SPEC.md's Out of scope; known problems are in docs/known-issues.md; undecided questions are in SPEC.md's Open questions.
+Features and ideas planned for after v1, grouped by area, so they're easy to find and plan around. What v1 builds lives in SPEC.md; what v1 leaves out for other reasons is in SPEC.md's Out of scope; known problems are in docs/known-issues.md; undecided questions are in SPEC.md's Open questions.
 
 Each entry says what it is, why it waits, and what others do where that's known. An entry here is not a commitment: building one is a feature change, so the owner agrees first (CLAUDE.md). When one is built, its entry moves into SPEC.md and leaves this file.
 
@@ -12,14 +12,14 @@ Most of how reading feels should be adjustable. Why: the owner's choice; timing 
 
 - **What:** sliders in Settings for the sentence pause and the paragraph pause, applied on top of the defaults in SPEC.md feature 6.
 - **Why later:** v1 has a tuning screen with a slider for every timing value (feature 11), reached through Settings, About, Tuning. It's for setting the defaults, not for readers. These two would be the reader-facing part of it.
-- **Others:** Speeedy has a sentence-pause and a paragraph-pause setting. mthiel74's SpeedReading toggles the sentence pause between 1.5× and 2×.
+- **Others:** [Speeedy](https://github.com/sami-29/speeedy) scales its pauses by a sentence-pause and a paragraph-pause setting (`src/services/rsvp-engine.ts`). [mthiel74's SpeedReading](https://github.com/mthiel74/SpeedReading) toggles the sentence pause between 1.5× and 2×.
 - **Added:** after the owner's first device trial (#36).
 
 ### Stop after a paragraph or a chapter
 
-- **What:** a toggle that pauses reading at the end of each paragraph, or of each chapter, until you tap to go on. Within the unit, reading stays automatic. Stopping after a chapter is likely the more useful of the two for most readers.
+- **What:** a toggle that pauses reading at the end of each paragraph, or of each chapter, until you tap to go on. Within the unit, reading stays automatic. The owner expects stopping after a chapter to suit most readers.
 - **Why:** a break for the eyes, and blinking; a longer paragraph pause (#36) only partly gives that.
-- **Others:** SplashReader "pauses every paragraph"; whether it waits for a tap isn't confirmed.
+- **Others:** [SplashReader](https://github.com/rattrayalex/splashreader)'s README says it "pauses every paragraph"; whether it waits for a tap isn't confirmed.
 - **Open:** whether it's one setting with three choices (never, after a paragraph, after a chapter) and where play resumes (feature 7 resumes at the sentence start, which here is the next paragraph's first word).
 - **Added:** after the owner's first device trial (#36).
 
@@ -68,4 +68,4 @@ Most of how reading feels should be adjustable. Why: the owner's choice; timing 
 
 ## Extras other apps have
 
-Each one is a separate product decision: per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Speeedy ramps the speed up over the first 30 words.
+Each one is a separate product decision: per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Speeedy ramps the speed up over the first 30 words (`src/services/rsvp-engine.ts`).
