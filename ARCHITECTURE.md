@@ -4,7 +4,7 @@ The stable shape of the code. Reasons for the big choices: docs/adr/.
 
 ## Bird's eye view
 
-A text is split into words and timed. The UI shows the words one at a time with a focus point, or paces the reader through full paragraphs.
+A text is split into words and timed. The UI shows the words one at a time with a focus point.
 
 ## Code map
 

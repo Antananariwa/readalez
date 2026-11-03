@@ -1,6 +1,6 @@
 # Readalez
 
-A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. Early days: the build setup is in place, and the app comes next.
+A speed-reading web app for practicing on real, meaningful texts. So far you can paste a text and read it one word at a time with a highlighted focus letter. What it's planned to do: [SPEC.md](SPEC.md).
 
 ## How it's built
 

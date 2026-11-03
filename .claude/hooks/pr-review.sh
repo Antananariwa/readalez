@@ -4,7 +4,9 @@
 # blocks the command and sends the message back to Claude. It checks that the
 # section has text, not what the text says. An inline body can't be checked
 # exactly, so it's blocked too. A relative --body-file path is read from the
-# hook's working directory, not after a `cd` earlier in the command.
+# hook's working directory, not after a `cd` earlier in the command. A path
+# given as a shell variable (`--body-file "$f"`) isn't expanded, so the file
+# isn't found and the command is blocked.
 input="$(cat)"
 cmd="$(printf '%s' "$input" | jq -r '.tool_input.command // ""')"
 

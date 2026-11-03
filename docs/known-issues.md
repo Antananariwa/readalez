@@ -69,7 +69,7 @@ Added in #26.
 ### Firefox isn't in the automatic tests
 
 - **What happens:** SPEC.md supports desktop Firefox, but `npm run e2e` and CI run only Chromium and WebKit. Firefox is checked only by hand, in each PR's Device checks.
-- **Why it's left:** adding it needs the dev container and the CI workflow changed, which only the owner can do. The owner chose to wait (#38).
+- **Why it's left:** the owner expected adding it to take too much time (#51). #52 plans adding it.
 - **Suggestions:** add `firefox` to `npx playwright install --with-deps --only-shell chromium webkit` in `.devcontainer/Dockerfile` and `.github/workflows/node.js.yml`, rebuild the container, then add a `{ name: "firefox", use: { ...devices["Desktop Firefox"] } }` project to `playwright.config.ts` and update its comment.
 
 ## Install and updates
