@@ -13,6 +13,17 @@
     "deny": ["Bash(gh pr merge *)", "Bash(gh api *merge*)"]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pr-review.sh\""
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

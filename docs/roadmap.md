@@ -1,6 +1,6 @@
 # Roadmap
 
-Ideas for after v1, grouped by area; none is committed. When one is built, its entry moves into [SPEC.md](../SPEC.md) and leaves this file.
+Ideas for after v1, grouped by area; none is committed. When one is built, its entry moves into [SPEC.md](../SPEC.md) and leaves this file. Each entry has a title naming the idea, then **What** and, when known, **Others** (what other apps do, with sources), **Open** (what is undecided) and **Suggestions**.
 
 ## Settings
 
