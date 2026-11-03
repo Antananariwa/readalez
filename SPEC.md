@@ -274,7 +274,7 @@ Checks:
 About shows the version, a link to the source code and its MIT license, the privacy note, the credits (Standard Ebooks for the built-in editions, and Speeedy for any code taken from it), the third-party licenses, and the way into the tuning screen.
 
 - **Privacy note.** Readalez has no accounts, analytics, cookies, ads or server of its own. Your books, progress, settings and reading sessions stay on this device unless you export a backup. The web host that serves the app's files handles requests as it does for any website; Readalez adds no logging.
-- **No requests to other sites.** Fonts are the system's, nothing loads from CDNs, and the only outside links are ones you tap: the source code link in About and the help links.
+- **No requests to other sites.** Fonts are the system's, nothing loads from CDNs, and the only outside links are ones you tap: the source code link in About and the help links in [feature 14](#14-where-to-find-books).
 - **Licenses.** Every dependency bundled into the app is listed with its license text and any NOTICE file, generated at build time. Allowed licenses: MIT, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, Apache-2.0 and CC0-1.0. Anything else fails the build. Why: so Readalez can stay MIT with every notice shipped.
 
 Checks:

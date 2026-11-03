@@ -24,7 +24,7 @@ This covers every doc, and any code comment or test name that states a fact. Tex
 
 ## Commands
 
-- `npm run check`: typecheck, lint, Prettier format check and unit tests. A Stop hook runs it when you finish a turn with changes and sends failures back to you (`.claude/hooks/check.sh`).
+- `npm run check`: typecheck, lint, Prettier format check and unit tests. A Stop hook runs it when you finish a turn, except when `.claude/hooks/check.sh` skips it, and sends failures back to you.
 - `npm run e2e`: Playwright against the production build, in headless Chromium and in WebKit with iPhone emulation, inside the container. Run it before opening a PR that changes the UI, and use Playwright screenshots whenever you need to see the UI.
 
 ## Structure

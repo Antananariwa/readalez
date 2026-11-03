@@ -15,7 +15,7 @@ Idea: most reading settings could become adjustable, as in other speed-reading a
 
 - **What:** an option that pauses reading at the end of each paragraph (#36, #51).
 - **Others:** [SplashReader](https://github.com/rattrayalex/splashreader)'s README says it "pauses every paragraph"; whether it waits for a tap isn't confirmed.
-- **Open:** where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the sentence start, which here is the next paragraph's first word).
+- **Open:** how reading goes on after the pause (a tap or a timer), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the sentence start, which here is the next paragraph's first word).
 
 ### Long-word settings
 
