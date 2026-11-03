@@ -257,14 +257,14 @@ Checks:
 
 - **Install.** Add to Home Screen in iPhone Safari, or the install button in Chrome and Edge, gives a full-screen app named Readalez with its own icon. Firefox runs it in a tab.
 - **Offline.** After the first visit, the app, the built-in books and every imported book work without a network.
-- **Updates** download in the background at the first launch after a deploy and apply at the launch after that, never while you read.
+- **Updates** download in the background and apply at a later launch, never while you read.
 - **Install tip.** On the first visit in iPhone Safari (not in the installed app), a card explains that Safari and the installed app keep separate libraries, and that Safari may clear a site's data after 7 days without a visit; it shows the Add to Home Screen steps. Once dismissed, it doesn't return. Why: books imported in a Safari tab don't appear in the installed app, and the installed app is exempt from the 7-day clearing.
 - **Keep the data.** After the first import, the app asks the browser for persistent storage, so its data isn't cleared to free space.
 
 Checks:
 
 - E2E: after one visit, the app reloads with the network off, and a built-in book plays.
-- E2E: a new version deployed while a book is playing doesn't reload the page; the next launch downloads it, and the launch after that runs it.
+- E2E: a new version deployed while a book is playing doesn't reload the page, and a later launch runs it.
 - E2E: the install tip shows once in emulated iPhone Safari (not installed) and never in other browsers.
 - E2E: after the first import, the app has requested persistent storage.
 - Device: Add to Home Screen on iPhone gives a Readalez icon that opens full screen, and in Airplane Mode the library and reading still work.
