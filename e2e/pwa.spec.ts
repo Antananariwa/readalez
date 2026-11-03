@@ -82,7 +82,7 @@ test("the service worker never skips waiting or claims open pages", async ({
   const worker = await (await request.get("/sw.js")).text();
   // Workbox's prompt mode adds a listener that skips waiting only when a page
   // posts SKIP_WAITING. The app never posts it (tests/tooling/service-worker.test.ts),
-  // so a new version still waits for the next launch.
+  // so a new version still waits (SPEC.md feature 12).
   const promptListener =
     /self\.addEventListener\("message",(\w+)=>\{\1\.data&&"SKIP_WAITING"===\1\.data\.type&&self\.skipWaiting\(\)\}\)/;
   const rest = worker.replace(promptListener, "");
