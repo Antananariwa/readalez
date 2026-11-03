@@ -295,7 +295,7 @@ Checks:
 
 ## Out of scope for v1
 
-Features planned for after v1, from the paragraph pacer to stats and more formats, live in [docs/future-features.md](docs/future-features.md), grouped by area. These are left out for other reasons:
+Ideas for after v1, from the paragraph pacer to stats and more formats, live in [docs/roadmap.md](docs/roadmap.md), grouped by area. These are left out for other reasons:
 
 - **Importing from a web link:** not planned. It needs a server that fetches any page, which invites abuse and copyright trouble.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
@@ -308,7 +308,7 @@ Features planned for after v1, from the paragraph pacer to stats and more format
 Working assumptions from public sources, not legal advice. Recheck them before anything that changes the risk: charging money, or adding a server or a catalog.
 
 - **Copyright.** UK copyright lasts 70 years after the author's death, and a translation's lasts 70 years after the translator's; some countries go up to 100. Everything Readalez ships (the built-in books, test fixtures and sample passages) is by authors, translators and illustrators who died over 100 years ago, so it's public domain almost everywhere the app is served or cached. Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
-- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is an open question), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
+- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is open: see [docs/roadmap.md](docs/roadmap.md)), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
 - **Focus-point patents.** The fixed focus point in feature 5 is what Spritz's patents describe: US 8,903,174 ("Serial text display for optimal recognition apparatus and method", filed 2012; Google Patents lists it as active, which isn't verified), the related US 9,483,109 and US 10,332,313, and a European family member (validated in Spain as ES 2700224 T3, so UK coverage is possible). The Chinese and Japanese members have lapsed. Free apps use the design openly, and the risk is low for a free open-source app. Recheck before charging money, and keep "Spritz" out of the name and the app's text.
 - **Name.** See [What Readalez is](#what-readalez-is).
 - **Privacy.** With no accounts, analytics, cookies, ads, logging or server of its own, Readalez collects no personal data. Storage on the device holds only what the features a reader uses need, which the UK's rules on device storage (PECR) treat as strictly necessary, so no consent banner is needed. Adding a server, sync or analytics means revisiting UK GDPR first.
@@ -340,6 +340,3 @@ A check that needs a later feature moves to that feature's issue: for example, f
 
 - **Final timing values:** set after tuning on the iPhone (feature 11). The table in feature 6 holds starting values.
 - **App icon and visual style:** not decided, apart from no Warner Bros. references.
-- **Paragraph pacer (after v1):** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone (continuously or a screen at a time), and whether it shares the single-word speed.
-- **Catalog (after v1):** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
-- **The next format after EPUB:** TXT or PDF.
