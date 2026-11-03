@@ -8,6 +8,10 @@ Closes #
 
 <!-- Commands you ran and their output: check, build, e2e. -->
 
+## Review
+
+<!-- Findings from the reviewer subagent (CLAUDE.md, Workflow). -->
+
 ## How to test
 
 <!-- What the owner should try on the preview, and on which devices. -->
