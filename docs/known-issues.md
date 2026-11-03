@@ -71,3 +71,13 @@ Added in #26.
 - **What happens:** SPEC.md supports desktop Firefox, but `npm run e2e` and CI run only Chromium and WebKit. Firefox is checked only by hand, in each PR's Device checks.
 - **Why:** adding it needs the dev container and the CI workflow changed, which only the owner can do. The owner chose to wait (#38).
 - **Possible fix:** add `firefox` to `npx playwright install --with-deps --only-shell chromium webkit` in `.devcontainer/Dockerfile` and `.github/workflows/node.js.yml`, rebuild the container, then add a `{ name: "firefox", use: { ...devices["Desktop Firefox"] } }` project to `playwright.config.ts` and update its comment.
+
+## Install and updates
+
+Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Added in #40.
+
+### A new version can take two launches to show
+
+- **What happens:** the first launch after a deploy still runs the old version, which finds the update and downloads it in the background. The new version runs only at the launch after that, and only once no Readalez tab is open, including tabs Chrome restores on startup. On the iPhone, you swipe the app away twice. Ctrl+Shift+R (Cmd+Shift+R on a Mac) shows the new version at once, since that page load skips the service worker; the offline copy still waits.
+- **Why:** the service worker never replaces itself while a page is open (`skipWaiting: false`), so an update never interrupts reading (SPEC.md feature 12). That is the safe default, but "the next launch" in SPEC.md really means the launch after the update has downloaded.
+- **Possible fix:** show an "Update ready" notice with a Reload button once the new version has downloaded, hidden while a book plays. The built service worker already accepts a `SKIP_WAITING` message, so `src/ui/registerServiceWorker.ts` could watch `registration.waiting`, post that message on Reload, then reload on `controllerchange`. It changes feature 12, so it needs the owner's approval first.
