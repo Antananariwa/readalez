@@ -76,8 +76,8 @@ Added in #26.
 
 Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Added in #40.
 
-### A new version can take two launches to show
+### A restart can still show the old version
 
-- **What happens:** the first launch after a deploy still runs the old version, which finds the update and downloads it in the background. The new version runs only at the launch after that, and only once no Readalez tab is open, including tabs Chrome restores on startup. On the iPhone, you swipe the app away twice. Ctrl+Shift+R (Cmd+Shift+R on a Mac) shows the new version at once, since that page load skips the service worker; the offline copy still waits.
-- **Why it's left:** the service worker never replaces itself while a page is open (`skipWaiting: false`), so an update never interrupts reading (SPEC.md feature 12). That is the safe default, but "the next launch" in SPEC.md really means the launch after the update has downloaded.
-- **Suggestions:** show an "Update ready" notice with a Reload button once the new version has downloaded, hidden while a book plays. The built service worker already accepts a `SKIP_WAITING` message, so `src/ui/registerServiceWorker.ts` could watch `registration.waiting`, post that message on Reload, then reload on `controllerchange`. It changes feature 12, so it needs the owner's approval first.
+- **What happens:** after a deploy, the owner's Chrome still showed the old version after a restart, until Ctrl+Shift+R loaded the new one (#40). In a test in headless Chromium and WebKit, with a relaunched Playwright profile standing in for a restart, the first launch after a deploy showed the old version and downloaded the new one, which waited; the launch after that showed the new one (#46).
+- **Why it's left:** with `skipWaiting: false`, a new service worker waits while a page is open (#46), so an update never interrupts reading (SPEC.md feature 12).
+- **Suggestions:** show an "Update ready" notice with a Reload button once the new version has downloaded, hidden while a book plays. The built service worker already accepts a `SKIP_WAITING` message, so `src/ui/registerServiceWorker.ts` could watch `registration.waiting`, post that message on Reload, then reload on `controllerchange`.

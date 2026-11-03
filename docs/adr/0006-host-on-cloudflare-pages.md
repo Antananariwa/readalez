@@ -13,7 +13,7 @@ The owner checks every PR on an iPhone and on desktop before merging, and SPEC.m
 - deploy without a workflow file, because the agent's token can't push one;
 - add no analytics, cookies or scripts. SPEC.md feature 13 promises requests only to the app's own origin.
 
-The installed app must reload without a network after the first visit. A new version must wait for the next launch, because SPEC.md feature 12 says updates never apply while you read.
+The installed app must reload without a network after the first visit. A new version must never apply while you read (SPEC.md feature 12).
 
 ## Hosts compared
 
