@@ -295,18 +295,12 @@ Checks:
 
 ## Out of scope for v1
 
-- **Paragraph pacer:** later. It's fiddly on a phone, single-word timing comes first, and the paused view (feature 7) is its base.
-- **Public-domain catalog and proxy:** later. Importing by hand avoids running a proxy, Gutenberg's blocking of automated traffic and copyright filtering by country, and the built-in books cover a reader's first use. [Legal and licensing](#legal-and-licensing) lists what a catalog has to respect.
-- **TXT, PDF, Word and other formats:** later, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
+Features planned for after v1, from the paragraph pacer to stats and more formats, live in [docs/future-features.md](docs/future-features.md), grouped by area. These are left out for other reasons:
+
 - **Importing from a web link:** not planned. It needs a server that fetches any page, which invites abuse and copyright trouble.
-- **Stats screens:** later. Sessions are recorded from v1 (feature 10).
-- **Word chunks:** later. Modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings. Speeedy has a words-per-flash setting; speedread joins neighbouring words of 3 letters or fewer.
-- **Long-word settings:** later. An adjustable letter limit instead of the fixed 13, and showing numbers, email addresses and web addresses whole (smaller, or on two lines) instead of splitting them. Why later: v1's split (feature 5) works, and a reader takes in a big number as one shape, so this is worth revisiting once the reader is in use.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
-- **An Android store app** through Capacitor: later (ADR 0002).
 - **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's choice.
 - **Right-to-left texts and Chinese, Japanese or Korean texts:** they need a mirrored layout or a different way of splitting words, which is much more work. Interface languages other than English are out too.
-- **Extras other apps have:** per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate product decision.
 - **Removing or replacing the built-in books.**
 
 ## Legal and licensing

@@ -1,6 +1,6 @@
 # Known issues
 
-Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
+Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, features planned for later in docs/future-features.md, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
 
 ## Timing and sentences
 
