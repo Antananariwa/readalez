@@ -295,18 +295,12 @@ Checks:
 
 ## Out of scope for v1
 
-- **Paragraph pacer:** later. It's fiddly on a phone, single-word timing comes first, and the paused view (feature 7) is its base.
-- **Public-domain catalog and proxy:** later. Importing by hand avoids running a proxy, Gutenberg's blocking of automated traffic and copyright filtering by country, and the built-in books cover a reader's first use. [Legal and licensing](#legal-and-licensing) lists what a catalog has to respect.
-- **TXT, PDF, Word and other formats:** later, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
+Ideas for after v1, from the paragraph pacer to stats and more formats, live in [docs/roadmap.md](docs/roadmap.md), grouped by area. These are left out for other reasons:
+
 - **Importing from a web link:** not planned. It needs a server that fetches any page, which invites abuse and copyright trouble.
-- **Stats screens:** later. Sessions are recorded from v1 (feature 10).
-- **Word chunks:** later. Modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings. Speeedy has a words-per-flash setting; speedread joins neighbouring words of 3 letters or fewer.
-- **Long-word settings:** later. An adjustable letter limit instead of the fixed 13, and showing numbers, email addresses and web addresses whole (smaller, or on two lines) instead of splitting them. Why later: v1's split (feature 5) works, and a reader takes in a big number as one shape, so this is worth revisiting once the reader is in use.
 - **Sync and accounts:** not planned. They need a server holding personal data, which brings in UK GDPR, and the backup file covers moving between devices.
-- **An Android store app** through Capacitor: later (ADR 0002).
 - **Accessibility conformance** (WCAG): not a v1 goal. Why: the owner's choice.
 - **Right-to-left texts and Chinese, Japanese or Korean texts:** they need a mirrored layout or a different way of splitting words, which is much more work. Interface languages other than English are out too.
-- **Extras other apps have:** per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate product decision.
 - **Removing or replacing the built-in books.**
 
 ## Legal and licensing
@@ -314,7 +308,7 @@ Checks:
 Working assumptions from public sources, not legal advice. Recheck them before anything that changes the risk: charging money, or adding a server or a catalog.
 
 - **Copyright.** UK copyright lasts 70 years after the author's death, and a translation's lasts 70 years after the translator's; some countries go up to 100. Everything Readalez ships (the built-in books, test fixtures and sample passages) is by authors, translators and illustrators who died over 100 years ago, so it's public domain almost everywhere the app is served or cached. Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
-- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is an open question), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
+- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is open: see [docs/roadmap.md](docs/roadmap.md)), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
 - **Focus-point patents.** The fixed focus point in feature 5 is what Spritz's patents describe: US 8,903,174 ("Serial text display for optimal recognition apparatus and method", filed 2012; Google Patents lists it as active, which isn't verified), the related US 9,483,109 and US 10,332,313, and a European family member (validated in Spain as ES 2700224 T3, so UK coverage is possible). The Chinese and Japanese members have lapsed. Free apps use the design openly, and the risk is low for a free open-source app. Recheck before charging money, and keep "Spritz" out of the name and the app's text.
 - **Name.** See [What Readalez is](#what-readalez-is).
 - **Privacy.** With no accounts, analytics, cookies, ads, logging or server of its own, Readalez collects no personal data. Storage on the device holds only what the features a reader uses need, which the UK's rules on device storage (PECR) treat as strictly necessary, so no consent banner is needed. Adding a server, sync or analytics means revisiting UK GDPR first.
@@ -346,6 +340,3 @@ A check that needs a later feature moves to that feature's issue: for example, f
 
 - **Final timing values:** set after tuning on the iPhone (feature 11). The table in feature 6 holds starting values.
 - **App icon and visual style:** not decided, apart from no Warner Bros. references.
-- **Paragraph pacer (after v1):** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone (continuously or a screen at a time), and whether it shares the single-word speed.
-- **Catalog (after v1):** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
-- **The next format after EPUB:** TXT or PDF.

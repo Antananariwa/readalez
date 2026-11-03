@@ -1,11 +1,11 @@
 # Readalez
 
-A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md.
+A speed-reading web app for practicing on real, meaningful texts: one word at a time with a highlighted focus point, or guided through full paragraphs. It's a PWA so one codebase runs on phones and desktops, installed from the browser. What to build and why: SPEC.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md.
 
 ## Working together
 
 - **Never:** expose secrets or tokens (in code, logs, commits or PRs); send readers' texts or data off the device, add tracking, or lose saved data; ship a dependency outside the license allowlist (SPEC.md feature 13).
-- **Ask the owner first:** adding, dropping or reshaping a feature, or anything in SPEC.md's Out of scope; changing a line marked "Why: the owner's choice"; and anything that needs the owner's access: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For access changes, say exactly what to change rather than working around the limit. When you ask, research how established apps and open-source projects do it and recommend that convention.
+- **Ask the owner first:** adding, dropping or reshaping a feature, or anything in SPEC.md's Out of scope or docs/roadmap.md; changing a line marked "Why: the owner's choice"; and anything that needs the owner's access: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For access changes, say exactly what to change rather than working around the limit. When you ask, research how established apps and open-source projects do it and recommend that convention.
 - **Decide everything else,** including details SPEC.md doesn't cover or gets wrong: take the established convention in its simplest working form, record the reason where the decision lives (SPEC.md, ARCHITECTURE.md, or a new ADR that supersedes an old one) in the same PR, and call it out in the PR. Problems you accept instead of fixing go in docs/known-issues.md; a fix removes its entry.
 - If the owner has to correct the same thing twice, propose a line for this file in the current PR.
 

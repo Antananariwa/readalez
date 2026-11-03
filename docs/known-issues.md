@@ -1,6 +1,6 @@
 # Known issues
 
-Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
+Known problems, edge cases and gaps that are accepted for now: what happens, why it was left, and what would fix it. Fixing any of them is optional. Undecided product questions live in SPEC.md's Open questions, ideas for after v1 in docs/roadmap.md, decisions in docs/adr/, and bugs that must be fixed in GitHub issues.
 
 ## Timing and sentences
 
@@ -65,3 +65,9 @@ Added in #26.
 - **What happens:** in WebKit, Playwright doesn't report requests the service worker makes itself, such as the precache fetches. So the WebKit run of "requests only the app's own origin" (`e2e/pwa.spec.ts`) misses them.
 - **Why:** it's a Playwright limit. The Chromium run of the same test covers those requests.
 - **Possible fix:** none needed while the Chromium run stays. Recheck if Playwright adds service worker requests for WebKit.
+
+### Firefox isn't in the automatic tests
+
+- **What happens:** SPEC.md supports desktop Firefox, but `npm run e2e` and CI run only Chromium and WebKit. Firefox is checked only by hand, in each PR's Device checks.
+- **Why:** adding it needs the dev container and the CI workflow changed, which only the owner can do. The owner chose to wait (#38).
+- **Possible fix:** add `firefox` to `npx playwright install --with-deps --only-shell chromium webkit` in `.devcontainer/Dockerfile` and `.github/workflows/node.js.yml`, rebuild the container, then add a `{ name: "firefox", use: { ...devices["Desktop Firefox"] } }` project to `playwright.config.ts` and update its comment.
