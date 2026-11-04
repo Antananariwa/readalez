@@ -65,6 +65,16 @@ button {
   background: transparent;
 }
 
+.add-text input {
+  box-sizing: border-box;
+  width: 100%;
+  /* At least 16px, as for the textarea. */
+  font: inherit;
+  font-size: 1rem;
+  color: inherit;
+  background: transparent;
+}
+
 .add-text button {
   align-self: flex-start;
 }

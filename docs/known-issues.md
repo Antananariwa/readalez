@@ -40,6 +40,22 @@ Code: `src/core/schedule.ts`. Added in #7.
 - **Why it's left:** time left stays the same whether you're paused or playing.
 - **Suggestions:** add the start factor to time left while paused.
 
+## Pasted text
+
+Code: `src/core/paste.ts`. Tests: `src/core/paste.test.ts`. Added in #9.
+
+### Two short lines of similar length join into one paragraph
+
+- **What happens:** `"Hello there\nHow are you?"` comes out as one paragraph, read as "Hello there How are you?". The first line breaks mid-sentence and is the only wrapped line, so it counts as hard-wrapped (`isHardWrapped`). Found by the reviewer in #9.
+- **Why it's left:** it follows SPEC.md feature 1's rule as written (most lines break mid-sentence at similar lengths), and with so few lines a hard-wrapped text looks the same. Longer texts, and a heading above a paragraph line, split as expected (`src/core/paste.test.ts`).
+- **Suggestions:** treat text as hard-wrapped only with at least a few wrapped lines, if short pastes turn out to matter.
+
+### A pasted Gutenberg book's title can be a fragment
+
+- **What happens:** the owner pasted the whole plain text of a Gutenberg book (_The Works of William Shakespeare_, Cambridge Edition, Vol. 8) on the iPhone, testing #57. The suggested title was `THE WORKS`, the first line after the `*** START OF` line, because the title page spreads the title over lines with blank lines between them. The field can be edited before saving.
+- **Why it's left:** the first line is SPEC.md feature 1's rule, and the apps checked don't guess more. [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/app-page.ts#L192-L193) titles pasted text "Pasted Text" unless one is typed. [Calibre](https://github.com/kovidgoyal/calibre/blob/ad42fa09dbc3993846cea83215e81acfd7683765/src/calibre/ebooks/metadata/txt.py#L22-L40) uses a TXT file's name, or its first line when three blank lines and an author line follow it. Neither reads Gutenberg's header.
+- **Suggestions:** take the header's `Title:` line when the paste includes Gutenberg's header (not checked: whether every Gutenberg file has that line).
+
 ## Reader
 
 Code: `src/ui/App.tsx`. Added in #8.

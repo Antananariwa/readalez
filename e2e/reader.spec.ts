@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { timeWords, wordDuration } from "../src/core/durations.ts";
 import { storyOfTheDoor } from "../src/core/fixtures/storyOfTheDoor.ts";
-import { pastedSections } from "../src/core/paste.ts";
+import { parsePaste } from "../src/core/paste.ts";
 import { splitText, wordText } from "../src/core/text.ts";
 import { DEFAULT_WPM } from "../src/core/timingValues.ts";
 
@@ -33,7 +33,7 @@ async function openReader(page: Page, text: string): Promise<void> {
   await page.goto("/");
   await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
   await page.getByLabel("Paste text").fill(text);
-  await page.getByRole("button", { name: "Read" }).click();
+  await page.getByRole("button", { name: "Save" }).click();
 }
 
 interface Measures {
@@ -117,7 +117,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     test("plays three paragraphs in order with the focus letter on a fixed spot", async ({
       page,
     }) => {
-      const timing = timeWords(splitText(pastedSections(threeParagraphs)));
+      const timing = timeWords(splitText(parsePaste(threeParagraphs).sections));
       expect(timing.words.length).toBeGreaterThanOrEqual(50);
       await openReader(page, threeParagraphs);
 

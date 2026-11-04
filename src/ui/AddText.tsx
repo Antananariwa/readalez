@@ -1,45 +1,67 @@
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { APP_NAME } from "../core/appName.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
-import { pastedSections } from "../core/paste.ts";
+import { parsePaste, suggestedTitle } from "../core/paste.ts";
 import { splitText } from "../core/text.ts";
 
 interface Props {
   text: string;
-  onChange: (text: string) => void;
-  onRead: (timing: Timing) => void;
+  /** The title as typed, or null while it follows the suggested title. */
+  title: string | null;
+  onTextChange: (text: string) => void;
+  onTitleChange: (title: string) => void;
+  onSave: (title: string, timing: Timing) => void;
 }
 
-/** The Add text screen: a paste box. Feature 1's full rules come in #9. */
-export default function AddText({ text, onChange, onRead }: Props) {
+/**
+ * The Add text screen (SPEC.md feature 1): a paste box and a title field.
+ * The title field shows the suggested title until it's typed in; a title
+ * left blank saves as the suggestion.
+ */
+export default function AddText({
+  text,
+  title,
+  onTextChange,
+  onTitleChange,
+  onSave,
+}: Props) {
   const [empty, setEmpty] = useState(false);
+  const suggested = useMemo(() => suggestedTitle(text), [text]);
 
-  const read = (event: FormEvent) => {
+  const save = (event: FormEvent) => {
     event.preventDefault();
-    const words = splitText(pastedSections(text));
+    const pasted = parsePaste(text);
+    const words = splitText(pasted.sections);
     if (words.length === 0) {
       setEmpty(true);
       return;
     }
-    onRead(timeWords(words));
+    onSave(title?.trim() || pasted.title, timeWords(words));
   };
 
   return (
     <main className="add-text">
       <h1>{APP_NAME}</h1>
-      <form onSubmit={read}>
+      <form onSubmit={save}>
         <label htmlFor="paste">Paste text</label>
         <textarea
           id="paste"
           value={text}
           onChange={(event) => {
-            onChange(event.target.value);
+            onTextChange(event.target.value);
             setEmpty(false);
           }}
         />
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          value={title ?? suggested}
+          onChange={(event) => onTitleChange(event.target.value)}
+        />
         {empty && <p role="status">No words to read.</p>}
         <button type="submit" disabled={text.trim() === ""}>
-          Read
+          Save
         </button>
       </form>
     </main>
