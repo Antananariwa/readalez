@@ -6,21 +6,26 @@ What Readalez is: SPEC.md's What Readalez is. What to build and why: the rest of
 
 - **Never:** expose secrets or tokens (in code, logs, commits or PRs); send readers' texts or data off the device, add tracking, or lose saved data; ship a dependency outside the license allowlist (SPEC.md feature 13).
 - **Ask the owner first:** adding, dropping or reshaping a feature, or anything in SPEC.md's Out of scope or docs/roadmap.md; changing a decision whose reason is a preference; and anything that needs the owner's access: GitHub settings and accounts, CI workflow files (your token can't push them), and the dev container or firewall (they take effect only after the owner rebuilds). For access changes, say exactly what to change rather than working around the limit. When you ask, research how established apps and open-source projects do it and recommend that convention.
-- **Decide everything else,** including details SPEC.md doesn't cover or gets wrong: take the established convention in its simplest working form, record the reason where the decision lives (SPEC.md, or a new ADR that supersedes an old one) in the same PR, and call it out in the PR. Problems you accept instead of fixing go in docs/known-issues.md.
+- **Decide everything else,** including details SPEC.md doesn't cover or gets wrong: take the established convention in its simplest working form, record the reason where the decision lives (SPEC.md, or a new ADR that supersedes an old one) in the same PR, and call it out in the PR. Accepted ADRs aren't edited apart from their Status line: they record what was known when the decision was made, and when the decision changes, a new ADR supersedes the old one. Problems you accept instead of fixing go in docs/known-issues.md.
 - If the owner has to correct the same thing twice, propose a line for this file in the current PR.
 
 ## Writing docs
 
-This covers every doc, and any code comment or test name that states a fact. Text written before PR #43 stays as written until #48 rechecks it; a sentence a PR changes follows this section.
+This covers docs, code comments, test names, and issue and PR text. Later sessions build on what's written here, so a guess written as a fact spreads (#42 lists cases).
 
-- An entry has a subject (what it's about), context (what is known about it: what was seen, what happened, a decision and its reason) and, if there are any, suggestions (a possible cause, fix or other idea).
-- Subject and context are strict. Each statement has a source and says no more than that source. A source is something a reader can go back to and check; link it unless it's in the same doc. The code in `src/core/` and its unit tests are a source for what the reading logic does; how a browser, device, tool or outside service behaves needs a run, an observation or a cited source.
-- Anything that goes beyond its source is a suggestion: a conclusion drawn from the source, or a claim nobody has checked, whoever wrote it. When someone checks it, it moves into context, with the check as its source.
-- Suggestions are welcome, each in its own labelled field or sentence, never in the subject or the context.
-- Anything not known yet is written as open, not guessed.
-- A decision stands on its reasons, not on who made it. A line that only says what the app does needs no reason; a reason that's given follows the rules for context. A preference is a reason too, written as one.
-- Each fact lives in one doc. Other places name it and link to it rather than repeat it.
-- Rules about who may do what live only in this file and in the agent briefs in `.claude/agents/`. A doc's intro says how that doc itself works.
+- **What was seen:** say what happened, where and how often, and link it. Don't widen it into a rule or a cause.
+- **What the code does:** name the file or test.
+- **What happens outside the repo** (browsers, devices, tools, other projects, laws, prices): link what you read or ran. Our config shows what we asked for, not what happens.
+- **Decisions and plans:** say what and why; a preference is a reason. They need no other source.
+- **Guesses** are welcome, marked as guesses: in an entry's **Suggestions** field, or in the sentence ("Possible cause: …", "(not checked)"). Write "unknown" rather than filling a gap. Once someone checks a guess, rewrite it as what was seen and link the check.
+- **One home per fact.** Elsewhere, link to it.
+- Rules about who may do what live only here and in `.claude/agents/`.
+
+Examples:
+
+- Not "Updates take two launches, because Chrome keeps running in the background after its window closes", but "After #37 merged, the owner's Chrome still showed the old version after a restart, until Ctrl+Shift+R loaded the new one (#40). Possible cause: Chrome kept running in the background, so the old page never closed."
+- Not "Safari clears a site's data after 7 days without a visit", but "Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/))."
+- Not "40% is easier to read", but "In the first device trial, a third put 5- and 6-letter words wholly in the left half of the screen; the owner chose 40% as more balanced (#36)."
 
 ## Commands
 
