@@ -15,7 +15,7 @@ export default defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    // Closest automated stand-in for iPhone Safari; it doesn't replace device checks.
+    // Why WebKit: ADR 0005.
     { name: "webkit-iphone", use: { ...devices["iPhone 16"] } },
   ],
   // Tests run against the production build.

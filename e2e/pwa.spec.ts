@@ -1,7 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // The installable shell (issue #5, ADR 0006): manifest, icons, offline reload,
-// same-origin requests only, and a service worker that never takes over open pages.
+// same-origin requests only, and a sw.js that skips waiting only on SKIP_WAITING
+// and never claims clients.
 
 async function waitForServiceWorker(page: Page): Promise<void> {
   await page.evaluate(async () => {
@@ -76,7 +77,7 @@ test("requests only the app's own origin", async ({ page, context }) => {
   expect(urls.filter((url) => new URL(url).origin !== origin)).toEqual([]);
 });
 
-test("the service worker never skips waiting or claims open pages", async ({
+test("sw.js skips waiting only on SKIP_WAITING and never claims clients", async ({
   request,
 }) => {
   const worker = await (await request.get("/sw.js")).text();

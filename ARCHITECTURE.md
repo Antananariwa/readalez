@@ -20,5 +20,5 @@ A text is split into words and timed. The UI shows the words one at a time with 
 ## Invariants
 
 - `src/core/` never imports from `src/ui/`, React or browser APIs (ADR 0003).
-  Enforced by `npm run check`: `tsconfig.core.json` leaves out the DOM library and all ambient types, so browser globals such as `document`, `window` and `localStorage` don't typecheck in `src/core/`; `.oxlintrc.json` bans imports of React and `src/ui/` there (ADR 0005).
+  Enforced by `npm run check`, through `tsconfig.core.json` and `.oxlintrc.json` (ADR 0005).
 - `src/ui/` holds no reading logic.

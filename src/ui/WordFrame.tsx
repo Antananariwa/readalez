@@ -33,7 +33,7 @@ export default function WordFrame({ word, playing, onToggle }: Props) {
       const left = beforeEl.getBoundingClientRect().width + half;
       const right = afterEl.getBoundingClientRect().width + half;
       const scale = Math.min(point / left, (width - point) / right);
-      // A little room, since text widths don't scale exactly with font size.
+      // A little room, since text widths don't scale exactly with font size (not checked).
       if (scale < 1) anchorEl.style.fontSize = `${scale * 0.97}em`;
     };
     fit();

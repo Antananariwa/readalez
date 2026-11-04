@@ -34,7 +34,7 @@ Examples:
 
 ## Structure
 
-- Reading logic (splitting text, focus position, timing, parsing imported texts) is plain TypeScript in `src/core/`, with unit tests and no DOM, React or browser APIs. `src/ui/` renders it and holds no reading logic. This keeps the logic quick and exact to test, which the Stop hook relies on, and lets the UI be reworked without breaking it. Details: ARCHITECTURE.md.
+- Reading logic (splitting text, focus position, timing, parsing imported texts) is plain TypeScript in `src/core/`, with unit tests and no DOM, React or browser APIs. `src/ui/` renders it and holds no reading logic. Why: ADR 0003.
 
 ## Workflow
 

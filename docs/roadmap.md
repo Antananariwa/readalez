@@ -4,7 +4,7 @@ Ideas for after v1, grouped by area; none is committed. When one is built, its e
 
 ## Settings
 
-Idea: most reading settings could become adjustable, as in other speed-reading apps.
+Idea: most reading settings could become adjustable, as some are in other speed-reading apps (each entry's **Others**).
 
 ### Sentence and paragraph pause sliders
 
@@ -37,19 +37,19 @@ Idea: most reading settings could become adjustable, as in other speed-reading a
 
 ### Public-domain catalog and proxy
 
-- **What:** finding and adding free books from inside the app. It needs a proxy, Gutenberg blocks automated traffic, and copyright differs by country, so v1 has readers import by hand and the built-in books cover a first use. [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing) lists what a catalog has to respect.
+- **What:** finding and adding free books from inside the app. It needs a proxy (not checked), and [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing) lists what a catalog has to respect, so v1 has readers import by hand and the built-in books cover a first use.
 - **Open:** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
 
 ### TXT, PDF, Word and other formats
 
-- **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
+- **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy (not checked).
 - **Open:** which comes after EPUB: TXT or PDF.
 
 ## Progress and stats
 
 ### Stats screens
 
-- **What:** screens for reading history, speed and time read. Sessions are recorded from v1 ([feature 10](../SPEC.md#10-reading-sessions)), so stats start with a history.
+- **What:** screens for reading history, speed and time read. Sessions are recorded from v1 ([feature 10](../SPEC.md#10-reading-sessions)).
 
 ## Platforms
 
