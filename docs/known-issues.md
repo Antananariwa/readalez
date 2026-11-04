@@ -21,7 +21,7 @@ Code: `src/core/sentences.ts`. Tests: `src/core/sentences.test.ts`. Added in #7.
 ### German ordinals get a sentence pause
 
 - **What happens:** `am 3. Oktober` pauses after `3.`, and back and forward see a new sentence at `Oktober`.
-- **Why it's left:** the decimals rule covers `3.14` only. A number followed by a dot usually ends an English sentence ("in 1914."; not checked).
+- **Why it's left:** the decimals rule covers `3.14` only. A number followed by a dot usually ends an English sentence, as in "in 1914." (not checked).
 - **Suggestions:** treat a number with a dot as an ordinal when the next word is a month or starts with a lowercase letter, in German text only. That needs the text's language.
 
 ## Schedule
@@ -64,7 +64,7 @@ Added in #26.
 
 - **What happens:** in WebKit, Playwright doesn't report requests the service worker makes itself, such as the precache fetches. So the WebKit run of "requests only the app's own origin" (`e2e/pwa.spec.ts`) misses them.
 - **Why it's left:** the Chromium run of the same test covers those requests.
-- **Suggestions:** possible cause: a Playwright limit (not checked). No fix needed while the Chromium run stays. Recheck if Playwright adds service worker requests for WebKit.
+- **Suggestions:** Possible cause: a Playwright limit. No fix needed while the Chromium run stays. Recheck if Playwright adds service worker requests for WebKit.
 
 ### Firefox isn't in the automatic tests
 

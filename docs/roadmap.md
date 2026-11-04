@@ -37,12 +37,12 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Public-domain catalog and proxy
 
-- **What:** finding and adding free books from inside the app. It needs a proxy (not checked), and [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing) lists what a catalog has to respect, so v1 has readers import by hand and the built-in books cover a first use.
+- **What:** finding and adding free books from inside the app. It needs a proxy, and [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing) lists what a catalog has to respect, so v1 has readers import by hand and the built-in books cover a first use.
 - **Open:** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
 
 ### TXT, PDF, Word and other formats
 
-- **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy (not checked).
+- **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
 - **Open:** which comes after EPUB: TXT or PDF.
 
 ## Progress and stats

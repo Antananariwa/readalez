@@ -16,7 +16,7 @@ fi
 
 if ! out="$(npm run -s check 2>&1)"; then
   {
-    echo "npm run check failed. See the Bugs line in CLAUDE.md's Workflow."
+    echo "npm run check failed. Fix the cause; don't weaken tests or config."
     printf '%s\n' "$out" | tail -n 60
   } >&2
   exit 2
