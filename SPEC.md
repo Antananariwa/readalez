@@ -35,7 +35,7 @@ A paste box on the Add text screen. Saving adds the text to the library and open
 
 - **Paragraphs.** Blank lines separate paragraphs. If the text is hard-wrapped (most lines break mid-sentence at similar lengths, as in Gutenberg's plain-text files), single line breaks are joined with spaces; otherwise each line is its own paragraph. Why: text copied from Safari's Reader view has one paragraph per line, Gutenberg's wraps about every 70 characters, and both should read as written.
 - **Gutenberg license text.** If the text contains Gutenberg's `*** START OF` and `*** END OF` lines, only the part between them is kept. Why: reading starts at the first real word, as with EPUBs.
-- **Title.** The first line, cut at a word boundary to at most 60 characters. It can be edited before saving and later in the library.
+- **Title.** The first line of the text kept (so not Gutenberg's header), cut at a word boundary to at most 60 characters. It can be edited before saving and later in the library; a title left blank saves as the first line. Why: the title should name what you read, and a text always needs one for the library.
 - **No chapters.** Pasted text is one section. Why: books come in as EPUB; guessing chapters from plain text returns with TXT import, after v1.
 - **No verse.** Pasted text carries no verse markup, so a pasted poem follows the paragraph rules above; verse pauses (feature 6) come from EPUBs.
 
