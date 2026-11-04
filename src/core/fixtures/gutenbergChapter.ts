@@ -1,8 +1,8 @@
-// "Story of the Door" (see storyOfTheDoor.ts: Stevenson, public domain) laid
-// out the way Gutenberg's plain-text files are: a header, the `*** START OF`
-// line, paragraphs hard-wrapped at 70 characters with blank lines between
-// them, the `*** END OF` line and a footer. The header and footer lines are
-// written for this fixture, not copied from Gutenberg's license text.
+// "Story of the Door" (see storyOfTheDoor.ts: Stevenson, public domain) in
+// the plain-text layout SPEC.md feature 1 describes for Gutenberg: a header,
+// the `*** START OF` line, paragraphs hard-wrapped at 70 characters with
+// blank lines between them, the `*** END OF` line and a footer. The header
+// and footer lines are written for this fixture, not copied from Gutenberg.
 
 import { storyOfTheDoor } from "./storyOfTheDoor.ts";
 

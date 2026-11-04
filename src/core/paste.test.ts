@@ -90,7 +90,7 @@ describe("parsePaste: paragraphs", () => {
   });
 
   it("keeps each line as a paragraph in text with one paragraph per line", () => {
-    // The shape of an article copied from Safari's Reader view.
+    // The shape SPEC.md feature 1 gives for Safari's Reader view.
     const text = chapterParagraphs.join("\n");
     expect(paragraphs(text)).toEqual(chapterParagraphs);
   });
@@ -105,6 +105,14 @@ describe("parsePaste: paragraphs", () => {
       chapterParagraphs[5],
     ].join("\n");
     expect(paragraphs(text)).toHaveLength(6);
+  });
+
+  it("keeps a heading and one paragraph line as two paragraphs", () => {
+    const text = `Story of the Door\n${chapterParagraphs[1]}`;
+    expect(paragraphs(text)).toEqual([
+      "Story of the Door",
+      chapterParagraphs[1],
+    ]);
   });
 
   it("keeps lines of similar length as paragraphs when each ends a sentence", () => {

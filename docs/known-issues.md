@@ -40,6 +40,16 @@ Code: `src/core/schedule.ts`. Added in #7.
 - **Why it's left:** time left stays the same whether you're paused or playing.
 - **Suggestions:** add the start factor to time left while paused.
 
+## Pasted text
+
+Code: `src/core/paste.ts`. Tests: `src/core/paste.test.ts`. Added in #9.
+
+### Two short lines of similar length join into one paragraph
+
+- **What happens:** `"Hello there\nHow are you?"` comes out as one paragraph, read as "Hello there How are you?". The first line breaks mid-sentence and is the only wrapped line, so it counts as hard-wrapped (`isHardWrapped`). Found by the reviewer in #9.
+- **Why it's left:** it follows SPEC.md feature 1's rule as written (most lines break mid-sentence at similar lengths), and with so few lines a hard-wrapped text looks the same. Longer texts, and a heading above a paragraph line, split as expected (`src/core/paste.test.ts`).
+- **Suggestions:** treat text as hard-wrapped only with at least a few wrapped lines, if short pastes turn out to matter.
+
 ## Reader
 
 Code: `src/ui/App.tsx`. Added in #8.

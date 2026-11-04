@@ -82,19 +82,29 @@ function blocks(text: string): string[][] {
 /**
  * True when most lines break mid-sentence at similar lengths, as in
  * Gutenberg's plain-text files. Only lines followed by another line of the
- * same block count, since a paragraph's last line is short anyway.
+ * same block count, since a paragraph's last line is short anyway. A
+ * paragraph's last line also fits the wrap width, so text whose last lines
+ * mostly run longer (a heading above a paragraph line) isn't hard-wrapped.
  */
 export function isHardWrapped(lineBlocks: readonly string[][]): boolean {
-  const wrapped = lineBlocks.flatMap((block) => block.slice(0, -1));
+  const multiLine = lineBlocks.filter((block) => block.length > 1);
+  const wrapped = multiLine.flatMap((block) => block.slice(0, -1));
   if (wrapped.length === 0) return false;
   const lengths = wrapped.map(length).sort((a, b) => a - b);
   const median = lengths[Math.floor(lengths.length / 2)]!;
+  const widest = median * (1 + SIMILAR_LENGTH);
   const midSentence = wrapped.filter(
     (line) =>
       Math.abs(length(line) - median) <= median * SIMILAR_LENGTH &&
       punctuation(lastWord(line)) !== "sentence",
   );
-  return midSentence.length > wrapped.length / 2;
+  const lastLinesFit = multiLine.filter(
+    (block) => length(block.at(-1)!) <= widest,
+  );
+  return (
+    midSentence.length > wrapped.length / 2 &&
+    lastLinesFit.length > multiLine.length / 2
+  );
 }
 
 /**
