@@ -13,9 +13,10 @@ export default defineConfig({
     react(),
     // Service worker and web app manifest (ADR 0006).
     VitePWA({
-      // A new version waits until every open page is closed, so an update never
-      // applies while you read (SPEC.md feature 12). The page registers the
-      // worker itself (src/ui/registerServiceWorker.ts), so workbox-window isn't bundled.
+      // skipWaiting and clientsClaim stay off, so an update never applies while you
+      // read (SPEC.md feature 12); #46 saw a new version wait while the page was open.
+      // The page registers the worker itself (src/ui/registerServiceWorker.ts), so
+      // workbox-window isn't bundled.
       registerType: "prompt",
       injectRegister: false,
       includeAssets: ["icon.svg", "apple-touch-icon.png"],
@@ -35,7 +36,7 @@ export default defineConfig({
         icons: [
           { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
-          // The letter stays inside the maskable safe zone, so one image serves both.
+          // Also listed as maskable (ADR 0006).
           {
             src: "/icon-512.png",
             sizes: "512x512",

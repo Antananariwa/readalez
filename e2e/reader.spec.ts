@@ -190,7 +190,7 @@ test.describe("in a narrow viewport", () => {
 
     await expect(word).toHaveText("comprehension");
     const normal = await measure(page);
-    // A 13-letter word fits at the default size (2.25rem) on an iPhone SE.
+    // A 13-letter word fits at the default size (2.25rem) in this 375 × 667 viewport.
     expect(normal.fontSize).toBe(36);
     expect(normal.word.left).toBeGreaterThanOrEqual(normal.frame.left);
     expect(normal.word.right).toBeLessThanOrEqual(normal.frame.right);

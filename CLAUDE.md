@@ -16,6 +16,7 @@ This covers docs, code comments, test names, and issue and PR text. Later sessio
 - **What was seen:** say what happened, where and how often, and link it. Don't widen it into a rule or a cause.
 - **What the code does:** name the file or test.
 - **What happens outside the repo** (browsers, devices, tools, other projects, laws, prices): link what you read or ran. Our config shows what we asked for, not what happens.
+- A fact with no link, file or test counts as not checked, whether or not it's labelled.
 - **Decisions and plans:** say what and why; a preference is a reason. They need no other source.
 - **Guesses** are welcome, marked as guesses: in an entry's **Suggestions** field, or in the sentence ("Possible cause: …", "(not checked)"). Write "unknown" rather than filling a gap. Once someone checks a guess, rewrite it as what was seen and link the check.
 - **One home per fact.** Elsewhere, link to it.
@@ -34,7 +35,7 @@ Examples:
 
 ## Structure
 
-- Reading logic (splitting text, focus position, timing, parsing imported texts) is plain TypeScript in `src/core/`, with unit tests and no DOM, React or browser APIs. `src/ui/` renders it and holds no reading logic. This keeps the logic quick and exact to test, which the Stop hook relies on, and lets the UI be reworked without breaking it. Details: ARCHITECTURE.md.
+- Reading logic (splitting text, focus position, timing, parsing imported texts) is plain TypeScript in `src/core/`, with unit tests and no DOM, React or browser APIs. `src/ui/` renders it and holds no reading logic. Why: ADR 0003.
 
 ## Workflow
 
