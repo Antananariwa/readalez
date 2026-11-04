@@ -23,7 +23,7 @@ This covers docs, code comments, test names, and issue and PR text. Later sessio
 
 Examples:
 
-- Not "Updates take two launches, because Chrome keeps running in the background after its window closes", but "After #37 merged, the owner's Chrome still showed the old version after a restart, until Ctrl+Shift+R loaded the new one (#40). Possible cause: Chrome kept running in the background, so the old page never closed."
+- Not "Updates take two launches, because Chrome keeps running in the background after its window closes", but "After #37 merged, the owner's Chrome still showed the old version after a restart, until Ctrl+Shift+R loaded the new one (#40). Possible cause: the first launch after a deploy still runs the old version and downloads the new one in the background."
 - Not "Safari clears a site's data after 7 days without a visit", but "Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/))."
 - Not "40% is easier to read", but "In the first device trial, a third put 5- and 6-letter words wholly in the left half of the screen; the owner chose 40% as more balanced (#36)."
 
