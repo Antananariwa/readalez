@@ -178,13 +178,19 @@ button {
   left: 100%;
 }
 
-/* Back and forward a sentence, slower and faster, under the frame. */
+/* Under the frame: a row for the speed, and one for moving by a sentence. */
 .controls {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-top: 2rem;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .controls button {
@@ -202,9 +208,13 @@ button {
   border-radius: 50%;
   cursor: pointer;
   touch-action: manipulation;
+  /* A long press steps the speed, so it mustn't select text or open a menu. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
-.speed {
+.control-label {
   min-width: 5.5em;
   text-align: center;
   font-variant-numeric: tabular-nums;

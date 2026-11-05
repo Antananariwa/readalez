@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { Timing } from "../core/durations.ts";
 import { usePlayback, type PlaybackControls } from "./usePlayback.ts";
+import RepeatButton from "./RepeatButton.tsx";
 import { useWakeLock } from "./useWakeLock.ts";
 import WordFrame from "./WordFrame.tsx";
 
@@ -10,10 +11,10 @@ interface Props {
 }
 
 /**
- * The reader (SPEC.md feature 7): tap the frame to play or pause, buttons
- * below it to move by a sentence and change the speed, and the same on the
- * keyboard. Reading pauses when the page is hidden, and the screen stays on
- * while words play.
+ * The reader (SPEC.md feature 7): tap the frame to play or pause. Below it,
+ * one row changes the speed (held, it keeps changing) and one moves by a
+ * sentence; the keyboard does the same. Reading pauses when the page is
+ * hidden, and the screen stays on while words play.
  */
 export default function Reader({ timing, onBack }: Props) {
   const controls = usePlayback(timing);
@@ -43,21 +44,28 @@ export default function Reader({ timing, onBack }: Props) {
       </nav>
       {word && <WordFrame word={word} playing={playing} onToggle={toggle} />}
       <div className="controls">
-        <button type="button" aria-label="Previous sentence" onClick={back}>
-          <Chevron direction="left" />
-        </button>
-        <button type="button" aria-label="Slower" onClick={slower}>
-          −
-        </button>
-        <span className="speed" role="status" data-testid="speed">
-          {wpm} wpm
-        </span>
-        <button type="button" aria-label="Faster" onClick={faster}>
-          +
-        </button>
-        <button type="button" aria-label="Next sentence" onClick={forward}>
-          <Chevron direction="right" />
-        </button>
+        <div className="control-row">
+          <RepeatButton label="Slower" onStep={slower}>
+            −
+          </RepeatButton>
+          <span className="control-label" role="status" data-testid="speed">
+            {wpm} wpm
+          </span>
+          <RepeatButton label="Faster" onStep={faster}>
+            +
+          </RepeatButton>
+        </div>
+        <div className="control-row">
+          <button type="button" aria-label="Previous sentence" onClick={back}>
+            <Chevron direction="left" />
+          </button>
+          <span className="control-label" aria-hidden="true">
+            sentence
+          </span>
+          <button type="button" aria-label="Next sentence" onClick={forward}>
+            <Chevron direction="right" />
+          </button>
+        </div>
       </div>
     </main>
   );

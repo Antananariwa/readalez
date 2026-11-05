@@ -42,6 +42,9 @@ export function usePlayback(timing: Timing): PlaybackControls {
   const [playing, setPlaying] = useState(false);
   // Kept across reloads in #18.
   const [wpm, setWpm] = useState(DEFAULT_WPM);
+  // The speed as of the last change, for steps that come faster than
+  // renders (a held speed button).
+  const speed = useRef(DEFAULT_WPM);
   const playback = useRef<Playback | null>(null);
   const starts = useMemo(() => sentenceStarts(timing.words), [timing]);
 
@@ -75,10 +78,10 @@ export function usePlayback(timing: Timing): PlaybackControls {
     const finished =
       playback.current !== null && isFinished(timing, playback.current);
     const start = finished ? 0 : sentenceStart(starts, index);
-    playback.current = play(timing, start, wpm, performance.now());
+    playback.current = play(timing, start, speed.current, performance.now());
     setIndex(start);
     setPlaying(true);
-  }, [playing, index, timing, starts, wpm]);
+  }, [playing, index, timing, starts]);
 
   const jump = useCallback(
     (to: number | null) => {
@@ -87,10 +90,10 @@ export function usePlayback(timing: Timing): PlaybackControls {
       // While playing, the schedule starts again at the new word, which gets
       // the start factor (SPEC.md feature 6). While paused, play starts there.
       playback.current = playing
-        ? play(timing, to, wpm, performance.now())
+        ? play(timing, to, speed.current, performance.now())
         : null;
     },
-    [playing, timing, wpm],
+    [playing, timing],
   );
 
   const back = useCallback(
@@ -102,17 +105,15 @@ export function usePlayback(timing: Timing): PlaybackControls {
     [jump, starts, index],
   );
 
-  const changeSpeed = useCallback(
-    (steps: number) => {
-      const next = stepSpeed(wpm, steps);
-      setWpm(next);
-      // Applies from the next word.
-      if (playing && playback.current) {
-        playback.current = setSpeed(playback.current, next);
-      }
-    },
-    [playing, wpm],
-  );
+  const changeSpeed = useCallback((steps: number) => {
+    const next = stepSpeed(speed.current, steps);
+    speed.current = next;
+    setWpm(next);
+    // While playing, applies from the next word.
+    if (playback.current) {
+      playback.current = setSpeed(playback.current, next);
+    }
+  }, []);
   const slower = useCallback(() => changeSpeed(-1), [changeSpeed]);
   const faster = useCallback(() => changeSpeed(1), [changeSpeed]);
 

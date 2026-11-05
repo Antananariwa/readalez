@@ -305,6 +305,28 @@ test.describe("controls", () => {
     await expect(speed(page)).toHaveText("1000 wpm");
   });
 
+  test("holding a speed button keeps changing the speed until let go", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    const faster = page.getByRole("button", { name: "Faster" });
+    await faster.hover();
+    await page.mouse.down();
+    await expect(speed(page)).toHaveText("310 wpm");
+    // After 400 ms, a step every 100 ms: at 400, 500, … 1,000 ms.
+    await page.clock.runFor(1000);
+    await expect(speed(page)).toHaveText("380 wpm");
+    await page.mouse.up();
+    await page.clock.runFor(1000);
+    await expect(speed(page)).toHaveText("380 wpm");
+
+    await page.getByRole("button", { name: "Slower" }).hover();
+    await page.mouse.down();
+    await page.clock.runFor(450);
+    await page.mouse.up();
+    await expect(speed(page)).toHaveText("360 wpm");
+  });
+
   test("moving while playing keeps playing from the sentence start", async ({
     page,
   }) => {
