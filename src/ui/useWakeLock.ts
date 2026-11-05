@@ -13,8 +13,8 @@ export function useWakeLock(active: boolean): void {
         if (done) void lock.release();
         else sentinel = lock;
       },
-      // The request is refused when the page isn't visible or the browser
-      // doesn't allow it. Reading works without it; the screen may dim.
+      // A refused request (when and why is not checked) leaves reading
+      // working; the screen may dim and lock as usual.
       () => {},
     );
     return () => {

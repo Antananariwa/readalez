@@ -23,8 +23,9 @@ export default function Reader({ timing, onBack }: Props) {
   useWakeLock(playing);
 
   useEffect(() => {
-    // The page is hidden when the app goes to the background, the screen
-    // locks or the tab is switched. Reading never resumes on its own.
+    // Meant to cover the app going to the background, the screen locking and
+    // the tab being hidden (not checked on devices: #10's device checks).
+    // Reading never resumes on its own.
     const onChange = () => {
       if (document.visibilityState === "hidden") pause();
     };

@@ -219,10 +219,7 @@ test.describe("controls", () => {
   const paused = (page: Page) =>
     expect(page.getByRole("button", { name: "Play" })).toBeVisible();
 
-  /**
-   * Stands in for the page being hidden and shown again, as when the app
-   * goes to the background or the screen locks.
-   */
+  /** Stands in for the page being hidden or shown, by faking its state. */
   function setVisibility(page: Page, state: "hidden" | "visible") {
     return page.evaluate((state) => {
       Object.defineProperty(document, "visibilityState", {
@@ -324,7 +321,7 @@ test.describe("controls", () => {
     await expect(word(page)).toHaveText("five");
   });
 
-  test("a faster speed applies from the next word", async ({ page }) => {
+  test("play uses the speed chosen while paused", async ({ page }) => {
     await openReader(page, sentences);
     for (let i = 0; i < 30; i++) await page.keyboard.press("ArrowUp");
     await expect(speed(page)).toHaveText("600 wpm");
@@ -335,6 +332,30 @@ test.describe("controls", () => {
     await expect(word(page)).toHaveText("two");
     await advanceTo(280);
     await expect(word(page)).toHaveText("three.");
+  });
+
+  test("a speed change while playing applies from the next word", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    const advanceTo = stopwatch(page);
+    await advanceTo(100);
+    for (let i = 0; i < 30; i++) await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("600 wpm");
+    // "One" keeps its 300 ms at 300 wpm; then at 600 wpm "two" 100 ms and
+    // "three." 200 ms.
+    for (const [at, text] of [
+      [270, "One"],
+      [330, "two"],
+      [370, "two"],
+      [430, "three."],
+      [570, "three."],
+      [630, "Four"],
+    ] as const) {
+      await advanceTo(at);
+      await expect(word(page)).toHaveText(text);
+    }
   });
 
   test("hiding the page pauses, and it stays paused", async ({ page }) => {
