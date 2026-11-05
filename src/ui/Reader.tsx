@@ -73,7 +73,7 @@ export default function Reader({ sections, timing, onBack }: Props) {
     return (
       <main className="reader">
         <FinishedCard
-          words={wordCount(timing.words)}
+          words={wordCount(sections)}
           onBack={onBack}
           onStartOver={startOver}
         />

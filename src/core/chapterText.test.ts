@@ -173,10 +173,11 @@ describe("wordAtCharacter", () => {
 });
 
 describe("wordCount", () => {
-  it("counts a split long word once and dashed words apart", () => {
-    const words = splitText(prose("incomprehensibilities yes—no well-known"));
-    expect(words).toHaveLength(5);
-    expect(wordCount(words)).toBe(4);
+  it("counts runs of text between spaces", () => {
+    expect(
+      wordCount(prose("incomprehensibilities yes—no", "well-\nknown")),
+    ).toBe(4);
+    expect(wordCount(prose(""))).toBe(0);
     expect(wordCount([])).toBe(0);
   });
 });

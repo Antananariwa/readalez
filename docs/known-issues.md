@@ -72,6 +72,12 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 - **Why it's left:** reading does pause and never resumes on its own, as SPEC.md feature 7 asks. The owner chose to note it for later; it may also interact with notifications.
 - **Suggestions:** Possible cause: the page counts as visible while the app shows as a card in the switcher, and `visibilitychange` (`src/ui/Reader.tsx`) fires only once the app is fully in the background (not checked). Also pausing on the window's `blur` or `pagehide` event might stop it sooner (not checked), to be tried on the iPhone.
 
+### A tap on the marked word's left edge after a dash can pick the word before
+
+- **What happens:** from reading the code, not checked in a browser: in the paused view, a tap on the left edge of the marked word's first letter, when a dash joins it to the word before ("yes—no" with "no" marked), can move the frame to the word before. The caret then sits at the end of the text before the `<mark>`, and `characterAt` (`src/ui/PausedText.tsx`) takes the character before the caret. Found while fixing the reviewer's finding in #68.
+- **Why it's left:** it needs a tap on a sliver of one letter, and only where a dash joins two words. The owner chose to leave it for later (#68).
+- **Suggestions:** when the caret is at the end of a text node, measure the first character of the next text node instead.
+
 ### The progress bar moves hundreds of words per pixel in a novel
 
 - **What happens:** the bar has one step per word. The 1 MB text of "with a novel's worth of text" (`e2e/navigation.spec.ts`) has 192,560 words. At a 375-px viewport the bar is 343 px wide (the page's padding in `src/ui/styles.css`), about 560 words per pixel, so a drag can't land on a chosen sentence.

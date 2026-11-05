@@ -27,6 +27,7 @@ function read(text: string) {
   const { sections } = parsePaste(text);
   const timing = timeWords(splitText(sections));
   return {
+    sections,
     timing,
     words: timing.words,
     texts: chapterTexts(sections, timing.words),
@@ -224,9 +225,9 @@ test("the last word leads to the Finished card; Start over and Back to library",
   await page.clock.runFor(10_000);
   await expect(page.getByRole("heading", { name: "Finished" })).toBeVisible();
   await expect(page.getByTestId("word-count")).toHaveText(
-    `${wordCount(text.words)} words`,
+    `${wordCount(text.sections)} words`,
   );
-  expect(wordCount(text.words)).toBe(10);
+  expect(wordCount(text.sections)).toBe(10);
   // Keys do nothing on the card.
   await page.keyboard.press("Space");
   await page.clock.runFor(1000);
@@ -269,7 +270,7 @@ test("the issue's run: pause, tap a word two paragraphs on, drag to the end, fin
   await page.getByRole("button", { name: "Play" }).click();
   await page.clock.runFor(20_000);
   await expect(page.getByTestId("word-count")).toHaveText(
-    `${wordCount(text.words)} words`,
+    `${wordCount(text.sections)} words`,
   );
   await page.getByRole("button", { name: "Start over" }).click();
   await expect(frameWord(page)).toHaveText(wordText(text.words[0]!));

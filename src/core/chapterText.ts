@@ -141,11 +141,13 @@ export function wordAtCharacter(
   return first + low;
 }
 
-/**
- * The text's word count, for the Finished card: every shown word, with the
- * parts of a split long word counted once. Words joined by a dash
- * ("yes—no") count as the two words they show as.
- */
-export function wordCount(words: readonly Word[]): number {
-  return words.filter((word) => !word.continues).length;
+/** The text's word count, for the Finished card: runs of text between spaces. */
+export function wordCount(sections: readonly Section[]): number {
+  let count = 0;
+  for (const section of sections) {
+    for (const paragraph of section.paragraphs) {
+      count += paragraphText(paragraph).match(/\S+/gu)?.length ?? 0;
+    }
+  }
+  return count;
 }
