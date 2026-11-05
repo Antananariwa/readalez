@@ -230,9 +230,7 @@ test.describe("controls", () => {
     await paused(page);
   });
 
-  test("play after a pause starts at the sentence's first word", async ({
-    page,
-  }) => {
+  test("play after a pause starts at the word on screen", async ({ page }) => {
     await openReader(page, sentences);
     await page.getByRole("button", { name: "Play" }).click();
     const advanceTo = stopwatch(page);
@@ -241,7 +239,12 @@ test.describe("controls", () => {
     await expect(word(page)).toHaveText("five");
     await page.getByRole("button", { name: "Pause" }).click();
     await page.getByRole("button", { name: "Play" }).click();
-    await expect(word(page)).toHaveText("Four");
+    await expect(word(page)).toHaveText("five");
+    // "five" is the first word after play: 1.5× (300 ms).
+    await page.clock.runFor(270);
+    await expect(word(page)).toHaveText("five");
+    await page.clock.runFor(60);
+    await expect(word(page)).toHaveText("six.");
   });
 
   test("buttons and arrow keys move by a sentence and change the speed", async ({
@@ -264,6 +267,16 @@ test.describe("controls", () => {
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
+    await expect(word(page)).toHaveText("One");
+
+    // From mid-sentence, back goes to the sentence's own first word first.
+    await page.getByRole("button", { name: "Play" }).click();
+    await page.clock.runFor(1200);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(word(page)).toHaveText("five");
+    await previous.click();
+    await expect(word(page)).toHaveText("Four");
+    await previous.click();
     await expect(word(page)).toHaveText("One");
 
     await expect(speed(page)).toHaveText("300 wpm");
@@ -423,6 +436,6 @@ test.describe("controls", () => {
     await paused(page);
     await page.keyboard.press("Space");
     await playing(page);
-    await expect(word(page)).toHaveText("Four");
+    await expect(word(page)).toHaveText("five");
   });
 });

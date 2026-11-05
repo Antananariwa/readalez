@@ -186,12 +186,16 @@ export function sentenceStart(
   return starts[sentenceAt(starts, index)] ?? 0;
 }
 
-/** The first word of the sentence before the one holding `index`, if any. */
-export function previousSentenceStart(
+/**
+ * The last sentence start before word `index`, if any, where Back goes: the
+ * start of the sentence holding it, or of the sentence before when `index`
+ * is a sentence's first word.
+ */
+export function sentenceStartBefore(
   starts: readonly number[],
   index: number,
 ): number | null {
-  return starts[sentenceAt(starts, index) - 1] ?? null;
+  return index > 0 ? (starts[sentenceAt(starts, index - 1)] ?? null) : null;
 }
 
 /** The first word of the sentence after the one holding `index`, if any. */

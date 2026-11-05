@@ -72,6 +72,12 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 - **Why it's left:** reading does pause and never resumes on its own, as SPEC.md feature 7 asks. The owner chose to note it for later; it may also interact with notifications.
 - **Suggestions:** Possible cause: the page counts as visible while the app shows as a card in the switcher, and `visibilitychange` (`src/ui/Reader.tsx`) fires only once the app is fully in the background (not checked). Also pausing on the window's `blur` or `pagehide` event might stop it sooner (not checked), to be tried on the iPhone.
 
+### A stray tap or drag loses your place
+
+- **What happens:** tapping a word in the paused view or moving the progress bar moves the frame there at once, and nothing leads back to where you were reading. The owner found it very annoying when it happened by accident, reviewing #68.
+- **Why it's left:** the owner chose to record it for later (#68).
+- **Suggestions:** after a tap or a drag, show a "Back to where you were" button for a while that returns to the word before the move. Kindle's "Go back to page …" after jumping to another place is a similar idea (not checked).
+
 ### A tap on the marked word's left edge after a dash can pick the word before
 
 - **What happens:** from reading the code, not checked in a browser: in the paused view, a tap on the left edge of the marked word's first letter, when a dash joins it to the word before ("yes—no" with "no" marked), can move the frame to the word before. The caret then sits at the end of the text before the `<mark>`, and `characterAt` (`src/ui/PausedText.tsx`) takes the character before the caret. Found while fixing the reviewer's finding in #68.

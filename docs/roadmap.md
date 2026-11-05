@@ -15,7 +15,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 - **What:** an option that pauses reading at the end of each paragraph (#36, #51).
 - **Others:** [SplashReader](https://github.com/rattrayalex/splashreader)'s README says it "pauses every paragraph"; whether it waits for a tap isn't confirmed.
-- **Open:** how reading goes on after the pause (a tap or a timer), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the sentence start, which here is the next paragraph's first word).
+- **Open:** how reading goes on after the pause (a tap or a timer), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the word on screen, which here is the paragraph's last word).
 
 ### Long-word settings
 
@@ -27,6 +27,11 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 - **Others:** [Speeedy](https://github.com/sami-29/speeedy) has a Words per flash setting from 1 to 5 words, 1 by default (`chunkSize` in [`src/components/settings-panel.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L156-L166) and [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L27)). With its `-m` switch, [speedread](https://github.com/pasky/speedread) joins two neighbouring words when each is 3 characters or fewer (`length($words[$i]) <= 3` in [`speedread`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L199-L207)).
 
 ## Reader
+
+### Reader layout options
+
+- **What:** settings for how the reader behaves and what it shows: where play resumes after a pause (the word on screen, as in v1, or the sentence start, as before #68), what shows while playing (progress bar, time left) and while paused (time left, how much text: the whole chapter, as in v1, or only the current sentence), and what's on screen at all. For example, a light mode with one sentence of context while paused and no times. From the owner, reviewing #68.
+- **Open:** whether these are separate settings or a few presets.
 
 ### Warm-up when a book starts
 

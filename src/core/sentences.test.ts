@@ -11,9 +11,9 @@ import {
   endsSentence,
   nearestSentenceStart,
   nextSentenceStart,
-  previousSentenceStart,
   punctuation,
   sentenceStart,
+  sentenceStartBefore,
   sentenceStarts,
 } from "./sentences.ts";
 import { splitText, wordText, type Paragraph, type Word } from "./text.ts";
@@ -302,16 +302,20 @@ describe("sentence starts", () => {
     ]);
   });
 
-  it("gives a word's sentence start and the previous and next ones", () => {
+  it("gives a word's sentence start, the start before it and the next one", () => {
     const i = at("Utterson");
     expect(sentenceStart(starts, i)).toBe(at("Mr."));
-    expect(previousSentenceStart(starts, i)).toBe(at("Story"));
+    // Mid-sentence, the start before is the sentence's own; from a
+    // sentence's first word, it's the previous sentence's.
+    expect(sentenceStartBefore(starts, i)).toBe(at("Mr."));
+    expect(sentenceStartBefore(starts, at("Mr."))).toBe(at("Story"));
     expect(nextSentenceStart(starts, i)).toBe(at("He"));
     expect(sentenceStart(starts, at("He"))).toBe(at("He"));
   });
 
-  it("has no previous start in the first sentence or next in the last", () => {
-    expect(previousSentenceStart(starts, at("Door"))).toBeNull();
+  it("has no start before the first word or next in the last sentence", () => {
+    expect(sentenceStartBefore(starts, at("Door"))).toBe(at("Story"));
+    expect(sentenceStartBefore(starts, at("Story"))).toBeNull();
     expect(nextSentenceStart(starts, at("lovable."))).toBeNull();
     expect(sentenceStarts([])).toEqual([]);
   });

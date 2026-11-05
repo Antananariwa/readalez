@@ -26,8 +26,8 @@ interface Props {
 /**
  * The reader (SPEC.md feature 7): tap the frame to play or pause. Below it,
  * one row changes the speed (held, it keeps changing) and one moves by a
- * sentence; the keyboard does the same. Then the progress bar and time left.
- * When paused, the chapter's text shows below; after the last word, the
+ * sentence; the keyboard does the same. Then the progress bar, and when
+ * paused, time left and the chapter's text below; after the last word, the
  * Finished card. Reading pauses when the page is hidden, and the screen stays
  * on while words play.
  */
@@ -115,12 +115,17 @@ export default function Reader({ sections, timing, onBack }: Props) {
       </div>
       <div className="progress-row">
         <ProgressBar index={index} count={timing.words.length} onSeek={seek} />
-        <p className="time-left">
-          <span data-testid="chapter-left">{formatDuration(left.chapter)}</span>{" "}
-          left in chapter ·{" "}
-          <span data-testid="book-left">{formatDuration(left.book)}</span> left
-          in book
-        </p>
+        {/* Hidden while playing: it takes attention from the words (#68). */}
+        {!playing && (
+          <p className="time-left">
+            <span data-testid="chapter-left">
+              {formatDuration(left.chapter)}
+            </span>{" "}
+            left in chapter ·{" "}
+            <span data-testid="book-left">{formatDuration(left.book)}</span>{" "}
+            left in book
+          </p>
+        )}
       </div>
       {!playing && word && (
         <PausedText

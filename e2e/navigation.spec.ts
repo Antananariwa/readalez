@@ -106,10 +106,14 @@ test("the paused view shows when paused; the frame and Space still toggle", asyn
   await openReader(page, sentences);
   await expect(pausedText(page)).toBeVisible();
   await expect(marked(page)).toHaveText("One");
+  await expect(page.getByTestId("book-left")).toBeVisible();
 
   await page.getByRole("button", { name: "Play" }).click();
   await playing(page);
   await expect(pausedText(page)).toBeHidden();
+  // While playing the progress bar stays, and time left is hidden.
+  await expect(page.getByLabel("Progress")).toBeVisible();
+  await expect(page.getByTestId("book-left")).toBeHidden();
   await page.keyboard.press("Space");
   await paused(page);
   await expect(pausedText(page)).toBeVisible();
@@ -152,11 +156,10 @@ test("the paused view marks the current word; a tapped word plays from exactly t
   await advanceTo(first + 30);
   await expect(frameWord(page)).toHaveText(wordText(text.words[target + 1]!));
 
-  // Play after an ordinary pause starts at the sentence start again.
+  // Play after a pause starts at the word on screen too.
   await page.getByRole("button", { name: "Pause" }).click();
   await page.getByRole("button", { name: "Play" }).click();
-  const sentence = text.starts.filter((s) => s <= target).at(-1)!;
-  await expect(frameWord(page)).toHaveText(wordText(text.words[sentence]!));
+  await expect(frameWord(page)).toHaveText(wordText(text.words[target + 1]!));
 });
 
 test("dragging the progress bar to the middle lands on a sentence start near the middle", async ({

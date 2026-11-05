@@ -1,6 +1,6 @@
 // The playback loop: asks #7's schedule (src/core/schedule.ts) which word to
 // show at each display refresh, and #7's sentence starts
-// (src/core/sentences.ts) where to resume and jump. It keeps no timing rules
+// (src/core/sentences.ts) where to jump. It keeps no timing rules
 // of its own.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -15,8 +15,7 @@ import {
 import {
   nearestSentenceStart,
   nextSentenceStart,
-  previousSentenceStart,
-  sentenceStart,
+  sentenceStartBefore,
   sentenceStarts,
 } from "../core/sentences.ts";
 import { DEFAULT_WPM, stepSpeed } from "../core/timingValues.ts";
@@ -29,19 +28,19 @@ export interface PlaybackControls {
   finished: boolean;
   /** Words per minute. */
   wpm: number;
-  /** Plays from the start of the sentence on screen, or pauses. */
+  /** Plays from the word on screen, or pauses. */
   toggle: () => void;
   pause: () => void;
-  /** Moves to the start of the sentence before the one on screen. */
+  /**
+   * Moves to the start of the sentence on screen, or of the one before when
+   * the word on screen starts its sentence.
+   */
   back: () => void;
   /** Moves to the start of the next sentence. */
   forward: () => void;
   /** Moves to the sentence start nearest word `index` (the progress bar). */
   seek: (index: number) => void;
-  /**
-   * Moves to word `index` (a tap in the paused view); play then starts
-   * exactly there, not at its sentence's start.
-   */
+  /** Moves to word `index` (a tap in the paused view). */
   moveTo: (index: number) => void;
   /** Goes back to the first word, paused (the Finished card). */
   startOver: () => void;
@@ -59,8 +58,6 @@ export function usePlayback(timing: Timing): PlaybackControls {
   // renders (a held speed button).
   const speed = useRef(DEFAULT_WPM);
   const playback = useRef<Playback | null>(null);
-  // Set by moveTo: the next play starts at the word on screen.
-  const exact = useRef(false);
   const starts = useMemo(() => sentenceStarts(timing.words), [timing]);
 
   useEffect(() => {
@@ -91,17 +88,13 @@ export function usePlayback(timing: Timing): PlaybackControls {
       return;
     }
     if (finished) return;
-    const start = exact.current ? index : sentenceStart(starts, index);
-    exact.current = false;
-    playback.current = play(timing, start, speed.current, performance.now());
-    setIndex(start);
+    playback.current = play(timing, index, speed.current, performance.now());
     setPlaying(true);
-  }, [playing, finished, index, timing, starts]);
+  }, [playing, finished, index, timing]);
 
   const jump = useCallback(
     (to: number | null) => {
       if (to === null) return;
-      exact.current = false;
       setIndex(to);
       // While playing, the schedule starts again at the new word, which gets
       // the start factor (SPEC.md feature 6). While paused, play starts there.
@@ -113,7 +106,7 @@ export function usePlayback(timing: Timing): PlaybackControls {
   );
 
   const back = useCallback(
-    () => jump(previousSentenceStart(starts, index)),
+    () => jump(sentenceStartBefore(starts, index)),
     [jump, starts, index],
   );
   const forward = useCallback(
@@ -125,17 +118,8 @@ export function usePlayback(timing: Timing): PlaybackControls {
     (to: number) => jump(nearestSentenceStart(starts, to)),
     [jump, starts],
   );
-  const moveTo = useCallback(
-    (to: number) => {
-      jump(to);
-      // While playing, the jump already starts at the word.
-      exact.current = !playing;
-    },
-    [jump, playing],
-  );
   const startOver = useCallback(() => {
     playback.current = null;
-    exact.current = false;
     setIndex(0);
     setPlaying(false);
     setFinished(false);
@@ -163,7 +147,7 @@ export function usePlayback(timing: Timing): PlaybackControls {
     back,
     forward,
     seek,
-    moveTo,
+    moveTo: jump,
     startOver,
     slower,
     faster,
