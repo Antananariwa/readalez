@@ -1,0 +1,46 @@
+# After each merge to main, rebuilds the review-log branch: current main plus
+# one commit adding every merged PR's Review section that main's
+# docs/reviews.md lacks (SPEC.md, How features are checked). The owner merges
+# it by PR, since main's ruleset requires one. Because each run starts again
+# from main, a pending entry is kept, and a cancelled or failed run is caught
+# up by the next one. GITHUB_TOKEN pushes start no other workflow run:
+# https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow
+name: Review log
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+concurrency: review-log
+
+jobs:
+  update:
+    if: github.event.pull_request.merged == true && github.head_ref != 'review-log'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - name: Add the reviews main's docs/reviews.md lacks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for n in $(gh pr list --state merged --base main --limit 1000 --json number,headRefName \
+              --jq '[.[] | select(.number >= 43 and .headRefName != "review-log") | .number] | sort | .[]'); do
+            grep -q "^## #$n " docs/reviews.md && continue
+            gh pr view "$n" --json number,title,mergedAt,headRefName,body \
+              | node scripts/append-review.ts docs/reviews.md
+          done
+          git diff --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c review-log
+          git commit -am "Add merged PRs' reviews to docs/reviews.md"
+          git push --force origin review-log
