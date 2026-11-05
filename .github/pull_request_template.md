@@ -10,7 +10,11 @@ Closes #
 
 ## Review
 
-<!-- See CLAUDE.md, Workflow. -->
+<!-- The reviewer subagent's findings (CLAUDE.md, Workflow), one line each, in the order found:
+- Fixed: <finding>. <what changed>.
+- Left: <finding>. <where it's recorded, for example docs/known-issues.md>.
+- Rejected: <finding>. <why it isn't a problem>.
+With no findings, write "- No findings." Lines that don't start with "- " (round headings, notes) are free text. -->
 
 ## How to test
 
