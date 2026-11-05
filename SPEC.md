@@ -319,7 +319,7 @@ Working assumptions from public sources, not legal advice. Recheck them before a
 - **Unit:** unit tests run by `npm run check`, mostly in `src/core`, where reading rules are tested exactly and quickly (ADR 0003). The Stop hook runs them.
 - **E2E:** Playwright in the dev container, in headless Chromium and in WebKit with iPhone emulation, including screenshots and measurements. Why WebKit, and why the Device checks stay: ADR 0005.
 - **Build:** a check that runs as part of the build.
-- **Review:** checked by reading the diff.
+- **Review:** checked by reading the diff. Each merged PR's review is collected in [docs/reviews.md](docs/reviews.md), to show what the reviews catch.
 - **Device:** the owner on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox. Each PR's How to test lists them.
 - **Test fixtures** follow the copyright rule in [Legal and licensing](#legal-and-licensing).
 
