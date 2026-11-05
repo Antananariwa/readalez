@@ -1,7 +1,8 @@
 # After each merge to main, rebuilds the review-log branch: current main plus
 # one commit adding every merged PR's Review section that main's
-# docs/reviews.md lacks (SPEC.md, How features are checked). The owner merges
-# it by PR, since main's ruleset requires one. Because each run starts again
+# docs/reviews.md lacks (SPEC.md, How features are checked). It opens a PR for
+# the branch when none is open, since main's ruleset requires one; the owner
+# merges it. Because each run starts again
 # from main, a pending entry is kept, and a cancelled or failed run is caught
 # up by the next one. GITHUB_TOKEN pushes start no other workflow run:
 # https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow
@@ -14,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency: review-log
 
@@ -44,3 +46,8 @@ jobs:
           git switch -c review-log
           git commit -am "Add merged PRs' reviews to docs/reviews.md"
           git push --force origin review-log
+          if [ -z "$(gh pr list --head review-log --state open --json number --jq '.[].number')" ]; then
+            gh pr create --head review-log --base main \
+              --title "Add merged PRs' reviews to docs/reviews.md" \
+              --body "Made by .github/workflows/reviews.yml. Docs only: adds the Review sections of PRs merged since the last log merge. CI waits for the owner's approval in this PR (docs/reviews.md intro)."
+          fi
