@@ -1,6 +1,6 @@
 # Reviews
 
-The `reviewer` subagent's findings on each merged PR, and what was done with each, copied from the PR's Review section (CLAUDE.md, Workflow), oldest first. Each entry gives the PR's number, title, merge date and branch. After each merge, `.github/workflows/reviews.yml` adds the PR's entry with `scripts/append-review.ts`. #43 to #59 were added in #62 with the same script. PRs before #43 had no review. The reviewer's brief (`.claude/agents/reviewer.md`) changed in #50 and #55.
+The `reviewer` subagent's findings on each merged PR, and what was done with each, copied from the PR's Review section (CLAUDE.md, Workflow), in the order added. Each entry gives the PR's number, title, merge date and branch. After each merge, `.github/workflows/reviews.yml` puts every merged PR from #43 on that isn't here yet on the `review-log` branch, as one commit on top of `main`, with `scripts/append-review.ts`. The owner merges that branch by PR. #43 to #59 were added in #62 with the same script. PRs before #43 have no Review section; some report a review elsewhere in their body. The reviewer's brief (`.claude/agents/reviewer.md`) changed in #50 and #55.
 
 ## #43 Say how docs are written, and check it before each PR (#42)
 
