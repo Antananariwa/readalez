@@ -206,3 +206,247 @@ test.describe("in a narrow viewport", () => {
     expect(Math.abs(wide.focus - normal.focus)).toBeLessThanOrEqual(1);
   });
 });
+
+// The reader controls (issue #10, SPEC.md feature 7): moving by a sentence,
+// the speed, desktop keys, resuming at the sentence start, pausing when the
+// page is hidden, and the screen wake lock.
+test.describe("controls", () => {
+  const sentences = "One two three. Four five six. Seven eight nine. Ten.";
+  const word = (page: Page) => page.getByTestId("word");
+  const speed = (page: Page) => page.getByTestId("speed");
+  const playing = (page: Page) =>
+    expect(page.getByRole("button", { name: "Pause" })).toBeVisible();
+  const paused = (page: Page) =>
+    expect(page.getByRole("button", { name: "Play" })).toBeVisible();
+
+  /** Stands in for the page being hidden or shown, by faking its state. */
+  function setVisibility(page: Page, state: "hidden" | "visible") {
+    return page.evaluate((state) => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        get: () => state,
+      });
+      Object.defineProperty(document, "hidden", {
+        configurable: true,
+        get: () => state === "hidden",
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    }, state);
+  }
+
+  test("tapping the frame and pressing Space each play and pause", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    await playing(page);
+    await page.keyboard.press("Space");
+    await paused(page);
+    await page.keyboard.press("Space");
+    await playing(page);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await paused(page);
+    // With the frame focused, Space still toggles only once.
+    await page.getByRole("button", { name: "Play" }).focus();
+    await page.keyboard.press("Space");
+    await playing(page);
+    await page.keyboard.press("Space");
+    await paused(page);
+  });
+
+  test("play after a pause starts at the sentence's first word", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    const advanceTo = stopwatch(page);
+    // At 300 wpm: "One" 300 ms, "two" 200, "three." 400, "Four" 200, "five" 200.
+    await advanceTo(1200);
+    await expect(word(page)).toHaveText("five");
+    await page.getByRole("button", { name: "Pause" }).click();
+    await page.getByRole("button", { name: "Play" }).click();
+    await expect(word(page)).toHaveText("Four");
+  });
+
+  test("buttons and arrow keys move by a sentence and change the speed", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    const next = page.getByRole("button", { name: "Next sentence" });
+    const previous = page.getByRole("button", { name: "Previous sentence" });
+
+    await next.click();
+    await expect(word(page)).toHaveText("Four");
+    await page.keyboard.press("ArrowRight");
+    await expect(word(page)).toHaveText("Seven");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    // No sentence after the last.
+    await expect(word(page)).toHaveText("Ten.");
+    await previous.click();
+    await expect(word(page)).toHaveText("Seven");
+    await page.keyboard.press("ArrowLeft");
+    await page.keyboard.press("ArrowLeft");
+    await page.keyboard.press("ArrowLeft");
+    await expect(word(page)).toHaveText("One");
+
+    await expect(speed(page)).toHaveText("300 wpm");
+    await page.getByRole("button", { name: "Faster" }).click();
+    await expect(speed(page)).toHaveText("310 wpm");
+    await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("320 wpm");
+    await page.getByRole("button", { name: "Slower" }).click();
+    await page.keyboard.press("ArrowDown");
+    await expect(speed(page)).toHaveText("300 wpm");
+
+    for (let i = 0; i < 25; i++) await page.keyboard.press("ArrowDown");
+    await expect(speed(page)).toHaveText("100 wpm");
+    for (let i = 0; i < 95; i++) await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("1000 wpm");
+  });
+
+  test("holding a speed button keeps changing the speed until let go", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    const faster = page.getByRole("button", { name: "Faster" });
+    await faster.hover();
+    await page.mouse.down();
+    await expect(speed(page)).toHaveText("310 wpm");
+    // After 400 ms, a step every 100 ms: at 400, 500, … 1,000 ms.
+    await page.clock.runFor(1000);
+    await expect(speed(page)).toHaveText("380 wpm");
+    await page.mouse.up();
+    await page.clock.runFor(1000);
+    await expect(speed(page)).toHaveText("380 wpm");
+
+    await page.getByRole("button", { name: "Slower" }).hover();
+    await page.mouse.down();
+    await page.clock.runFor(450);
+    await page.mouse.up();
+    await expect(speed(page)).toHaveText("360 wpm");
+  });
+
+  test("moving while playing keeps playing from the sentence start", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    await page.keyboard.press("ArrowRight");
+    const advanceTo = stopwatch(page);
+    await expect(word(page)).toHaveText("Four");
+    await playing(page);
+    // "Four" is the first word after the jump: 1.5× (300 ms).
+    await advanceTo(270);
+    await expect(word(page)).toHaveText("Four");
+    await advanceTo(330);
+    await expect(word(page)).toHaveText("five");
+  });
+
+  test("play uses the speed chosen while paused", async ({ page }) => {
+    await openReader(page, sentences);
+    for (let i = 0; i < 30; i++) await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("600 wpm");
+    await page.getByRole("button", { name: "Play" }).click();
+    const advanceTo = stopwatch(page);
+    // At 600 wpm: "One" 150 ms, "two" 100 ms.
+    await advanceTo(180);
+    await expect(word(page)).toHaveText("two");
+    await advanceTo(280);
+    await expect(word(page)).toHaveText("three.");
+  });
+
+  test("a speed change while playing applies from the next word", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    const advanceTo = stopwatch(page);
+    await advanceTo(100);
+    for (let i = 0; i < 30; i++) await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("600 wpm");
+    // "One" keeps its 300 ms at 300 wpm; then at 600 wpm "two" 100 ms and
+    // "three." 200 ms.
+    for (const [at, text] of [
+      [270, "One"],
+      [330, "two"],
+      [370, "two"],
+      [430, "three."],
+      [570, "three."],
+      [630, "Four"],
+    ] as const) {
+      await advanceTo(at);
+      await expect(word(page)).toHaveText(text);
+    }
+  });
+
+  test("hiding the page pauses, and it stays paused", async ({ page }) => {
+    await openReader(page, sentences);
+    await page.getByRole("button", { name: "Play" }).click();
+    await page.clock.runFor(400);
+    await expect(word(page)).toHaveText("two");
+    await setVisibility(page, "hidden");
+    await paused(page);
+    await setVisibility(page, "visible");
+    await page.clock.runFor(3000);
+    await paused(page);
+    await expect(word(page)).toHaveText("two");
+  });
+
+  test("playing holds a screen wake lock, and pausing releases it", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const calls: string[] = [];
+      Object.assign(window, { wakeLockCalls: calls });
+      Object.defineProperty(navigator, "wakeLock", {
+        configurable: true,
+        value: {
+          request: async (type: string) => {
+            calls.push(`request ${type}`);
+            return {
+              release: async () => {
+                calls.push("release");
+              },
+            };
+          },
+        },
+      });
+    });
+    await openReader(page, sentences);
+    const calls = () =>
+      page.evaluate(
+        () => (window as unknown as { wakeLockCalls: string[] }).wakeLockCalls,
+      );
+    expect(await calls()).toEqual([]);
+    await page.getByRole("button", { name: "Play" }).click();
+    await expect.poll(calls).toEqual(["request screen"]);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect.poll(calls).toEqual(["request screen", "release"]);
+  });
+
+  test("the issue's run: keys, speed, hiding and resuming", async ({
+    page,
+  }) => {
+    await openReader(page, sentences);
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowLeft");
+    await expect(word(page)).toHaveText("Four");
+    for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowUp");
+    await expect(speed(page)).toHaveText("330 wpm");
+    await page.keyboard.press("Space");
+    await playing(page);
+    // At 330 wpm, "Four" shows for about 273 ms, then "five".
+    await page.clock.runFor(400);
+    await expect(word(page)).toHaveText("five");
+    await setVisibility(page, "hidden");
+    await paused(page);
+    await setVisibility(page, "visible");
+    await page.clock.runFor(2000);
+    await paused(page);
+    await page.keyboard.press("Space");
+    await playing(page);
+    await expect(word(page)).toHaveText("Four");
+  });
+});

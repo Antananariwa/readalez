@@ -26,6 +26,19 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 - **What:** modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings.
 - **Others:** [Speeedy](https://github.com/sami-29/speeedy) has a Words per flash setting from 1 to 5 words, 1 by default (`chunkSize` in [`src/components/settings-panel.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L156-L166) and [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L27)). With its `-m` switch, [speedread](https://github.com/pasky/speedread) joins two neighbouring words when each is 3 characters or fewer (`length($words[$i]) <= 3` in [`speedread`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L199-L207)).
 
+## Reader
+
+### Warm-up when a book starts
+
+- **What:** opening a book shows its whole title first. Tapping the frame then shows the first word for as long as a paragraph pause or longer, and the speed rises gradually from slower to the set speed. From the owner, reviewing #59.
+- **Others:** [Speeedy](https://github.com/sami-29/speeedy)'s speed ramp is off by default. Turned on, it moves the speed from the set speed to a target speed, 500 wpm by default, over the text's first 30 words (`rampWpm` and `RAMP_WORDS` in [`src/services/rsvp-engine.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746), defaults in [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L30-L31)).
+- **Open:** whether the ramp runs only when a book opens or after every pause; the starting speed and over how many words it rises.
+- **Suggestions:** the first word's time is already a timing value (the start factor, [SPEC.md feature 6](../SPEC.md#6-timing)), so a longer first word can be tried on the [tuning screen](../SPEC.md#11-tuning-screen) without new code. Chapter titles already show as words with the paragraph pause around them.
+
+### Title above the frame while paused
+
+- **What:** while paused, the book's title shows above the word frame, outside the reading area. A visual design choice, for when the visual style is decided ([SPEC.md, Open questions](../SPEC.md#open-questions)). From the owner, reviewing #59.
+
 ## Reading modes
 
 ### Paragraph pacer
@@ -61,5 +74,4 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Features other apps have
 
-- **What:** per-book speed, speed ramps and training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate idea.
-- **Others:** [Speeedy](https://github.com/sami-29/speeedy)'s speed ramp is off by default. Turned on, it moves the speed from the set speed to a target speed, 500 wpm by default, over the text's first 30 words (`rampWpm` and `RAMP_WORDS` in [`src/services/rsvp-engine.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746), defaults in [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L30-L31)).
+- **What:** per-book speed, training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate idea. Speed ramps: [Warm-up when a book starts](#warm-up-when-a-book-starts).
