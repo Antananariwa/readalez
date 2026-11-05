@@ -183,7 +183,7 @@ Checks:
 
 ### 7. Reader
 
-- **Controls.** Tap the word frame to play or pause. Buttons below it: back a sentence, forward a sentence, slower and faster (10 wpm each). On desktop, Space plays or pauses, ← and → move by a sentence, and ↑ and ↓ change the speed. Why: one big tap target suits a phone.
+- **Controls.** Tap the word frame to play or pause. Buttons below it: back a sentence, forward a sentence, slower and faster (10 wpm each). Back goes to the start of the sentence before the one on screen, even from mid-sentence, since play already starts at the current sentence's first word. On desktop, Space plays or pauses, ← and → move by a sentence, and ↑ and ↓ change the speed. Why: one big tap target suits a phone.
 - **Resume at the sentence start.** Pressing play after a pause, or opening a book, starts at the first word of the current sentence. Why: you re-enter with context, at the cost of a few seconds after short pauses.
 - **Paused view.** When paused, the current word stays in its frame, and the text around it appears below, scrollable through the chapter, with the current word marked. Tapping a word in the text moves the frame to that word, and play then starts exactly there. Why: it helps you recover a lost thread, and the later paragraph pacer can build on it.
 - **Navigation.** A chapter list, including the skipped front matter, the Notes and the publishing pages; tapping an entry jumps to its start. A draggable progress bar covers the reading flow, and letting go moves to the start of the nearest sentence. Time left shows for the chapter and the book.
