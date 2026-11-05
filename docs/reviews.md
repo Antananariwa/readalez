@@ -132,3 +132,20 @@ Second round, on the owner-feedback commit:
 2. `RepeatButton.tsx` said a long press opens a menu, with no source. **Fixed:** the comment now says this is not checked on devices.
 
 The reviewer also checked with a throwaway Playwright script: Enter on a button gives a click with `detail` 0, and a mouse click gives 1, in Chromium and WebKit. In Chromium, a touch tap steps only once. Touch taps in WebKit are not checked. It found no code problems.
+
+## #63 Collect each merged PR's review in docs/reviews.md (#62)
+
+Merged 2026-11-05, branch `issue-62-review-log`.
+
+`reviewer` subagent findings, and what I did.
+
+First round, on 4f981bb:
+1. **Fixed:** the workflow's `git push` to `main` would be rejected by `main`'s ruleset (PR rule, no bypass actors). Checked with `gh api .../rulesets/25832236`. The workflow now pushes to the `review-log` branch, after asking the owner.
+2. **Fixed:** `concurrency` cancels a pending run by default ([GitHub docs](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)), so a review could be dropped. Each run now adds every missing PR, so the next run catches up.
+3. **Fixed:** the push failed if `main` moved after checkout. Same catch-up; the push is now a force-push to `review-log`.
+4. **Fixed:** "PRs before #43 had no review" was untrue; several reported a review in their body. Reworded.
+5. **Fixed:** file names differed from the issue. The issue now names them, and What and why calls it out.
+
+Second round, on cdb5869:
+1. **Fixed:** with the `review-log` PR open, a bot push starts no CI, so the required `build (24.x)` check could block the merge. The reviewer says CI never runs; GitHub's [trigger-a-workflow](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow) page says such a `synchronize` run waits for approval. Neither checked here. The intro now gives both ways out: approve the run, or close and reopen the PR.
+2. **Fixed:** "some report a review elsewhere" had no source. The intro now names the 9 PRs the reviewer found (#3, #27, #29, #32, #34, #35, #37, #39, #41).
