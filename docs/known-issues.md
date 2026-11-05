@@ -58,13 +58,19 @@ Code: `src/core/paste.ts`. Tests: `src/core/paste.test.ts`. Added in #9.
 
 ## Reader
 
-Code: `src/ui/App.tsx`. Added in #8.
+Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`. Added in #8 and #10.
 
 ### The browser's Back leaves the app
 
 - **What happens:** the Add text screen and the reader are React state, not history entries. So the browser's Back button, or a swipe back, leaves Readalez instead of returning from the reader to Add text. The reader's own Back button works.
 - **Why it's left:** two screens with one way between them don't need a router, and the library (#12) reshapes the navigation.
 - **Suggestions:** push a history entry when the reader opens and close it on `popstate`, or a router once there are more screens.
+
+### Reading goes on for a while after swiping to the app switcher
+
+- **What happens:** in the installed app on the owner's iPhone, swiping up from the bottom while words played left reading running with the app off screen. It stopped late, hard to tell exactly when. Pausing first, then switching apps, left it paused on return. Seen once, testing #59.
+- **Why it's left:** reading does pause and never resumes on its own, as SPEC.md feature 7 asks. The owner chose to note it for later; it may also interact with notifications.
+- **Suggestions:** Possible cause: the page counts as visible while the app shows as a card in the switcher, and `visibilitychange` (`src/ui/Reader.tsx`) fires only once the app is fully in the background (not checked). Also pausing on the window's `blur` or `pagehide` event might stop it sooner (not checked), to be tried on the iPhone.
 
 ## Build and tests
 
