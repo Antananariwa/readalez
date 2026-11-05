@@ -120,14 +120,14 @@ function place(
 }
 
 /**
- * The word at a place in the paragraph's text, such as where a tap landed:
- * the first word ending at or after it, so a place right after a word's last
- * letter is that word. After the last word it's the last word; a paragraph
- * with no words gives null.
+ * The word at character `char` of the paragraph's text, such as the one a tap
+ * landed on: the word holding it, or the next word when it's a space between
+ * words. After the last word it's the last word; a paragraph with no words
+ * gives null.
  */
-export function wordAtOffset(
+export function wordAtCharacter(
   paragraph: ParagraphText,
-  offset: number,
+  char: number,
 ): number | null {
   const { ends, first } = paragraph;
   if (ends.length === 0) return null;
@@ -135,7 +135,7 @@ export function wordAtOffset(
   let high = ends.length - 1;
   while (low < high) {
     const mid = Math.floor((low + high) / 2);
-    if ((ends[mid] ?? 0) >= offset) high = mid;
+    if ((ends[mid] ?? 0) > char) high = mid;
     else low = mid + 1;
   }
   return first + low;

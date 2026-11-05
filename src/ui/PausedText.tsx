@@ -4,11 +4,12 @@
 // A pasted novel is one chapter of up to about 200,000 words (#11), so each
 // paragraph is one plain text node, and only the current word's paragraph is
 // split around a <mark>. A tap is turned into a place in the text with the
-// browser's caret-from-point API (see `caretAt`), and src/core/chapterText.ts
-// turns that place into a word.
+// browser's caret-from-point API (see `caretAt`), then into the character
+// under the point (see `characterAt`), and src/core/chapterText.ts turns that
+// character into a word.
 
 import { memo, useLayoutEffect, useRef, type MouseEvent } from "react";
-import { wordAtOffset, type ParagraphText } from "../core/chapterText.ts";
+import { wordAtCharacter, type ParagraphText } from "../core/chapterText.ts";
 
 interface Props {
   /** The paragraphs of the current word's chapter. */
@@ -52,8 +53,8 @@ export default function PausedText({
     if (!text) return;
     const range = document.createRange();
     range.setStart(p, 0);
-    range.setEnd(caret.node, caret.offset);
-    const word = wordAtOffset(text, range.toString().length);
+    range.setEnd(caret.node, characterAt(caret, event.clientX, event.clientY));
+    const word = wordAtCharacter(text, range.toString().length);
     if (word !== null) onTap(word);
   };
 
@@ -115,6 +116,30 @@ const Paragraph = memo(
     a.mark?.start === b.mark?.start &&
     a.mark?.end === b.mark?.end,
 );
+
+/**
+ * The offset of the character under a point, from the caret nearest it. The
+ * caret sits between two characters: the point is on the one after it when
+ * that character's box holds the point, and otherwise on the one before.
+ * Where words touch ("yes—no"), the caret alone can't tell them apart.
+ */
+function characterAt(
+  caret: { node: Node; offset: number },
+  x: number,
+  y: number,
+): number {
+  const { node, offset } = caret;
+  if (!(node instanceof Text) || offset >= node.length) {
+    return Math.max(offset - 1, 0);
+  }
+  const range = document.createRange();
+  range.setStart(node, offset);
+  range.setEnd(node, offset + 1);
+  const box = range.getBoundingClientRect();
+  const inside =
+    x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
+  return inside ? offset : Math.max(offset - 1, 0);
+}
 
 /**
  * The text node and offset under a point. MDN's compatibility data lists

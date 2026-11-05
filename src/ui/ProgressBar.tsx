@@ -18,16 +18,35 @@ export default function ProgressBar({ index, count, onSeek }: Props) {
   const [dragged, setDragged] = useState<number | null>(null);
 
   // React's onChange fires on every move (the input event); the native change
-  // event fires when the bar is let go.
+  // event fires when the bar is let go, but only if its value changed. A drag
+  // let go where it started (#11's review) fires none, so letting go there
+  // just hands the bar back to the word.
   useEffect(() => {
     const el = input.current;
     if (!el) return;
+    let start: string | null = null;
     const onChange = () => {
+      start = null;
       setDragged(null);
       onSeek(Number(el.value));
     };
+    const onDown = () => {
+      start = el.value;
+    };
+    const onUp = () => {
+      if (start !== null && el.value === start) setDragged(null);
+      start = null;
+    };
     el.addEventListener("change", onChange);
-    return () => el.removeEventListener("change", onChange);
+    el.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      el.removeEventListener("change", onChange);
+      el.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
   }, [onSeek]);
 
   const value = dragged ?? index;

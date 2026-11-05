@@ -308,3 +308,64 @@ test.describe("with a novel's worth of text", () => {
     await expect(frameWord(page)).toHaveText(wordText(text.words[target]!));
   });
 });
+
+test("the bar follows the word again after a drag let go where it started", async ({
+  page,
+}) => {
+  await openReader(page, sentences);
+  const bar = page.getByLabel("Progress");
+  const box = (await bar.boundingBox())!;
+  const y = box.y + box.height / 2;
+  // From the thumb at 0 to the middle and back before letting go: the value
+  // ends where it started, so the browser fires no change event.
+  await page.mouse.move(box.x + 8, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, y, { steps: 5 });
+  await page.mouse.move(box.x + 8, y, { steps: 5 });
+  await page.mouse.up();
+  await expect(bar).toHaveValue("0");
+
+  await page.getByRole("button", { name: "Next sentence" }).click();
+  await expect(frameWord(page)).toHaveText("Four");
+  await expect(bar).toHaveValue("3");
+});
+
+test("tapping the start of a word right after a dash picks that word", async ({
+  page,
+}) => {
+  const text = "Alpha beta yes—nothing more here.";
+  await openReader(page, text);
+  const point = await page.evaluate(() => {
+    const p = document.querySelector("[data-testid=paused-text] p")!;
+    const node = [...p.childNodes].find((n) =>
+      n.textContent!.includes("nothing"),
+    )!;
+    const range = document.createRange();
+    const at = node.textContent!.indexOf("nothing");
+    range.setStart(node, at);
+    range.setEnd(node, at + 1);
+    const box = range.getBoundingClientRect();
+    return { x: box.left + 1, y: box.top + box.height / 2 };
+  });
+  await page.mouse.click(point.x, point.y);
+  await expect(frameWord(page)).toHaveText("nothing");
+});
+
+test.describe("without caretPositionFromPoint, as in Safari before 26.2", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      delete (Document.prototype as Partial<Document>).caretPositionFromPoint;
+    });
+  });
+
+  test("a tapped word still moves the frame", async ({ page }) => {
+    const text = read(threeParagraphs);
+    await openReader(page, threeParagraphs);
+    expect(
+      await page.evaluate(() => "caretPositionFromPoint" in document),
+    ).toBe(false);
+    const target = text.words.findIndex((w) => w.paragraph === 2) + 4;
+    await tapWord(page, text, target);
+    await expect(frameWord(page)).toHaveText(wordText(text.words[target]!));
+  });
+});

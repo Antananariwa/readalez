@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   chapterTexts,
   paragraphText,
-  wordAtOffset,
+  wordAtCharacter,
   wordCount,
   type ParagraphText,
 } from "./chapterText.ts";
@@ -141,26 +141,34 @@ describe("chapterTexts", () => {
   });
 });
 
-describe("wordAtOffset", () => {
+describe("wordAtCharacter", () => {
   const sections = prose("Ab cd, ef.", "Gh");
   const texts = chapterTexts(sections, splitText(sections))[0]!;
   const first: ParagraphText = texts[0]!;
 
-  it("gives the word at a place, a word's end included", () => {
+  it("gives the word holding a character, or the next after a space", () => {
     // "Ab cd, ef.": Ab 0–2, cd, 3–6, ef. 7–10.
-    expect([0, 1, 2].map((o) => wordAtOffset(first, o))).toEqual([0, 0, 0]);
-    expect([3, 5, 6].map((o) => wordAtOffset(first, o))).toEqual([1, 1, 1]);
-    expect([7, 10].map((o) => wordAtOffset(first, o))).toEqual([2, 2]);
+    expect([0, 1].map((c) => wordAtCharacter(first, c))).toEqual([0, 0]);
+    expect([2, 3, 5].map((c) => wordAtCharacter(first, c))).toEqual([1, 1, 1]);
+    expect([6, 7, 9].map((c) => wordAtCharacter(first, c))).toEqual([2, 2, 2]);
+  });
+
+  it("tells apart words split at a dash", () => {
+    const dashed = prose("yes—no");
+    const text = chapterTexts(dashed, splitText(dashed))[0]![0]!;
+    // "yes—" 0–4, "no" 4–6.
+    expect(wordAtCharacter(text, 3)).toBe(0);
+    expect(wordAtCharacter(text, 4)).toBe(1);
   });
 
   it("gives the last word after it, counting from the whole text", () => {
-    expect(wordAtOffset(first, 99)).toBe(2);
-    expect(wordAtOffset(texts[1]!, 0)).toBe(3);
+    expect(wordAtCharacter(first, 99)).toBe(2);
+    expect(wordAtCharacter(texts[1]!, 0)).toBe(3);
   });
 
   it("gives null for a paragraph with no words", () => {
     const empty = chapterTexts(prose("* * *"), [])[0]![0]!;
-    expect(wordAtOffset(empty, 0)).toBeNull();
+    expect(wordAtCharacter(empty, 0)).toBeNull();
   });
 });
 
