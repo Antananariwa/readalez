@@ -149,3 +149,13 @@ First round, on 4f981bb:
 Second round, on cdb5869:
 1. **Fixed:** with the `review-log` PR open, a bot push starts no CI, so the required `build (24.x)` check could block the merge. The reviewer says CI never runs; GitHub's [trigger-a-workflow](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow) page says such a `synchronize` run waits for approval. Neither checked here. The intro now gives both ways out: approve the run, or close and reopen the PR.
 2. **Fixed:** "some report a review elsewhere" had no source. The intro now names the 9 PRs the reviewer found (#3, #27, #29, #32, #34, #35, #37, #39, #41).
+
+## #66 Have the review-log workflow open its PR (#65)
+
+Merged 2026-11-05, branch `issue-65-review-log-pr`.
+
+`reviewer` subagent: no bugs, nothing outside #65. One finding:
+
+1. **Fixed:** criterion 1 can't be seen while #64 is open, because the workflow would update #64 instead of opening a PR. Owner steps now say to merge #64 first, and list the settings switch next to the file commit.
+
+It also read GitHub's trigger-a-workflow page and found it supports the intro's sentence on approval. No change: the sentence still says "not checked here", since nothing has run in this repo yet.
