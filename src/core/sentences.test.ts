@@ -9,6 +9,7 @@ import { timeWords, wordDuration } from "./durations.ts";
 import {
   abbreviation,
   endsSentence,
+  nearestSentenceStart,
   nextSentenceStart,
   previousSentenceStart,
   punctuation,
@@ -313,5 +314,17 @@ describe("sentence starts", () => {
     expect(previousSentenceStart(starts, at("Door"))).toBeNull();
     expect(nextSentenceStart(starts, at("lovable."))).toBeNull();
     expect(sentenceStarts([])).toEqual([]);
+  });
+
+  it("finds the nearest sentence start, the earlier one on a tie", () => {
+    // Starts: Story (0), Mr. (4), He (11), Yet (14).
+    expect(nearestSentenceStart(starts, at("lawyer"))).toBe(at("Mr."));
+    expect(nearestSentenceStart(starts, at("lawyer") + 1)).toBe(at("He"));
+    expect(nearestSentenceStart(starts, at("Mr."))).toBe(at("Mr."));
+    // "the" (2) is two words from Story and from Mr.
+    expect(nearestSentenceStart(starts, 2)).toBe(at("Story"));
+    expect(nearestSentenceStart(starts, at("lovable."))).toBe(at("Yet"));
+    expect(nearestSentenceStart(starts, all.length + 5)).toBe(at("Yet"));
+    expect(nearestSentenceStart([], 3)).toBe(0);
   });
 });

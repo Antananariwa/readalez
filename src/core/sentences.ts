@@ -201,3 +201,18 @@ export function nextSentenceStart(
 ): number | null {
   return starts[sentenceAt(starts, index) + 1] ?? null;
 }
+
+/**
+ * The sentence start nearest to word `index`, counted in words, where the
+ * progress bar lets go (SPEC.md feature 7). A tie goes to the earlier start,
+ * so the sentence the word is in wins.
+ */
+export function nearestSentenceStart(
+  starts: readonly number[],
+  index: number,
+): number {
+  const at = sentenceAt(starts, index);
+  const before = starts[at] ?? 0;
+  const after = starts[at + 1];
+  return after !== undefined && after - index < index - before ? after : before;
+}

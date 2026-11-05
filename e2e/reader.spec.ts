@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openReader, stopwatch } from "./helpers.ts";
 import { timeWords, wordDuration } from "../src/core/durations.ts";
 import { storyOfTheDoor } from "../src/core/fixtures/storyOfTheDoor.ts";
 import { parsePaste } from "../src/core/paste.ts";
@@ -14,27 +15,6 @@ const threeParagraphs = storyOfTheDoor.paragraphs
   .slice(5, 8)
   .map((p) => (p.kind === "verse" ? p.lines.join("\n") : p.text))
   .join("\n\n");
-
-/**
- * Moves the paused clock on to `at` ms after it was made, so a test can
- * check what shows at times counted from the tap that started playing.
- */
-function stopwatch(page: Page): (at: number) => Promise<void> {
-  let now = 0;
-  return async (at) => {
-    await page.clock.runFor(at - now);
-    now = at;
-  };
-}
-
-/** Opens the reader on `text` with the page's clock paused. */
-async function openReader(page: Page, text: string): Promise<void> {
-  await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
-  await page.goto("/");
-  await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
-  await page.getByLabel("Paste text").fill(text);
-  await page.getByRole("button", { name: "Save" }).click();
-}
 
 interface Measures {
   focus: number;
@@ -164,17 +144,13 @@ for (const colorScheme of ["light", "dark"] as const) {
       expect(sentenceEnd).toBeGreaterThan(durations[1]!);
       expect(paragraphEnd).toBeGreaterThan(sentenceEnd!);
 
-      // Reading stops on the last word. Until the Finished card (#11), a tap
-      // starts again from the first word, and tapping again pauses there.
-      await advanceTo(start + 100);
+      // Reading stops after the last word, on the Finished card (#11).
+      await advanceTo(start - 30);
       await expect(word).toHaveText(wordText(timing.words.at(-1)!));
-      await page.getByRole("button", { name: "Play" }).click();
-      await expect(word).toHaveText(wordText(timing.words[0]!));
-      await page.clock.runFor(wordDuration(timing, 0, DEFAULT_WPM, true) + 100);
-      await expect(word).toHaveText(wordText(timing.words[1]!));
-      await page.getByRole("button", { name: "Pause" }).click();
-      await page.clock.runFor(5000);
-      await expect(word).toHaveText(wordText(timing.words[1]!));
+      await advanceTo(start + 100);
+      await expect(
+        page.getByRole("heading", { name: "Finished" }),
+      ).toBeVisible();
     });
   });
 }

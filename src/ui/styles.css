@@ -79,11 +79,13 @@ button {
   align-self: flex-start;
 }
 
+/* One screen high, so the paused text scrolls inside its pane. When the
+   screen is too short (a phone in landscape), the page scrolls instead. */
 .reader {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
 }
 
 .back {
@@ -219,4 +221,75 @@ button {
   text-align: center;
   font-variant-numeric: tabular-nums;
   color: var(--muted);
+}
+
+/* The progress bar and time left, under the controls. */
+.progress-row {
+  margin-top: 1.5rem;
+}
+
+.progress {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--highlight);
+}
+
+.time-left {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* The paused view: the chapter's text, filling the rest of the screen. */
+.paused-text {
+  flex: 1 1 0;
+  min-height: 10rem;
+  margin-top: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--line);
+  line-height: 1.5;
+}
+
+.paused-text p {
+  margin: 0.75rem 0;
+  cursor: pointer;
+}
+
+.paused-text .heading {
+  font-weight: bold;
+}
+
+.paused-text .verse {
+  white-space: pre-line;
+}
+
+.paused-text mark {
+  color: var(--background);
+  background: var(--highlight);
+}
+
+/* The Finished card. */
+.finished {
+  margin: 25vh auto 0;
+  text-align: center;
+}
+
+.finished-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.finished-actions button {
+  min-height: 44px;
+  padding: 0 1rem;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
