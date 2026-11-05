@@ -47,7 +47,7 @@ export default function RepeatButton({ label, onStep, children }: Props) {
       onPointerUp={stop}
       onPointerLeave={stop}
       onPointerCancel={stop}
-      // A long press on a phone would otherwise open a menu.
+      // Meant to stop the menu a long press may open (not checked on devices).
       onContextMenu={(event) => event.preventDefault()}
       onClick={(event) => {
         // A pointer press has already stepped; Enter on a focused button
