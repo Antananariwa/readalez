@@ -36,6 +36,8 @@ A paste box on the Add text screen. Saving adds the text to the library and open
 - **Paragraphs.** Blank lines separate paragraphs. If the text is hard-wrapped (most lines break mid-sentence at similar lengths, as in Gutenberg's plain-text files), single line breaks are joined with spaces; otherwise each line is its own paragraph. Why: text copied from Safari's Reader view has one paragraph per line, Gutenberg's wraps about every 70 characters, and both should read as written.
 - **Gutenberg license text.** If the text contains Gutenberg's `*** START OF` and `*** END OF` lines, only the part between them is kept. Why: reading starts at the first real word, as with EPUBs.
 - **Title.** The first line of the text kept (so not Gutenberg's header), cut at a word boundary to at most 60 characters. It can be edited before saving and later in the library; a title left blank saves as the first line. Why: the title should name what you read, and a text always needs one for the library.
+- **Author.** A pasted text's author is "Unknown author", the fallback EPUBs use (feature 2). Why: one rule for every book, with no extra field to fill in (the owner's choice, #12).
+- **Same text twice.** Saving a text already in the library opens the copy you have, with its title and progress, as for EPUBs (feature 2). Texts match by their words (ADR 0007). Why: one book, one entry (the owner's choice, #12).
 - **No chapters.** Pasted text is one section. Why: books come in as EPUB; guessing chapters from plain text returns with TXT import, after v1.
 - **No verse.** Pasted text carries no verse markup, so a pasted poem follows the paragraph rules above; verse pauses (feature 6) come from EPUBs.
 
@@ -46,7 +48,7 @@ Checks:
 - Unit: the title is the first line, cut at a word boundary to 60 characters.
 - E2E: after pasting and saving, the reader opens at the first word, and the library lists the text under its title.
 - Device: an article copied from Safari's Reader view on iPhone reads paragraph by paragraph.
-- Device: a novel's worth of text (about 1 MB) pastes and saves on iPhone in under 3 seconds.
+- Device: a novel's worth of text (about 1 MB) pastes and saves on iPhone without freezing or crashing. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 
 ### 2. Import EPUB files
 
@@ -72,7 +74,7 @@ Checks:
 - Unit: soft hyphens and zero-width characters are gone, and each verse line ends with a line-break pause.
 - E2E: importing a fixture adds it with the title and author from its metadata and opens it at the first chapter; importing it again opens the same copy, with no duplicate.
 - Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app opens at chapter 1.
-- Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone in under 10 seconds, showing progress, and the app stays responsive.
+- Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone, showing progress, and the app stays responsive. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 
 ### 3. Built-in books
 
@@ -96,7 +98,7 @@ Checks:
 - E2E: a fresh install lists the three books, and each opens where its text starts: the opening poem of _Alice_, Dickens's preface to _A Christmas Carol_ and chapter 1 of _Jekyll and Hyde_.
 - E2E: built-in books can't be deleted; after Delete all data they're still listed, at 0%.
 - E2E: after the first visit, with the network off, a built-in book opens and plays.
-- Unit: the three shipped EPUBs contain no images and total at most 400 KB.
+- Unit: the three shipped EPUBs contain no images. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 
 ### 4. Library
 

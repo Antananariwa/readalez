@@ -8,6 +8,7 @@ import {
 import { splitText, wordText } from "../src/core/text.ts";
 import { DEFAULT_WPM } from "../src/core/timingValues.ts";
 import { splitWords } from "../src/core/words.ts";
+import { goToAddText } from "./helpers.ts";
 
 // The Add text screen (issue #9, SPEC.md feature 1): the suggested title,
 // editing it, and saving into the reader.
@@ -15,7 +16,7 @@ import { splitWords } from "../src/core/words.ts";
 test("suggests a title, lets it be edited, and saves into the reader", async ({
   page,
 }) => {
-  await page.goto("/");
+  await goToAddText(page);
   const title = page.getByLabel("Title");
   await page
     .getByLabel("Paste text")
@@ -33,7 +34,7 @@ test("suggests a title, lets it be edited, and saves into the reader", async ({
 test("a Gutenberg chapter opens at its first word, not in the license", async ({
   page,
 }) => {
-  await page.goto("/");
+  await goToAddText(page);
   await page.getByLabel("Paste text").fill(gutenbergChapter);
   await expect(page.getByLabel("Title")).toHaveValue("Story of the Door");
   await page.getByRole("button", { name: "Save" }).click();
@@ -62,6 +63,7 @@ test("a Gutenberg chapter pauses at paragraph ends only, not at line wraps", asy
   await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
   await page.goto("/");
   await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
+  await page.getByRole("button", { name: "Add text" }).click();
   await page.getByLabel("Paste text").fill(gutenbergChapter);
   await page.getByRole("button", { name: "Save" }).click();
   await page.getByRole("button", { name: "Play" }).click();

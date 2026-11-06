@@ -244,7 +244,9 @@ test("the last word leads to the Finished card; Start over and Back to library",
   await page.getByRole("button", { name: "Play" }).click();
   await page.clock.runFor(10_000);
   await page.getByRole("button", { name: "Back to library" }).click();
-  await expect(page.getByLabel("Paste text")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Readalez" }),
+  ).toBeVisible();
 });
 
 test("the issue's run: pause, tap a word two paragraphs on, drag to the end, finish", async ({

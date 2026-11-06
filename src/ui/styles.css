@@ -9,6 +9,7 @@
   --muted: #6b7280;
   --line: #9ca3af;
   --highlight: #c8102e;
+  --hover: #f3f4f6;
   --word-size: 2.25rem;
   /* Where the focus letter sits: left of centre, as in Spritz-style readers,
      since most of a word lies right of its focus letter (SPEC.md feature 5). */
@@ -30,6 +31,7 @@
     --muted: #9ca3af;
     --line: #6b7280;
     --highlight: #ff6b6b;
+    --hover: #262626;
   }
 }
 
@@ -79,6 +81,111 @@ button {
   align-self: flex-start;
 }
 
+.library .add {
+  padding: 0.5rem 1rem;
+}
+
+.books {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.books li {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--line);
+}
+
+.books li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.book {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.75rem 0;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.book-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.book-author,
+.book-opened {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.options {
+  /* The same 44px minimum as the reader's buttons. */
+  min-width: 44px;
+  color: inherit;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.book-dialog {
+  box-sizing: border-box;
+  width: min(24rem, calc(100vw - 2rem));
+  color: inherit;
+  background: var(--background);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+}
+
+.book-dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+.book-dialog h2 {
+  margin-top: 0;
+  font-size: 1.125rem;
+  overflow-wrap: anywhere;
+}
+
+.book-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.book-dialog input {
+  box-sizing: border-box;
+  width: 100%;
+  /* At least 16px, as for the textarea. */
+  font: inherit;
+  font-size: 1rem;
+  color: inherit;
+  background: transparent;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.book-dialog .danger {
+  color: var(--highlight);
+}
+
+.book-dialog form > .danger {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
 /* One screen high, so the paused text scrolls inside its pane. When the
    screen is too short (a phone in landscape), the page scrolls instead. */
 .reader {
@@ -93,6 +200,21 @@ button {
   background: none;
   border: none;
   padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+/* Borderless buttons show they can be pressed on hover (owner's feedback on
+   #72). Limited to devices that report hover, meant to keep a tap on a touch
+   screen from leaving the hover style behind (not checked). */
+@media (hover: hover) {
+  .back:hover,
+  .book:hover .book-title {
+    text-decoration: underline;
+  }
+
+  .options:hover {
+    background: var(--hover);
+  }
 }
 
 /* The word frame: one big tap target. */
