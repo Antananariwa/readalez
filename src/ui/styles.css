@@ -121,6 +121,7 @@ button {
 }
 
 .book-author,
+.book-progress,
 .book-opened {
   color: var(--muted);
   font-size: 0.875rem;

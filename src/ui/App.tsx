@@ -2,6 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { bookId } from "../core/bookId.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
 import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import {
+  findPosition,
+  progressTable,
+  readingState,
+  type ProgressTable,
+} from "../core/position.ts";
 import { splitText, type Section } from "../core/text.ts";
 import AddText from "./AddText.tsx";
 import Library from "./Library.tsx";
@@ -13,12 +19,21 @@ import {
   listBooks,
   markOpened,
   renameBook,
+  saveReading,
 } from "./storage.ts";
 
 type Screen =
   | { name: "library" }
   | { name: "addText" }
-  | { name: "reader"; sections: Section[]; timing: Timing };
+  | {
+      name: "reader";
+      id: string;
+      sections: Section[];
+      timing: Timing;
+      table: ProgressTable;
+      start: number;
+      startFinished: boolean;
+    };
 
 /**
  * Three screens in React state, with no router: the library (home), Add text
@@ -40,13 +55,23 @@ export default function App() {
   }, []);
   useEffect(reload, [reload]);
 
+  /** Opens `book` where its reading stopped (SPEC.md feature 4). */
   const read = async (
-    id: string,
+    book: BookInfo,
     sections: Section[],
     timing = timeWords(splitText(sections)),
   ) => {
-    await markOpened(id, Date.now());
-    setScreen({ name: "reader", sections, timing });
+    await markOpened(book.id, Date.now());
+    const saved = book.reading;
+    setScreen({
+      name: "reader",
+      id: book.id,
+      sections,
+      timing,
+      table: progressTable(timing),
+      start: saved ? findPosition(timing.words, saved.position) : 0,
+      startFinished: saved?.finished ?? false,
+    });
   };
 
   const back = () => {
@@ -55,8 +80,18 @@ export default function App() {
   };
 
   if (screen.name === "reader") {
+    const { id, timing, table } = screen;
     return (
-      <Reader sections={screen.sections} timing={screen.timing} onBack={back} />
+      <Reader
+        sections={screen.sections}
+        timing={timing}
+        start={screen.start}
+        startFinished={screen.startFinished}
+        onSave={(index, finished) =>
+          saveReading(id, readingState(timing, table, index, finished))
+        }
+        onBack={back}
+      />
     );
   }
   if (screen.name === "addText") {
@@ -71,12 +106,14 @@ export default function App() {
             title,
             author: UNKNOWN_AUTHOR,
             addedAt: Date.now(),
+            // So the library shows 0% and the whole time left at once.
+            reading: readingState(timing, progressTable(timing), 0, false),
           };
           const book = await addBook(added, sections);
           if (book === added) {
-            await read(book.id, sections, timing);
+            await read(book, sections, timing);
           } else {
-            await read(book.id, (await getText(book.id)) ?? sections);
+            await read(book, (await getText(book.id)) ?? sections);
           }
         }}
       />
@@ -89,7 +126,7 @@ export default function App() {
       onAdd={() => setScreen({ name: "addText" })}
       onOpen={(book) => {
         getText(book.id)
-          .then((sections) => (sections ? read(book.id, sections) : reload()))
+          .then((sections) => (sections ? read(book, sections) : reload()))
           .catch(() => setFailed(true));
       }}
       onRename={(book, title) => {

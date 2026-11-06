@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { APP_NAME } from "../core/appName.ts";
 import { libraryOrder, type BookInfo } from "../core/library.ts";
+import {
+  bookTimeLeft,
+  progressPercent,
+  type Reading,
+} from "../core/position.ts";
+import { formatDuration } from "../core/timeLeft.ts";
+import { DEFAULT_WPM } from "../core/timingValues.ts";
 
 interface Props {
   /** Null while the library is loading. */
@@ -17,7 +24,8 @@ const date = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
 /**
  * The library (SPEC.md feature 4), the home screen: every text with its
- * title, author and when it was last opened, most recently opened first.
+ * title, author, progress, time left and when it was last opened, most
+ * recently opened first.
  * Each text's options button opens a dialog to rename or delete it.
  */
 export default function Library({
@@ -49,6 +57,7 @@ export default function Library({
               >
                 <span className="book-title">{book.title}</span>
                 <span className="book-author">{book.author}</span>
+                {book.reading && <Progress reading={book.reading} />}
                 <span className="book-opened">
                   {book.openedAt === undefined
                     ? "Not opened yet"
@@ -82,6 +91,32 @@ export default function Library({
         />
       )}
     </main>
+  );
+}
+
+/**
+ * "Finished", or the progress and the time left. Time left is at the default
+ * speed until the speed is stored (#18).
+ */
+function Progress({ reading }: { reading: Reading }) {
+  if (reading.finished) {
+    return (
+      <span className="book-progress" data-testid="book-progress">
+        Finished
+      </span>
+    );
+  }
+  return (
+    <span className="book-progress">
+      <span data-testid="book-progress">
+        {progressPercent(reading.progress)}%
+      </span>{" "}
+      ·{" "}
+      <span data-testid="book-left">
+        {formatDuration(bookTimeLeft(reading.left, DEFAULT_WPM))}
+      </span>{" "}
+      left
+    </span>
   );
 }
 

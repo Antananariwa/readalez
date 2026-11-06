@@ -124,10 +124,34 @@ Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Added in #40.
 
 ## Library
 
-Code: `src/ui/storage.ts`, `src/ui/Library.tsx`. Tests: `e2e/library.spec.ts`. Added in #12.
+Code: `src/ui/storage.ts`, `src/ui/Library.tsx`, `src/core/position.ts`. Tests: `e2e/library.spec.ts`, `e2e/positions.spec.ts`. Added in #12 and #13.
 
 ### A rename made just before a reload can be lost
 
 - **What happens:** the rename dialog closes as soon as Save is tapped, and the change is written to IndexedDB after that. In `e2e/library.spec.ts`, reloading the page right after the dialog closed showed the old title in 3 of 3 Chromium runs, while waiting for the list to show the new title first kept it (#12's PR). Deleting works the same way.
 - **Why it's left:** the list shows the new title only once it's stored, so what's on screen is what's saved. How long the write takes is unknown; a person closing the app in that moment seems unlikely (not checked).
 - **Suggestions:** keep the dialog open, with its buttons disabled, until the write has committed.
+
+### Time left in the library is at 300 wpm, whatever speed you read at
+
+- **What happens:** the library shows each book's time left at the default speed, 300 wpm (`src/ui/Library.tsx`). The reader's speed starts at 300 wpm each time a book opens and isn't stored (`src/ui/usePlayback.ts`).
+- **Why it's left:** SPEC.md feature 4 asks for time left at the current speed, and the speed is stored with the settings in #18.
+- **Suggestions:** once #18 stores the speed, pass it to the library.
+
+### Books added before #13 show no progress until opened
+
+- **What happens:** a book stored before #13 has no saved reading (ADR 0008), so its library row shows no progress or time left (`src/ui/Library.tsx`) until it's opened; opening saves the position at once (`src/ui/useSavePosition.ts`). `e2e/library.spec.ts` checks the row without them.
+- **Why it's left:** working the figures out means splitting the book's text, which the library avoids (ADR 0007), and only books added between #12 and #13 are affected.
+- **Suggestions:** work them out once for such books in the background after the library shows.
+
+### Progress in the library can be out of date after an update
+
+- **What happens:** a book's progress and time left in the library are worked out when its position is saved (ADR 0008). After an update that changes how words are split or timed, the library shows the old figures until the book is opened again. The position itself lands in the same paragraph (`src/core/position.test.ts`).
+- **Why it's left:** working them out for every book on each visit to the library means splitting every text again, which took 1.3 s for 1 MB in Node (ADR 0007).
+- **Suggestions:** store the version of the splitting rules with the figures, and work out the stale ones in the background after an update.
+
+### A failed save of the reading position shows nothing
+
+- **What happens:** if IndexedDB refuses a write, the position isn't saved and the reader shows no message (`src/ui/useSavePosition.ts`); the error reaches only the browser console. The next save tries again. Not seen yet; found while writing #13.
+- **Why it's left:** what a reader should do about a failed save is unknown, and a full device is the likeliest cause (not checked).
+- **Suggestions:** show a message once in the library if saves keep failing.
