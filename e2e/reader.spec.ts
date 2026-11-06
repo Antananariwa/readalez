@@ -184,7 +184,7 @@ test.describe("in a narrow viewport", () => {
 });
 
 // The reader controls (issue #10, SPEC.md feature 7): moving by a sentence,
-// the speed, desktop keys, resuming at the sentence start, pausing when the
+// the speed, desktop keys, resuming where you left off, pausing when the
 // page is hidden, and the screen wake lock.
 test.describe("controls", () => {
   const sentences = "One two three. Four five six. Seven eight nine. Ten.";
