@@ -4,11 +4,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 
-/**
- * How often the position is saved while words play. SPEC.md feature 4 asks
- * that a reopened book be at most 5 seconds of reading behind; 2 seconds
- * leaves room for a write still in flight and a late timer.
- */
+/** How often the position is saved while words play; why: SPEC.md feature 4. */
 export const SAVE_EVERY_MS = 2000;
 
 /**

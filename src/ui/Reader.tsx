@@ -27,7 +27,7 @@ interface Props {
   startFinished: boolean;
   /** Stores the word on screen, or the Finished card; see `useSavePosition`. */
   onSave: (index: number, finished: boolean) => Promise<void>;
-  /** Called once the position is saved. */
+  /** Called once the save of the position has finished or failed. */
   onBack: () => void;
 }
 

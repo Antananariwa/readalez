@@ -138,6 +138,12 @@ Code: `src/ui/storage.ts`, `src/ui/Library.tsx`, `src/core/position.ts`. Tests: 
 - **Why it's left:** SPEC.md feature 4 asks for time left at the current speed, and the speed is stored with the settings in #18.
 - **Suggestions:** once #18 stores the speed, pass it to the library.
 
+### Books added before #13 show no progress until opened
+
+- **What happens:** a book stored before #13 has no saved reading (ADR 0008), so its library row shows no progress or time left (`src/ui/Library.tsx`) until it's opened; opening saves the position at once (`src/ui/useSavePosition.ts`). `e2e/library.spec.ts` checks the row without them.
+- **Why it's left:** working the figures out means splitting the book's text, which the library avoids (ADR 0007), and only books added between #12 and #13 are affected.
+- **Suggestions:** work them out once for such books in the background after the library shows.
+
 ### Progress in the library can be out of date after an update
 
 - **What happens:** a book's progress and time left in the library are worked out when its position is saved (ADR 0008). After an update that changes how words are split or timed, the library shows the old figures until the book is opened again. The position itself lands in the same paragraph (`src/core/position.test.ts`).
