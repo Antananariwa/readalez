@@ -159,3 +159,42 @@ Merged 2026-11-05, branch `issue-65-review-log-pr`.
 1. **Fixed:** criterion 1 can't be seen while #64 is open, because the workflow would update #64 instead of opening a PR. Owner steps now say to merge #64 first, and list the settings switch next to the file commit.
 
 It also read GitHub's trigger-a-workflow page and found it supports the intro's sentence on approval. No change: the sentence still says "not checked here", since nothing has run in this repo yet.
+
+## #68 Add the paused view, progress bar, time left and Finished card (#11)
+
+Merged 2026-11-06, branch `issue-11-paused-view`.
+
+The `reviewer` subagent made three findings. I checked each one and fixed all three:
+
+1. **The progress bar stopped following the word after a drag let go where it started** (`src/ui/ProgressBar.tsx`). The browser fires no `change` event then, so the dragged value stayed in place. Reproduced in both engines with a new failing test ("the bar follows the word again after a drag let go where it started"). Fixed: the bar records its value on `pointerdown`, and letting go at that same value hands the bar back to the word.
+2. **A tap on the left part of a word's first letter, right after a dash, picked the word before** ("yes—nothing"). Reproduced in both engines with a new failing test ("tapping the start of a word right after a dash picks that word"). Fixed: the UI now works out the character under the point from the caret and the box of the character after it (`characterAt`), and core's `wordAtOffset` became `wordAtCharacter`.
+   - Still left, from reading the code: a tap on the left edge of the marked word itself, right after a dash, can still pick the word before. The owner chose to leave it, and it's recorded in `docs/known-issues.md`.
+3. **SPEC.md pointed to "the timing check below", which is in feature 6, above.** Fixed: it now links to feature 6.
+
+Also added: a test of taps with `caretPositionFromPoint` removed ("without caretPositionFromPoint, as in Safari before 26.2"). Playwright's Chromium and WebKit both have both APIs, so the `caretRangeFromPoint` fallback that iOS 18.4 uses wasn't tested before.
+
+**Second review**, after the owner's review changes (resume at the word on screen, Back, hidden time left, word count). No correctness bugs found. Four findings, all checked and fixed:
+
+1. SPEC.md feature 7 said "as it does in some other readers" with no link. It now links the roadmap entry that cites them.
+2. The same fact about rsvp-speed-reader's second tap was in both `docs/known-issues.md` and `docs/roadmap.md`. Kept only in the roadmap.
+3. The roadmap entry used "Other apps" where the file's entry shape says "Others". Renamed.
+4. SPEC's check says ← from mid-sentence goes to that sentence's start, but no test pressed ← from mid-sentence. Added to "buttons and arrow keys move by a sentence and change the speed" (`e2e/reader.spec.ts`).
+
+Also noted: `sentenceStart` (`src/core/sentences.ts`) had no caller left after the resume change. Removed, with its test lines.
+
+After the fixes: `npm run check` gives 286 passed; `npm run e2e` gives 68 passed (1.1m).
+
+## #72 Keep texts in a library on the device (#12)
+
+Merged 2026-11-06, branch `issue-12-library`.
+
+The `reviewer` subagent found no bugs and nothing outside the issue's scope. It made four findings about the Writing docs rules, and I fixed all four in 6a5e018:
+
+1. ADR 0007 stated facts about localStorage and IndexedDB with no link. I reworded them and marked them as not checked: the firewall blocks web pages (#71).
+2. `styles.css` claimed Apple's 44-point tap target with no link. The comment now points to the reader's existing 44px buttons, and the value is `44px` like theirs.
+3. `styles.css` copied the comment on the textarea's 16px font size. It now says "as for the textarea", as the existing input rule does.
+4. `bookId.test.ts` claimed which values FIPS 180-4 is "usually checked with", with no source. I removed it. The expected values are attributed to Node's `crypto.createHash`.
+
+Second run, on the whole branch after the owner's feedback (hover styles in 92480f6, performance targets moved to #73 in 4259218): no bugs, no gaps against #12, nothing out of scope. One finding:
+
+5. The hover comment in `styles.css` stated as fact that iPhone doesn't report hover and that a tap would leave the style behind, with no link. Fixed in 9ec9ca0: reworded as intent and marked not checked.
