@@ -9,6 +9,7 @@
   --muted: #6b7280;
   --line: #9ca3af;
   --highlight: #c8102e;
+  --hover: #f3f4f6;
   --word-size: 2.25rem;
   /* Where the focus letter sits: left of centre, as in Spritz-style readers,
      since most of a word lies right of its focus letter (SPEC.md feature 5). */
@@ -30,6 +31,7 @@
     --muted: #9ca3af;
     --line: #6b7280;
     --highlight: #ff6b6b;
+    --hover: #262626;
   }
 }
 
@@ -198,6 +200,20 @@ button {
   background: none;
   border: none;
   padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+/* Borderless buttons show they can be pressed on hover (owner's feedback on
+   #72). Only where hover exists, so a tap on iPhone leaves nothing behind. */
+@media (hover: hover) {
+  .back:hover,
+  .book:hover .book-title {
+    text-decoration: underline;
+  }
+
+  .options:hover {
+    background: var(--hover);
+  }
 }
 
 /* The word frame: one big tap target. */
