@@ -9,7 +9,7 @@ Issue #12 makes texts survive a reload. Everything stays in the browser's storag
 
 ## Decision
 
-- **Storage: IndexedDB, without a wrapper library.** It's the browser's store for structured data in this amount, and it stores the parsed sections as they are. localStorage holds strings only, is synchronous, and has a small per-site quota, which a few novels would fill (quota not checked). `src/ui/storage.ts` wraps the few calls the app needs in promises, in about 150 lines, instead of adding `idb` (ISC, which the allowlist permits): no new dependency to download, update and credit.
+- **Storage: IndexedDB, without a wrapper library.** It stores the parsed sections as objects and works asynchronously; localStorage would mean turning each book into one string, read and written in one blocking call, within a per-site quota a few novels might fill (none of this checked against browser documentation, since the firewall blocks web pages, #71). `src/ui/storage.ts` wraps the few calls the app needs in promises, in about 150 lines, instead of adding `idb` (ISC, which the allowlist permits): no new dependency to download, update and credit.
 - **Schema version: the database's version.** The database is `readalez`, version 1. `upgrade` in `src/ui/storage.ts` adds one step per version, so a later issue that adds a store raises the version and adds a step. Backups get their own format version in #21, since a backup outlives the schema it came from.
 - **Two stores**, so the library lists books without reading their texts:
   - `books`, keyed by `id`: `BookInfo` from `src/core/library.ts` (title, author, when it was added and last opened).

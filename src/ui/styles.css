@@ -125,8 +125,8 @@ button {
 }
 
 .options {
-  /* At least 44 points wide, Apple's minimum tap target. */
-  min-width: 2.75rem;
+  /* The same 44px minimum as the reader's buttons. */
+  min-width: 44px;
   color: inherit;
   background: none;
   border: none;
@@ -162,7 +162,7 @@ button {
 .book-dialog input {
   box-sizing: border-box;
   width: 100%;
-  /* At least 16px, so iPhone Safari doesn't zoom in on focus. */
+  /* At least 16px, as for the textarea. */
   font: inherit;
   font-size: 1rem;
   color: inherit;

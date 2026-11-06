@@ -5,8 +5,7 @@ import { parsePaste } from "./paste.ts";
 import type { Section } from "./text.ts";
 
 describe("sha256Hex", () => {
-  // Expected values made with Node's `crypto.createHash("sha256")`. The first
-  // three are also the examples FIPS 180-4's SHA-256 is usually checked with.
+  // Expected values made with Node's `crypto.createHash("sha256")`.
   it.each([
     ["", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
     ["abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"],
