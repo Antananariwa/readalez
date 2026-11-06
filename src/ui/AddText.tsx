@@ -1,55 +1,69 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { APP_NAME } from "../core/appName.ts";
-import { timeWords, type Timing } from "../core/durations.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
+import { timeWords, type Timing } from "../core/durations.ts";
 import { splitText, type Section } from "../core/text.ts";
 
 interface Props {
-  text: string;
-  /** The title as typed, or null while it follows the suggested title. */
-  title: string | null;
-  onTextChange: (text: string) => void;
-  onTitleChange: (title: string) => void;
-  onSave: (title: string, sections: Section[], timing: Timing) => void;
+  /**
+   * Saves the text; rejects if it couldn't be stored. `timing` is
+   * `timeWords(splitText(sections))`, worked out once here.
+   */
+  onSave: (title: string, sections: Section[], timing: Timing) => Promise<void>;
+  onBack: () => void;
 }
+
+type Problem = "empty" | "storage" | null;
 
 /**
  * The Add text screen (SPEC.md feature 1): a paste box and a title field.
  * The title field shows the suggested title until it's typed in; a title
  * left blank saves as the suggestion.
  */
-export default function AddText({
-  text,
-  title,
-  onTextChange,
-  onTitleChange,
-  onSave,
-}: Props) {
-  const [empty, setEmpty] = useState(false);
+export default function AddText({ onSave, onBack }: Props) {
+  const [text, setText] = useState("");
+  /** The title as typed, or null while it follows the suggested title. */
+  const [title, setTitle] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Problem>(null);
+  const [saving, setSaving] = useState(false);
   const suggested = useMemo(() => suggestedTitle(text), [text]);
 
-  const save = (event: FormEvent) => {
+  const save = async (event: FormEvent) => {
     event.preventDefault();
     const pasted = parsePaste(text);
     const words = splitText(pasted.sections);
     if (words.length === 0) {
-      setEmpty(true);
+      setProblem("empty");
       return;
     }
-    onSave(title?.trim() || pasted.title, pasted.sections, timeWords(words));
+    setSaving(true);
+    try {
+      await onSave(
+        title?.trim() || pasted.title,
+        pasted.sections,
+        timeWords(words),
+      );
+    } catch {
+      setProblem("storage");
+      setSaving(false);
+    }
   };
 
   return (
     <main className="add-text">
-      <h1>{APP_NAME}</h1>
+      <nav>
+        <button type="button" className="back" onClick={onBack}>
+          Back
+        </button>
+      </nav>
+      <h1>Add text</h1>
       <form onSubmit={save}>
         <label htmlFor="paste">Paste text</label>
         <textarea
           id="paste"
           value={text}
           onChange={(event) => {
-            onTextChange(event.target.value);
-            setEmpty(false);
+            setText(event.target.value);
+            setProblem(null);
           }}
         />
         <label htmlFor="title">Title</label>
@@ -57,10 +71,13 @@ export default function AddText({
           id="title"
           type="text"
           value={title ?? suggested}
-          onChange={(event) => onTitleChange(event.target.value)}
+          onChange={(event) => setTitle(event.target.value)}
         />
-        {empty && <p role="status">No words to read.</p>}
-        <button type="submit" disabled={text.trim() === ""}>
+        {problem === "empty" && <p role="status">No words to read.</p>}
+        {problem === "storage" && (
+          <p role="status">Couldn't save the text on this device.</p>
+        )}
+        <button type="submit" disabled={text.trim() === "" || saving}>
           Save
         </button>
       </form>

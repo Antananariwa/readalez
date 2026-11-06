@@ -1,42 +1,103 @@
-import { useState } from "react";
-import type { Timing } from "../core/durations.ts";
-import type { Section } from "../core/text.ts";
+import { useCallback, useEffect, useState } from "react";
+import { bookId } from "../core/bookId.ts";
+import { timeWords, type Timing } from "../core/durations.ts";
+import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import { splitText, type Section } from "../core/text.ts";
 import AddText from "./AddText.tsx";
+import Library from "./Library.tsx";
 import Reader from "./Reader.tsx";
+import {
+  addBook,
+  deleteBook,
+  getText,
+  listBooks,
+  markOpened,
+  renameBook,
+} from "./storage.ts";
 
-interface Saved {
-  title: string;
-  sections: Section[];
-  timing: Timing;
-}
+type Screen =
+  | { name: "library" }
+  | { name: "addText" }
+  | { name: "reader"; sections: Section[]; timing: Timing };
 
 /**
- * Two screens, Add text and Reader, in memory only until the library (#12),
- * which will also show the saved title. The pasted text and title stay when
- * the reader leads back.
+ * Three screens in React state, with no router: the library (home), Add text
+ * and the reader. A reload lands in the library.
  */
 export default function App() {
-  const [text, setText] = useState("");
-  const [title, setTitle] = useState<string | null>(null);
-  const [saved, setSaved] = useState<Saved | null>(null);
-  if (saved) {
+  const [screen, setScreen] = useState<Screen>({ name: "library" });
+  const [books, setBooks] = useState<BookInfo[] | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  const reload = useCallback(() => {
+    listBooks().then(
+      (list) => {
+        setBooks(list);
+        setFailed(false);
+      },
+      () => setFailed(true),
+    );
+  }, []);
+  useEffect(reload, [reload]);
+
+  const read = async (
+    id: string,
+    sections: Section[],
+    timing = timeWords(splitText(sections)),
+  ) => {
+    await markOpened(id, Date.now());
+    setScreen({ name: "reader", sections, timing });
+  };
+
+  const back = () => {
+    setScreen({ name: "library" });
+    reload();
+  };
+
+  if (screen.name === "reader") {
     return (
-      <Reader
-        sections={saved.sections}
-        timing={saved.timing}
-        onBack={() => setSaved(null)}
+      <Reader sections={screen.sections} timing={screen.timing} onBack={back} />
+    );
+  }
+  if (screen.name === "addText") {
+    return (
+      <AddText
+        onBack={() => setScreen({ name: "library" })}
+        onSave={async (title, sections, timing) => {
+          // A text already in the library opens the copy there (SPEC.md
+          // feature 1).
+          const added: BookInfo = {
+            id: bookId(sections),
+            title,
+            author: UNKNOWN_AUTHOR,
+            addedAt: Date.now(),
+          };
+          const book = await addBook(added, sections);
+          if (book === added) {
+            await read(book.id, sections, timing);
+          } else {
+            await read(book.id, (await getText(book.id)) ?? sections);
+          }
+        }}
       />
     );
   }
   return (
-    <AddText
-      text={text}
-      title={title}
-      onTextChange={setText}
-      onTitleChange={setTitle}
-      onSave={(savedTitle, sections, timing) =>
-        setSaved({ title: savedTitle, sections, timing })
-      }
+    <Library
+      books={books}
+      failed={failed}
+      onAdd={() => setScreen({ name: "addText" })}
+      onOpen={(book) => {
+        getText(book.id)
+          .then((sections) => (sections ? read(book.id, sections) : reload()))
+          .catch(() => setFailed(true));
+      }}
+      onRename={(book, title) => {
+        renameBook(book.id, title).then(reload, reload);
+      }}
+      onDelete={(book) => {
+        deleteBook(book.id).then(reload, reload);
+      }}
     />
   );
 }

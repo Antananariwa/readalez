@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 // Helpers shared by the reader's tests. Playwright's clock drives
 // requestAnimationFrame and performance.now(), so word changes are checked
@@ -16,11 +16,20 @@ export function stopwatch(page: Page): (at: number) => Promise<void> {
   };
 }
 
+/** Opens the library, then the Add text screen. */
+export async function goToAddText(page: Page): Promise<void> {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Add text" }).click();
+}
+
 /** Opens the reader on `text` with the page's clock paused. */
 export async function openReader(page: Page, text: string): Promise<void> {
   await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
   await page.goto("/");
   await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
+  await page.getByRole("button", { name: "Add text" }).click();
   await page.getByLabel("Paste text").fill(text);
   await page.getByRole("button", { name: "Save" }).click();
+  // Saving stores the text first, so the reader opens a moment later.
+  await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
 }

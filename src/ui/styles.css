@@ -79,6 +79,111 @@ button {
   align-self: flex-start;
 }
 
+.library .add {
+  padding: 0.5rem 1rem;
+}
+
+.books {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.books li {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--line);
+}
+
+.books li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.book {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.75rem 0;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.book-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.book-author,
+.book-opened {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.options {
+  /* At least 44 points wide, Apple's minimum tap target. */
+  min-width: 2.75rem;
+  color: inherit;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.book-dialog {
+  box-sizing: border-box;
+  width: min(24rem, calc(100vw - 2rem));
+  color: inherit;
+  background: var(--background);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+}
+
+.book-dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+.book-dialog h2 {
+  margin-top: 0;
+  font-size: 1.125rem;
+  overflow-wrap: anywhere;
+}
+
+.book-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.book-dialog input {
+  box-sizing: border-box;
+  width: 100%;
+  /* At least 16px, so iPhone Safari doesn't zoom in on focus. */
+  font: inherit;
+  font-size: 1rem;
+  color: inherit;
+  background: transparent;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.book-dialog .danger {
+  color: var(--highlight);
+}
+
+.book-dialog form > .danger {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
 /* One screen high, so the paused text scrolls inside its pane. When the
    screen is too short (a phone in landscape), the page scrolls instead. */
 .reader {

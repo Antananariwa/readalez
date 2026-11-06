@@ -121,3 +121,13 @@ Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Added in #40.
 - **What happens:** after a deploy, the owner's Chrome still showed the old version after a restart, until Ctrl+Shift+R loaded the new one (#40). In a test in headless Chromium and WebKit, with a relaunched Playwright profile standing in for a restart, the first launch after a deploy showed the old version and downloaded the new one, which waited; the launch after that showed the new one (#46).
 - **Why it's left:** with `skipWaiting: false`, a new service worker waits while a page is open (#46), so an update never interrupts reading (SPEC.md feature 12).
 - **Suggestions:** show an "Update ready" notice with a Reload button once the new version has downloaded, hidden while a book plays. The built service worker already accepts a `SKIP_WAITING` message, so `src/ui/registerServiceWorker.ts` could watch `registration.waiting`, post that message on Reload, then reload on `controllerchange`.
+
+## Library
+
+Code: `src/ui/storage.ts`, `src/ui/Library.tsx`. Tests: `e2e/library.spec.ts`. Added in #12.
+
+### A rename made just before a reload can be lost
+
+- **What happens:** the rename dialog closes as soon as Save is tapped, and the change is written to IndexedDB after that. In `e2e/library.spec.ts`, reloading the page right after the dialog closed showed the old title in 3 of 3 Chromium runs, while waiting for the list to show the new title first kept it (#12's PR). Deleting works the same way.
+- **Why it's left:** the list shows the new title only once it's stored, so what's on screen is what's saved. How long the write takes is unknown; a person closing the app in that moment seems unlikely (not checked).
+- **Suggestions:** keep the dialog open, with its buttons disabled, until the write has committed.
