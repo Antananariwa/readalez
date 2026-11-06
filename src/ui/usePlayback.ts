@@ -1,6 +1,6 @@
 // The playback loop: asks #7's schedule (src/core/schedule.ts) which word to
 // show at each display refresh, and #7's sentence starts
-// (src/core/sentences.ts) where to resume and jump. It keeps no timing rules
+// (src/core/sentences.ts) where to jump. It keeps no timing rules
 // of its own.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -13,9 +13,9 @@ import {
   type Playback,
 } from "../core/schedule.ts";
 import {
+  nearestSentenceStart,
   nextSentenceStart,
-  previousSentenceStart,
-  sentenceStart,
+  sentenceStartBefore,
   sentenceStarts,
 } from "../core/sentences.ts";
 import { DEFAULT_WPM, stepSpeed } from "../core/timingValues.ts";
@@ -24,15 +24,26 @@ export interface PlaybackControls {
   /** The word on screen. It stays on the last word once reading ends. */
   index: number;
   playing: boolean;
+  /** True once the last word has ended, until Start over. */
+  finished: boolean;
   /** Words per minute. */
   wpm: number;
-  /** Plays from the start of the sentence on screen, or pauses. */
+  /** Plays from the word on screen, or pauses. */
   toggle: () => void;
   pause: () => void;
-  /** Moves to the start of the sentence before the one on screen. */
+  /**
+   * Moves to the start of the sentence on screen, or of the one before when
+   * the word on screen starts its sentence.
+   */
   back: () => void;
   /** Moves to the start of the next sentence. */
   forward: () => void;
+  /** Moves to the sentence start nearest word `index` (the progress bar). */
+  seek: (index: number) => void;
+  /** Moves to word `index` (a tap in the paused view). */
+  moveTo: (index: number) => void;
+  /** Goes back to the first word, paused (the Finished card). */
+  startOver: () => void;
   slower: () => void;
   faster: () => void;
 }
@@ -40,6 +51,7 @@ export interface PlaybackControls {
 export function usePlayback(timing: Timing): PlaybackControls {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [finished, setFinished] = useState(false);
   // Kept across reloads in #18.
   const [wpm, setWpm] = useState(DEFAULT_WPM);
   // The speed as of the last change, for steps that come faster than
@@ -57,7 +69,9 @@ export function usePlayback(timing: Timing): PlaybackControls {
       const next = tick(timing, current, now);
       playback.current = next;
       if (isFinished(timing, next)) {
+        playback.current = null;
         setPlaying(false);
+        setFinished(true);
         return;
       }
       if (next.index !== current.index) setIndex(next.index);
@@ -73,15 +87,10 @@ export function usePlayback(timing: Timing): PlaybackControls {
       setPlaying(false);
       return;
     }
-    // After the last word, a tap starts again from the first, until the
-    // Finished card arrives (#11).
-    const finished =
-      playback.current !== null && isFinished(timing, playback.current);
-    const start = finished ? 0 : sentenceStart(starts, index);
-    playback.current = play(timing, start, speed.current, performance.now());
-    setIndex(start);
+    if (finished) return;
+    playback.current = play(timing, index, speed.current, performance.now());
     setPlaying(true);
-  }, [playing, index, timing, starts]);
+  }, [playing, finished, index, timing]);
 
   const jump = useCallback(
     (to: number | null) => {
@@ -97,13 +106,24 @@ export function usePlayback(timing: Timing): PlaybackControls {
   );
 
   const back = useCallback(
-    () => jump(previousSentenceStart(starts, index)),
+    () => jump(sentenceStartBefore(starts, index)),
     [jump, starts, index],
   );
   const forward = useCallback(
     () => jump(nextSentenceStart(starts, index)),
     [jump, starts, index],
   );
+
+  const seek = useCallback(
+    (to: number) => jump(nearestSentenceStart(starts, to)),
+    [jump, starts],
+  );
+  const startOver = useCallback(() => {
+    playback.current = null;
+    setIndex(0);
+    setPlaying(false);
+    setFinished(false);
+  }, []);
 
   const changeSpeed = useCallback((steps: number) => {
     const next = stepSpeed(speed.current, steps);
@@ -117,5 +137,19 @@ export function usePlayback(timing: Timing): PlaybackControls {
   const slower = useCallback(() => changeSpeed(-1), [changeSpeed]);
   const faster = useCallback(() => changeSpeed(1), [changeSpeed]);
 
-  return { index, playing, wpm, toggle, pause, back, forward, slower, faster };
+  return {
+    index,
+    playing,
+    finished,
+    wpm,
+    toggle,
+    pause,
+    back,
+    forward,
+    seek,
+    moveTo: jump,
+    startOver,
+    slower,
+    faster,
+  };
 }

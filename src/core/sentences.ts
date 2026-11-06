@@ -178,20 +178,16 @@ function sentenceAt(starts: readonly number[], index: number): number {
   return low;
 }
 
-/** The first word of the sentence holding word `index`. */
-export function sentenceStart(
-  starts: readonly number[],
-  index: number,
-): number {
-  return starts[sentenceAt(starts, index)] ?? 0;
-}
-
-/** The first word of the sentence before the one holding `index`, if any. */
-export function previousSentenceStart(
+/**
+ * The last sentence start before word `index`, if any, where Back goes: the
+ * start of the sentence holding it, or of the sentence before when `index`
+ * is a sentence's first word.
+ */
+export function sentenceStartBefore(
   starts: readonly number[],
   index: number,
 ): number | null {
-  return starts[sentenceAt(starts, index) - 1] ?? null;
+  return index > 0 ? (starts[sentenceAt(starts, index - 1)] ?? null) : null;
 }
 
 /** The first word of the sentence after the one holding `index`, if any. */
@@ -200,4 +196,19 @@ export function nextSentenceStart(
   index: number,
 ): number | null {
   return starts[sentenceAt(starts, index) + 1] ?? null;
+}
+
+/**
+ * The sentence start nearest to word `index`, counted in words, where the
+ * progress bar lets go (SPEC.md feature 7). A tie goes to the earlier start,
+ * so the sentence the word is in wins.
+ */
+export function nearestSentenceStart(
+  starts: readonly number[],
+  index: number,
+): number {
+  const at = sentenceAt(starts, index);
+  const before = starts[at] ?? 0;
+  const after = starts[at + 1];
+  return after !== undefined && after - index < index - before ? after : before;
 }

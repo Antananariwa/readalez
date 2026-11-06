@@ -1,11 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { chapterTexts, wordCount } from "../core/chapterText.ts";
 import type { Timing } from "../core/durations.ts";
+import type { Section } from "../core/text.ts";
+import {
+  formatDuration,
+  lookUpTimeLeft,
+  timeLeftTable,
+} from "../core/timeLeft.ts";
+import FinishedCard from "./FinishedCard.tsx";
+import PausedText from "./PausedText.tsx";
+import ProgressBar from "./ProgressBar.tsx";
 import { usePlayback, type PlaybackControls } from "./usePlayback.ts";
 import RepeatButton from "./RepeatButton.tsx";
 import { useWakeLock } from "./useWakeLock.ts";
 import WordFrame from "./WordFrame.tsx";
 
 interface Props {
+  /** The text's sections, for the paused view. */
+  sections: readonly Section[];
+  /** `timeWords(splitText(sections))`. */
   timing: Timing;
   onBack: () => void;
 }
@@ -13,15 +26,36 @@ interface Props {
 /**
  * The reader (SPEC.md feature 7): tap the frame to play or pause. Below it,
  * one row changes the speed (held, it keeps changing) and one moves by a
- * sentence; the keyboard does the same. Reading pauses when the page is
- * hidden, and the screen stays on while words play.
+ * sentence; the keyboard does the same. Then the progress bar, and when
+ * paused, time left and the chapter's text below; after the last word, the
+ * Finished card. Reading pauses when the page is hidden, and the screen stays
+ * on while words play.
  */
-export default function Reader({ timing, onBack }: Props) {
+export default function Reader({ sections, timing, onBack }: Props) {
   const controls = usePlayback(timing);
-  const { index, playing, wpm, toggle, pause, back, forward, slower, faster } =
-    controls;
+  const {
+    index,
+    playing,
+    finished,
+    wpm,
+    toggle,
+    pause,
+    back,
+    forward,
+    seek,
+    moveTo,
+    startOver,
+    slower,
+    faster,
+  } = controls;
   useKeys(controls);
   useWakeLock(playing);
+
+  const texts = useMemo(
+    () => chapterTexts(sections, timing.words),
+    [sections, timing],
+  );
+  const table = useMemo(() => timeLeftTable(timing, wpm), [timing, wpm]);
 
   useEffect(() => {
     // Meant to cover the app going to the background, the screen locking and
@@ -35,6 +69,18 @@ export default function Reader({ timing, onBack }: Props) {
   }, [pause]);
 
   const word = timing.words[index];
+  if (finished) {
+    return (
+      <main className="reader">
+        <FinishedCard
+          words={wordCount(sections)}
+          onBack={onBack}
+          onStartOver={startOver}
+        />
+      </main>
+    );
+  }
+  const left = lookUpTimeLeft(table, index);
   return (
     <main className="reader">
       <nav>
@@ -67,16 +113,40 @@ export default function Reader({ timing, onBack }: Props) {
           </button>
         </div>
       </div>
+      <div className="progress-row">
+        <ProgressBar index={index} count={timing.words.length} onSeek={seek} />
+        {/* Hidden while playing: it takes attention from the words (#68). */}
+        {!playing && (
+          <p className="time-left">
+            <span data-testid="chapter-left">
+              {formatDuration(left.chapter)}
+            </span>{" "}
+            left in chapter ·{" "}
+            <span data-testid="book-left">{formatDuration(left.book)}</span>{" "}
+            left in book
+          </p>
+        )}
+      </div>
+      {!playing && word && (
+        <PausedText
+          paragraphs={texts[word.section] ?? []}
+          index={index}
+          paragraph={word.paragraph}
+          onTap={moveTo}
+        />
+      )}
     </main>
   );
 }
 
 /**
  * Desktop keys: Space plays or pauses, ← and → move by a sentence, ↑ and ↓
- * change the speed. Keys with Alt, Ctrl or Meta are left to the browser.
+ * change the speed, also with the progress bar focused. Keys with Alt, Ctrl
+ * or Meta are left to the browser, and so are keys in text fields. On the
+ * Finished card the keys do nothing.
  */
 function useKeys(controls: PlaybackControls): void {
-  const { toggle, back, forward, slower, faster } = controls;
+  const { finished, toggle, back, forward, slower, faster } = controls;
   useEffect(() => {
     const actions: Record<string, () => void> = {
       " ": toggle,
@@ -86,10 +156,11 @@ function useKeys(controls: PlaybackControls): void {
       ArrowDown: slower,
     };
     const onKeyDown = (event: KeyboardEvent) => {
+      if (finished) return;
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target;
       if (
-        target instanceof HTMLInputElement ||
+        (target instanceof HTMLInputElement && target.type !== "range") ||
         target instanceof HTMLTextAreaElement
       ) {
         return;
@@ -103,7 +174,7 @@ function useKeys(controls: PlaybackControls): void {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [toggle, back, forward, slower, faster]);
+  }, [finished, toggle, back, forward, slower, faster]);
 }
 
 function Chevron({ direction }: { direction: "left" | "right" }) {

@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { timeWords, wordDuration } from "./durations.ts";
 import { splitText } from "./text.ts";
-import { timeLeft } from "./timeLeft.ts";
+import {
+  formatDuration,
+  lookUpTimeLeft,
+  timeLeft,
+  timeLeftTable,
+} from "./timeLeft.ts";
 
 const words = splitText([
   {
@@ -57,5 +62,44 @@ describe("timeLeft", () => {
       chapter: 0,
       book: 0,
     });
+  });
+});
+
+describe("timeLeftTable", () => {
+  it("gives the same time left as timeLeft for every word", () => {
+    for (const wpm of [100, 300, 1000]) {
+      const table = timeLeftTable(timing, wpm);
+      for (let i = 0; i <= words.length; i++) {
+        expect(lookUpTimeLeft(table, i)).toEqual(timeLeft(timing, i, wpm));
+      }
+    }
+  });
+
+  it("is zero for a text with no words", () => {
+    const empty = timeWords([]);
+    expect(lookUpTimeLeft(timeLeftTable(empty, 300), 0)).toEqual({
+      chapter: 0,
+      book: 0,
+    });
+  });
+});
+
+describe("formatDuration", () => {
+  it("shows minutes and seconds, rounded up to the second", () => {
+    expect(formatDuration(0)).toBe("0:00");
+    expect(formatDuration(1)).toBe("0:01");
+    expect(formatDuration(1000)).toBe("0:01");
+    expect(formatDuration(1001)).toBe("0:02");
+    expect(formatDuration(65_000)).toBe("1:05");
+    expect(formatDuration(59 * 60_000 + 59_500)).toBe("1:00:00");
+  });
+
+  it("shows hours from an hour", () => {
+    expect(formatDuration(3_600_000)).toBe("1:00:00");
+    expect(formatDuration(2 * 3_600_000 + 5 * 60_000 + 9_000)).toBe("2:05:09");
+  });
+
+  it("never goes below zero", () => {
+    expect(formatDuration(-500)).toBe("0:00");
   });
 });

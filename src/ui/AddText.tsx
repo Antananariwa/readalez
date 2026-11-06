@@ -2,7 +2,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { APP_NAME } from "../core/appName.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
-import { splitText } from "../core/text.ts";
+import { splitText, type Section } from "../core/text.ts";
 
 interface Props {
   text: string;
@@ -10,7 +10,7 @@ interface Props {
   title: string | null;
   onTextChange: (text: string) => void;
   onTitleChange: (title: string) => void;
-  onSave: (title: string, timing: Timing) => void;
+  onSave: (title: string, sections: Section[], timing: Timing) => void;
 }
 
 /**
@@ -36,7 +36,7 @@ export default function AddText({
       setEmpty(true);
       return;
     }
-    onSave(title?.trim() || pasted.title, timeWords(words));
+    onSave(title?.trim() || pasted.title, pasted.sections, timeWords(words));
   };
 
   return (

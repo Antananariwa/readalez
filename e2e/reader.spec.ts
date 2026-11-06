@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openReader, stopwatch } from "./helpers.ts";
 import { timeWords, wordDuration } from "../src/core/durations.ts";
 import { storyOfTheDoor } from "../src/core/fixtures/storyOfTheDoor.ts";
 import { parsePaste } from "../src/core/paste.ts";
@@ -14,27 +15,6 @@ const threeParagraphs = storyOfTheDoor.paragraphs
   .slice(5, 8)
   .map((p) => (p.kind === "verse" ? p.lines.join("\n") : p.text))
   .join("\n\n");
-
-/**
- * Moves the paused clock on to `at` ms after it was made, so a test can
- * check what shows at times counted from the tap that started playing.
- */
-function stopwatch(page: Page): (at: number) => Promise<void> {
-  let now = 0;
-  return async (at) => {
-    await page.clock.runFor(at - now);
-    now = at;
-  };
-}
-
-/** Opens the reader on `text` with the page's clock paused. */
-async function openReader(page: Page, text: string): Promise<void> {
-  await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
-  await page.goto("/");
-  await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
-  await page.getByLabel("Paste text").fill(text);
-  await page.getByRole("button", { name: "Save" }).click();
-}
 
 interface Measures {
   focus: number;
@@ -164,17 +144,13 @@ for (const colorScheme of ["light", "dark"] as const) {
       expect(sentenceEnd).toBeGreaterThan(durations[1]!);
       expect(paragraphEnd).toBeGreaterThan(sentenceEnd!);
 
-      // Reading stops on the last word. Until the Finished card (#11), a tap
-      // starts again from the first word, and tapping again pauses there.
-      await advanceTo(start + 100);
+      // Reading stops after the last word, on the Finished card (#11).
+      await advanceTo(start - 30);
       await expect(word).toHaveText(wordText(timing.words.at(-1)!));
-      await page.getByRole("button", { name: "Play" }).click();
-      await expect(word).toHaveText(wordText(timing.words[0]!));
-      await page.clock.runFor(wordDuration(timing, 0, DEFAULT_WPM, true) + 100);
-      await expect(word).toHaveText(wordText(timing.words[1]!));
-      await page.getByRole("button", { name: "Pause" }).click();
-      await page.clock.runFor(5000);
-      await expect(word).toHaveText(wordText(timing.words[1]!));
+      await advanceTo(start + 100);
+      await expect(
+        page.getByRole("heading", { name: "Finished" }),
+      ).toBeVisible();
     });
   });
 }
@@ -208,7 +184,7 @@ test.describe("in a narrow viewport", () => {
 });
 
 // The reader controls (issue #10, SPEC.md feature 7): moving by a sentence,
-// the speed, desktop keys, resuming at the sentence start, pausing when the
+// the speed, desktop keys, resuming where you left off, pausing when the
 // page is hidden, and the screen wake lock.
 test.describe("controls", () => {
   const sentences = "One two three. Four five six. Seven eight nine. Ten.";
@@ -254,9 +230,7 @@ test.describe("controls", () => {
     await paused(page);
   });
 
-  test("play after a pause starts at the sentence's first word", async ({
-    page,
-  }) => {
+  test("play after a pause starts at the word on screen", async ({ page }) => {
     await openReader(page, sentences);
     await page.getByRole("button", { name: "Play" }).click();
     const advanceTo = stopwatch(page);
@@ -265,7 +239,12 @@ test.describe("controls", () => {
     await expect(word(page)).toHaveText("five");
     await page.getByRole("button", { name: "Pause" }).click();
     await page.getByRole("button", { name: "Play" }).click();
-    await expect(word(page)).toHaveText("Four");
+    await expect(word(page)).toHaveText("five");
+    // "five" is the first word after play: 1.5× (300 ms).
+    await page.clock.runFor(270);
+    await expect(word(page)).toHaveText("five");
+    await page.clock.runFor(60);
+    await expect(word(page)).toHaveText("six.");
   });
 
   test("buttons and arrow keys move by a sentence and change the speed", async ({
@@ -289,6 +268,25 @@ test.describe("controls", () => {
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
     await expect(word(page)).toHaveText("One");
+
+    // From mid-sentence, back goes to the sentence's own first word first.
+    await page.getByRole("button", { name: "Play" }).click();
+    await page.clock.runFor(1200);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(word(page)).toHaveText("five");
+    await previous.click();
+    await expect(word(page)).toHaveText("Four");
+    await previous.click();
+    await expect(word(page)).toHaveText("One");
+    // ← does the same from mid-sentence.
+    await next.click();
+    await page.getByRole("button", { name: "Play" }).click();
+    // "Four" is the first word after play: 1.5× (300 ms), then "five" 200.
+    await page.clock.runFor(400);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(word(page)).toHaveText("five");
+    await page.keyboard.press("ArrowLeft");
+    await expect(word(page)).toHaveText("Four");
 
     await expect(speed(page)).toHaveText("300 wpm");
     await page.getByRole("button", { name: "Faster" }).click();
@@ -447,6 +445,6 @@ test.describe("controls", () => {
     await paused(page);
     await page.keyboard.press("Space");
     await playing(page);
-    await expect(word(page)).toHaveText("Four");
+    await expect(word(page)).toHaveText("five");
   });
 });
