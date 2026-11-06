@@ -25,6 +25,6 @@ Issue #12 makes texts survive a reload. Everything stays in the browser's storag
 
 ## Consequences
 
-- The 1 MB save is dominated by word splitting, not storage: in Playwright on the dev container, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, both on `main` before this change and with it (issue #12's PR). `splitText` alone took 1.3 s of a Node run on the same text. The iPhone time is the owner's device check.
+- The 1 MB save is dominated by word splitting, not storage: in Playwright on the dev container, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, both on `main` before this change and with it (issue #12's PR). `splitText` alone took 1.3 s of a Node run on the same text. iPhone times are unknown; performance targets are in #73.
 - The unit tests run in Node, which has no IndexedDB, so `src/ui/storage.ts` is covered by the browser tests in `e2e/library.spec.ts` only.
 - A book imported on two devices gets the same ID only if both parse it into the same words. A parser change between the two imports gives two books; the backup merge (#21) inherits that.
