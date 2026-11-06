@@ -204,7 +204,8 @@ button {
 }
 
 /* Borderless buttons show they can be pressed on hover (owner's feedback on
-   #72). Only where hover exists, so a tap on iPhone leaves nothing behind. */
+   #72). Limited to devices that report hover, meant to keep a tap on a touch
+   screen from leaving the hover style behind (not checked). */
 @media (hover: hover) {
   .back:hover,
   .book:hover .book-title {
