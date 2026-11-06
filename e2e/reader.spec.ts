@@ -278,6 +278,15 @@ test.describe("controls", () => {
     await expect(word(page)).toHaveText("Four");
     await previous.click();
     await expect(word(page)).toHaveText("One");
+    // ← does the same from mid-sentence.
+    await next.click();
+    await page.getByRole("button", { name: "Play" }).click();
+    // "Four" is the first word after play: 1.5× (300 ms), then "five" 200.
+    await page.clock.runFor(400);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(word(page)).toHaveText("five");
+    await page.keyboard.press("ArrowLeft");
+    await expect(word(page)).toHaveText("Four");
 
     await expect(speed(page)).toHaveText("300 wpm");
     await page.getByRole("button", { name: "Faster" }).click();

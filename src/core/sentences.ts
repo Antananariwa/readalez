@@ -178,14 +178,6 @@ function sentenceAt(starts: readonly number[], index: number): number {
   return low;
 }
 
-/** The first word of the sentence holding word `index`. */
-export function sentenceStart(
-  starts: readonly number[],
-  index: number,
-): number {
-  return starts[sentenceAt(starts, index)] ?? 0;
-}
-
 /**
  * The last sentence start before word `index`, if any, where Back goes: the
  * start of the sentence holding it, or of the sentence before when `index`

@@ -12,7 +12,6 @@ import {
   nearestSentenceStart,
   nextSentenceStart,
   punctuation,
-  sentenceStart,
   sentenceStartBefore,
   sentenceStarts,
 } from "./sentences.ts";
@@ -302,15 +301,13 @@ describe("sentence starts", () => {
     ]);
   });
 
-  it("gives a word's sentence start, the start before it and the next one", () => {
+  it("gives the sentence start before a word and the next one", () => {
     const i = at("Utterson");
-    expect(sentenceStart(starts, i)).toBe(at("Mr."));
     // Mid-sentence, the start before is the sentence's own; from a
     // sentence's first word, it's the previous sentence's.
     expect(sentenceStartBefore(starts, i)).toBe(at("Mr."));
     expect(sentenceStartBefore(starts, at("Mr."))).toBe(at("Story"));
     expect(nextSentenceStart(starts, i)).toBe(at("He"));
-    expect(sentenceStart(starts, at("He"))).toBe(at("He"));
   });
 
   it("has no start before the first word or next in the last sentence", () => {

@@ -76,7 +76,7 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 
 - **What happens:** tapping a word in the paused view or moving the progress bar moves the frame there at once, and nothing leads back to where you were reading. The owner found it very annoying when it happened by accident, reviewing #68.
 - **Why it's left:** the owner chose to record it for later (#68).
-- **Suggestions:** after a tap or a drag, show a "Back to where you were" button for a while that returns to the word before the move. The open-source reader [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader#readme) has a "Back to my position" link for scrolling away while paused, and makes a tapped word play only on a second tap. Kindle's "Go back to page …" after jumping to another place is a similar idea (not checked).
+- **Suggestions:** after a tap or a drag, show a "Back to where you were" button for a while that returns to the word before the move. The open-source reader [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader#readme) has a "Back to my position" link for scrolling away while paused. Kindle's "Go back to page …" after jumping to another place is a similar idea (not checked).
 
 ### A tap on the marked word's left edge after a dash can pick the word before
 
