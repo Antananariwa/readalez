@@ -48,10 +48,18 @@ export interface PlaybackControls {
   faster: () => void;
 }
 
-export function usePlayback(timing: Timing): PlaybackControls {
-  const [index, setIndex] = useState(0);
+/**
+ * Playback of `timing`, paused at word `start`, or on the Finished card when
+ * `startFinished` is set (a saved place, #13).
+ */
+export function usePlayback(
+  timing: Timing,
+  start = 0,
+  startFinished = false,
+): PlaybackControls {
+  const [index, setIndex] = useState(start);
   const [playing, setPlaying] = useState(false);
-  const [finished, setFinished] = useState(false);
+  const [finished, setFinished] = useState(startFinished);
   // Kept across reloads in #18.
   const [wpm, setWpm] = useState(DEFAULT_WPM);
   // The speed as of the last change, for steps that come faster than

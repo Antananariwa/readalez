@@ -1,8 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
+import { timeWords } from "../src/core/durations.ts";
+import { parsePaste } from "../src/core/paste.ts";
+import { splitText } from "../src/core/text.ts";
+import { formatDuration, timeLeft } from "../src/core/timeLeft.ts";
+import { DEFAULT_WPM } from "../src/core/timingValues.ts";
 
-// The library (issue #12, SPEC.md feature 4): texts stay on the device, the
-// library lists them most recently opened first, and they can be renamed and
-// deleted.
+// The library (issues #12 and #13, SPEC.md feature 4): texts stay on the
+// device, the library lists them most recently opened first with their
+// progress, and they can be renamed and deleted. Saved positions:
+// e2e/positions.spec.ts.
 
 const first = "Marley was dead: to begin with.\n\nThere is no doubt whatever.";
 const second = "Mr. Utterson the lawyer was a man.\n\nHe was never lighted.";
@@ -67,7 +73,13 @@ test("starts empty, and a saved text opens at its first word and is listed", asy
   await expect(titles(page)).toHaveText(["Marley was dead: to begin with."]);
 });
 
-test("lists title, author and last opened, by last opened, unopened last", async ({
+/** A whole text's time left at the default speed, as the library shows it. */
+function wholeTime(text: string): string {
+  const timing = timeWords(splitText(parsePaste(text).sections));
+  return formatDuration(timeLeft(timing, 0, DEFAULT_WPM).book);
+}
+
+test("lists title, author, progress, time left and last opened, by last opened, unopened last", async ({
   page,
 }) => {
   const monday = new Date("2026-11-02T10:00:00Z");
@@ -99,6 +111,16 @@ test("lists title, author and last opened, by last opened, unopened last", async
     `Opened ${await format(monday)}`,
   );
   await expect(rows(page).nth(2)).toContainText("Not opened yet");
+  // Nothing read yet: 0% and the whole text's time.
+  await expect(rows(page).nth(0).getByTestId("book-progress")).toHaveText("0%");
+  await expect(rows(page).nth(0).getByTestId("book-left")).toHaveText(
+    wholeTime(second),
+  );
+  await expect(rows(page).nth(1).getByTestId("book-left")).toHaveText(
+    wholeTime(first),
+  );
+  // A book stored before #13 shows no progress until it's read.
+  await expect(rows(page).nth(2).getByTestId("book-progress")).toHaveCount(0);
 
   await page.clock.pauseAt(wednesday);
   await openText(page, "First");

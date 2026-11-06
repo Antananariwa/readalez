@@ -61,6 +61,16 @@ export function wordDuration(
   first = false,
 ): number {
   const factor = timing.factors[index] ?? 1;
-  const scaled = first ? Math.max(timing.values.start, factor) : factor;
-  return Math.round((60_000 / wpm) * scaled);
+  return factorDuration(
+    first ? Math.max(timing.values.start, factor) : factor,
+    wpm,
+  );
+}
+
+/**
+ * How long a word with timing factor `factor` shows at `wpm`, in whole
+ * milliseconds: `factor` times 60,000 ÷ wpm.
+ */
+export function factorDuration(factor: number, wpm: number): number {
+  return Math.round((60_000 / wpm) * factor);
 }

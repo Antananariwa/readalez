@@ -3,6 +3,7 @@
 // adds a step to `upgrade`.
 
 import type { BookInfo } from "../core/library.ts";
+import type { Reading } from "../core/position.ts";
 import type { Section } from "../core/text.ts";
 
 const DATABASE = "readalez";
@@ -127,6 +128,11 @@ function updateBook(id: string, change: Partial<BookInfo>): Promise<void> {
 
 export function markOpened(id: string, at: number): Promise<void> {
   return updateBook(id, { openedAt: at });
+}
+
+/** Stores where reading a book stopped (ADR 0008). */
+export function saveReading(id: string, reading: Reading): Promise<void> {
+  return updateBook(id, { reading });
 }
 
 export function renameBook(id: string, title: string): Promise<void> {

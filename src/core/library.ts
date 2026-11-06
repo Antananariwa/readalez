@@ -1,5 +1,7 @@
-// The library (SPEC.md feature 4, issue #12): what it knows about each book,
-// and the order it lists them in.
+// The library (SPEC.md feature 4, issues #12 and #13): what it knows about
+// each book, and the order it lists them in.
+
+import type { Reading } from "./position.ts";
 
 /** What the library lists for a book; its text is stored apart. */
 export interface BookInfo {
@@ -11,6 +13,11 @@ export interface BookInfo {
   addedAt: number;
   /** When it was last opened, in ms since 1970; absent until it's opened. */
   openedAt?: number;
+  /**
+   * Where reading stopped, with the progress the library shows; absent for
+   * books stored before #13 until they're read (ADR 0008).
+   */
+  reading?: Reading;
 }
 
 /**
