@@ -12,6 +12,7 @@ import PausedText from "./PausedText.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import { usePlayback, type PlaybackControls } from "./usePlayback.ts";
 import RepeatButton from "./RepeatButton.tsx";
+import { useSavePosition } from "./useSavePosition.ts";
 import { useWakeLock } from "./useWakeLock.ts";
 import WordFrame from "./WordFrame.tsx";
 
@@ -20,6 +21,13 @@ interface Props {
   sections: readonly Section[];
   /** `timeWords(splitText(sections))`. */
   timing: Timing;
+  /** The word to open at, from the saved position (#13). */
+  start: number;
+  /** Opens on the Finished card, for a book already finished. */
+  startFinished: boolean;
+  /** Stores the word on screen, or the Finished card; see `useSavePosition`. */
+  onSave: (index: number, finished: boolean) => Promise<void>;
+  /** Called once the save of the position has finished or failed. */
   onBack: () => void;
 }
 
@@ -29,10 +37,17 @@ interface Props {
  * sentence; the keyboard does the same. Then the progress bar, and when
  * paused, time left and the chapter's text below; after the last word, the
  * Finished card. Reading pauses when the page is hidden, and the screen stays
- * on while words play.
+ * on while words play. The position is saved as `useSavePosition` says.
  */
-export default function Reader({ sections, timing, onBack }: Props) {
-  const controls = usePlayback(timing);
+export default function Reader({
+  sections,
+  timing,
+  start,
+  startFinished,
+  onSave,
+  onBack,
+}: Props) {
+  const controls = usePlayback(timing, start, startFinished);
   const {
     index,
     playing,
@@ -50,6 +65,9 @@ export default function Reader({ sections, timing, onBack }: Props) {
   } = controls;
   useKeys(controls);
   useWakeLock(playing);
+  const saveNow = useSavePosition(index, playing, finished, onSave);
+  // The library lists the books again after this, so it waits for the save.
+  const leave = () => void saveNow().finally(onBack);
 
   const texts = useMemo(
     () => chapterTexts(sections, timing.words),
@@ -74,7 +92,7 @@ export default function Reader({ sections, timing, onBack }: Props) {
       <main className="reader">
         <FinishedCard
           words={wordCount(sections)}
-          onBack={onBack}
+          onBack={leave}
           onStartOver={startOver}
         />
       </main>
@@ -84,7 +102,7 @@ export default function Reader({ sections, timing, onBack }: Props) {
   return (
     <main className="reader">
       <nav>
-        <button type="button" className="back" onClick={onBack}>
+        <button type="button" className="back" onClick={leave}>
           Back
         </button>
       </nav>
