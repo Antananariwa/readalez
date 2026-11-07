@@ -132,7 +132,12 @@ export default function Reader({
         </div>
       </div>
       <div className="progress-row">
-        <ProgressBar index={index} count={timing.words.length} onSeek={seek} />
+        <ProgressBar
+          index={index}
+          count={timing.words.length}
+          disabled={playing}
+          onSeek={seek}
+        />
         {/* Hidden while playing: it takes attention from the words (#68). */}
         {!playing && (
           <p className="time-left">

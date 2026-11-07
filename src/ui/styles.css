@@ -358,6 +358,11 @@ button {
   accent-color: var(--highlight);
 }
 
+/* Locked while words play (#76): dimmed, so it reads as progress only. */
+.progress:disabled {
+  opacity: 0.4;
+}
+
 .time-left {
   margin: 0.5rem 0 0;
   text-align: center;
