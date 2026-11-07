@@ -181,17 +181,56 @@ test("dragging the progress bar to the middle lands on a sentence start near the
   await paused(page);
 });
 
-test("dragging while playing keeps playing from the sentence start", async ({
+test("the bar is locked and dimmed while playing (#76)", async ({ page }) => {
+  const text = read(chapter);
+  await openReader(page, chapter);
+  const bar = page.getByLabel("Progress");
+  const opacity = () =>
+    bar.evaluate((el) => Number(getComputedStyle(el).opacity));
+  await expect(bar).toBeEnabled();
+  const pausedOpacity = await opacity();
+
+  await page.getByRole("button", { name: "Play" }).click();
+  await expect(bar).toBeDisabled();
+  expect(await opacity()).toBeLessThan(pausedOpacity);
+  // The clock stands still during the drag, so the word stays the first.
+  await dragBar(page, 0.5);
+  await expect(bar).toHaveValue("0");
+  await expect(frameWord(page)).toHaveText(wordText(text.words[0]!));
+  await playing(page);
+
+  await page.getByRole("button", { name: "Pause" }).click();
+  await expect(bar).toBeEnabled();
+  expect(await opacity()).toBe(pausedOpacity);
+});
+
+test("play started mid-drag hands the bar back to the word", async ({
   page,
 }) => {
   const text = read(chapter);
+  const bar = page.getByLabel("Progress");
+  /** The bar shows the word in the frame, not a stale drag. */
+  const followsWord = async () => {
+    const value = Number(await bar.inputValue());
+    await expect(frameWord(page)).toHaveText(wordText(text.words[value]!));
+  };
   await openReader(page, chapter);
-  await page.getByRole("button", { name: "Play" }).click();
-  await dragBar(page, 0.5);
-  const value = Number(await page.getByLabel("Progress").inputValue());
-  expect(text.starts).toContain(value);
-  await expect(frameWord(page)).toHaveText(wordText(text.words[value]!));
+  const box = (await bar.boundingBox())!;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + 8, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, y, { steps: 5 });
+  await expect(bar).not.toHaveValue("0");
+  // Chromium commits the drag when the bar is disabled, so play starts at
+  // the sentence start there; WebKit drops it, so play starts at the first
+  // word (seen in this test's runs, #76).
+  await page.keyboard.press("Space");
   await playing(page);
+  await followsWord();
+  await page.mouse.up();
+  await page.keyboard.press("Space");
+  await paused(page);
+  await followsWord();
 });
 
 test("time left for the chapter and the book matches #7's time left", async ({
