@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { bookId } from "../core/bookId.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
-import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import type { BookInfo } from "../core/library.ts";
 import {
   findPosition,
   progressTable,
@@ -98,18 +98,18 @@ export default function App() {
     return (
       <AddText
         onBack={() => setScreen({ name: "library" })}
-        onSave={async (title, sections, timing) => {
+        onSave={async ({ title, author, sections, chapters, timing }) => {
           // A text already in the library opens the copy there (SPEC.md
-          // feature 1).
+          // features 1 and 2).
           const added: BookInfo = {
             id: bookId(sections),
             title,
-            author: UNKNOWN_AUTHOR,
+            author,
             addedAt: Date.now(),
             // So the library shows 0% and the whole time left at once.
             reading: readingState(timing, progressTable(timing), 0, false),
           };
-          const book = await addBook(added, sections);
+          const book = await addBook(added, sections, chapters);
           if (book === added) {
             await read(book, sections, timing);
           } else {

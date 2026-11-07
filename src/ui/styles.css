@@ -50,6 +50,10 @@ button {
   font: inherit;
 }
 
+.add-text .import {
+  margin-bottom: 1.5rem;
+}
+
 .add-text form {
   display: flex;
   flex-direction: column;

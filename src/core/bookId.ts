@@ -97,7 +97,7 @@ function rotr(x: number, n: number): number {
  * `text` as UTF-8 bytes. A lone surrogate becomes U+FFFD, as `TextEncoder`
  * does.
  */
-function utf8(text: string): Uint8Array {
+export function utf8(text: string): Uint8Array<ArrayBuffer> {
   const bytes: number[] = [];
   for (const char of text) {
     let code = char.codePointAt(0)!;

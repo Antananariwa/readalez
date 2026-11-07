@@ -1,7 +1,7 @@
 # 3. Keep reading logic separate from the UI
 
 Date: 2026-10-27
-Status: Accepted
+Status: Accepted; amended by ADR 0009, which allows the web APIs Node also has
 
 ## Context
 

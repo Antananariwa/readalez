@@ -155,3 +155,25 @@ Code: `src/ui/storage.ts`, `src/ui/Library.tsx`, `src/core/position.ts`. Tests: 
 - **What happens:** if IndexedDB refuses a write, the position isn't saved and the reader shows no message (`src/ui/useSavePosition.ts`); the error reaches only the browser console. The next save tries again. Not seen yet; found while writing #13.
 - **Why it's left:** what a reader should do about a failed save is unknown, and a full device is the likeliest cause (not checked).
 - **Suggestions:** show a message once in the library if saves keep failing.
+
+## EPUB import
+
+Code: `src/core/epub.ts` and `src/core/epub/`. Tests: `src/core/epub.test.ts`, `src/core/epub/*.test.ts` and `tests/epub/fixtures.test.ts`. Added in #14.
+
+### Named entities other than XML's five show as written
+
+- **What happens:** `src/core/epub/xml.ts` replaces `&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;` and numeric references. Any other named entity, such as `&nbsp;` or `&mdash;`, stays in the text as written, and the reader shows it as a word or part of one (`src/core/epub/xml.test.ts`). Not seen in the fixtures: the Standard Ebooks one uses only `&lt;` and `&gt;`.
+- **Why it's left:** named entities need the document's DTD, which the reader doesn't load (ADR 0009). EPUB 3's XHTML can't use them (not checked), so only EPUB 2 books could.
+- **Suggestions:** a table of XHTML 1.1's named entities, if a real book turns up with them.
+
+### Unusual namespace prefixes lose verse and author roles
+
+- **What happens:** the XML reader doesn't resolve namespaces (ADR 0009). Verse is found through an `epub:type` attribute and EPUB 2 author roles through a prefixed `role` attribute such as `opf:role` (`src/core/epub/content.ts`, `src/core/epub/package.ts`). A book that binds the EPUB namespace to another prefix has its verse read as prose. Not seen in the fixtures.
+- **Why it's left:** EPUB's own examples use `epub:` and `opf:` (not checked against a survey of real books), and resolving namespaces would add code for a case not yet seen.
+- **Suggestions:** resolve `xmlns:` declarations in `xml.ts` and match attributes by namespace.
+
+### Preformatted text loses its line breaks
+
+- **What happens:** `src/core/epub/content.ts` collapses all whitespace, including inside `pre`, so its lines join into one paragraph. Not seen in the fixtures.
+- **Why it's left:** `pre` is rare in the books Readalez is for (not checked).
+- **Suggestions:** read each line of a `pre` as a line break.
