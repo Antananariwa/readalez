@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { bookId } from "../core/bookId.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
-import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import type { BookInfo } from "../core/library.ts";
 import {
   findPosition,
   progressTable,
@@ -43,6 +43,11 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: "library" });
   const [books, setBooks] = useState<BookInfo[] | null>(null);
   const [failed, setFailed] = useState(false);
+  /**
+   * The book just imported, marked New in the library until you leave it or
+   * reload (SPEC.md feature 2). Only React state, so a reload clears it.
+   */
+  const [newId, setNewId] = useState<string | null>(null);
 
   const reload = useCallback(() => {
     listBooks().then(
@@ -62,6 +67,7 @@ export default function App() {
     timing = timeWords(splitText(sections)),
   ) => {
     await markOpened(book.id, Date.now());
+    setNewId(null);
     const saved = book.reading;
     setScreen({
       name: "reader",
@@ -77,6 +83,16 @@ export default function App() {
   const back = () => {
     setScreen({ name: "library" });
     reload();
+  };
+
+  /** Opens a book from the library. */
+  const open = (book: BookInfo) => {
+    getText(book.id)
+      .then((sections) => (sections ? read(book, sections) : back()))
+      .catch(() => {
+        setFailed(true);
+        setScreen({ name: "library" });
+      });
   };
 
   if (screen.name === "reader") {
@@ -98,24 +114,29 @@ export default function App() {
     return (
       <AddText
         onBack={() => setScreen({ name: "library" })}
-        onSave={async (title, sections, timing) => {
-          // A text already in the library opens the copy there (SPEC.md
-          // feature 1).
+        onSave={async ({ title, author, sections, chapters, timing, from }) => {
+          // A text already in the library is handed back, so Add text can
+          // say so (SPEC.md features 1 and 2).
           const added: BookInfo = {
             id: bookId(sections),
             title,
-            author: UNKNOWN_AUTHOR,
+            author,
             addedAt: Date.now(),
             // So the library shows 0% and the whole time left at once.
             reading: readingState(timing, progressTable(timing), 0, false),
           };
-          const book = await addBook(added, sections);
-          if (book === added) {
-            await read(book, sections, timing);
+          const book = await addBook(added, sections, chapters);
+          if (book !== added) return book;
+          if (from === "epub") {
+            // A new book goes to the library, marked New (SPEC.md feature 2).
+            setNewId(book.id);
+            back();
           } else {
-            await read(book, (await getText(book.id)) ?? sections);
+            await read(book, sections, timing);
           }
+          return null;
         }}
+        onOpen={open}
       />
     );
   }
@@ -123,12 +144,12 @@ export default function App() {
     <Library
       books={books}
       failed={failed}
-      onAdd={() => setScreen({ name: "addText" })}
-      onOpen={(book) => {
-        getText(book.id)
-          .then((sections) => (sections ? read(book, sections) : reload()))
-          .catch(() => setFailed(true));
+      newId={newId}
+      onAdd={() => {
+        setNewId(null);
+        setScreen({ name: "addText" });
       }}
+      onOpen={open}
       onRename={(book, title) => {
         renameBook(book.id, title).then(reload, reload);
       }}

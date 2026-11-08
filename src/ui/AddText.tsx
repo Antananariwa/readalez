@@ -1,31 +1,93 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { parseEpub, type Chapter } from "../core/epub.ts";
+import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import { progressPercent } from "../core/position.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
 import { splitText, type Section } from "../core/text.ts";
 
+/** A text to add to the library, pasted or imported. */
+export interface NewText {
+  title: string;
+  author: string;
+  sections: Section[];
+  /** The chapter list; empty for pasted text. */
+  chapters: Chapter[];
+  /** `timeWords(splitText(sections))`, worked out once here. */
+  timing: Timing;
+  /** Where it came from: an imported book goes to the library, a paste opens. */
+  from: "epub" | "paste";
+}
+
 interface Props {
   /**
-   * Saves the text; rejects if it couldn't be stored. `timing` is
-   * `timeWords(splitText(sections))`, worked out once here.
+   * Saves the text; rejects if it couldn't be stored. Resolves to the copy
+   * already in the library when the text is there already, and to null
+   * otherwise.
    */
-  onSave: (title: string, sections: Section[], timing: Timing) => Promise<void>;
+  onSave: (text: NewText) => Promise<BookInfo | null>;
+  /** Opens a book in the library. */
+  onOpen: (book: BookInfo) => void;
   onBack: () => void;
 }
 
 type Problem = "empty" | "storage" | null;
+type ImportProblem = Problem | "unreadable";
 
 /**
- * The Add text screen (SPEC.md feature 1): a paste box and a title field.
- * The title field shows the suggested title until it's typed in; a title
- * left blank saves as the suggestion.
+ * The Add text screen (SPEC.md features 1 and 2): Import EPUB, then a paste
+ * box and a title field. The title field shows the suggested title until
+ * it's typed in; a title left blank saves as the suggestion.
  */
-export default function AddText({ onSave, onBack }: Props) {
+export default function AddText({ onSave, onOpen, onBack }: Props) {
   const [text, setText] = useState("");
   /** The title as typed, or null while it follows the suggested title. */
   const [title, setTitle] = useState<string | null>(null);
   const [problem, setProblem] = useState<Problem>(null);
+  const [importProblem, setImportProblem] = useState<ImportProblem>(null);
   const [saving, setSaving] = useState(false);
+  /** The copy in the library of a text added again. */
+  const [existing, setExisting] = useState<BookInfo | null>(null);
   const suggested = useMemo(() => suggestedTitle(text), [text]);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  /** Reads an EPUB on the device and saves it (SPEC.md feature 2). */
+  const importEpub = async (file: File) => {
+    setProblem(null);
+    setImportProblem(null);
+    setSaving(true);
+    let book;
+    try {
+      book = await parseEpub(
+        new Uint8Array(await file.arrayBuffer()),
+        file.name,
+      );
+    } catch {
+      setImportProblem("unreadable");
+      setSaving(false);
+      return;
+    }
+    const words = splitText(book.sections);
+    if (words.length === 0) {
+      setImportProblem("empty");
+      setSaving(false);
+      return;
+    }
+    try {
+      const copy = await onSave({
+        ...book,
+        timing: timeWords(words),
+        from: "epub",
+      });
+      if (copy) {
+        setExisting(copy);
+        setSaving(false);
+      }
+    } catch {
+      setImportProblem("storage");
+      setSaving(false);
+    }
+  };
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
@@ -37,11 +99,18 @@ export default function AddText({ onSave, onBack }: Props) {
     }
     setSaving(true);
     try {
-      await onSave(
-        title?.trim() || pasted.title,
-        pasted.sections,
-        timeWords(words),
-      );
+      const copy = await onSave({
+        title: title?.trim() || pasted.title,
+        author: UNKNOWN_AUTHOR,
+        sections: pasted.sections,
+        chapters: [],
+        timing: timeWords(words),
+        from: "paste",
+      });
+      if (copy) {
+        setExisting(copy);
+        setSaving(false);
+      }
     } catch {
       setProblem("storage");
       setSaving(false);
@@ -56,6 +125,36 @@ export default function AddText({ onSave, onBack }: Props) {
         </button>
       </nav>
       <h1>Add text</h1>
+      <div className="import">
+        <button
+          type="button"
+          disabled={saving}
+          onClick={() => fileInput.current?.click()}
+        >
+          Import EPUB
+        </button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".epub,application/epub+zip"
+          hidden
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            // So picking the same file again still fires a change.
+            event.target.value = "";
+            if (file) void importEpub(file);
+          }}
+        />
+        {importProblem === "unreadable" && (
+          <p role="status">Couldn't read this EPUB.</p>
+        )}
+        {importProblem === "empty" && (
+          <p role="status">This book has no words to read.</p>
+        )}
+        {importProblem === "storage" && (
+          <p role="status">Couldn't save the book on this device.</p>
+        )}
+      </div>
       <form onSubmit={save}>
         <label htmlFor="paste">Paste text</label>
         <textarea
@@ -64,6 +163,7 @@ export default function AddText({ onSave, onBack }: Props) {
           onChange={(event) => {
             setText(event.target.value);
             setProblem(null);
+            setImportProblem(null);
           }}
         />
         <label htmlFor="title">Title</label>
@@ -81,6 +181,66 @@ export default function AddText({ onSave, onBack }: Props) {
           Save
         </button>
       </form>
+      {existing && (
+        <AlreadyInLibrary
+          book={existing}
+          onOpen={() => onOpen(existing)}
+          onClose={() => setExisting(null)}
+        />
+      )}
     </main>
+  );
+}
+
+/**
+ * Says a text or book is already in the library, and offers to open that
+ * copy (SPEC.md features 1 and 2).
+ */
+function AlreadyInLibrary({
+  book,
+  onOpen,
+  onClose,
+}: {
+  book: BookInfo;
+  onOpen: () => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    // As in the library's dialog: no cleanup, since an open dialog leaves the
+    // top layer when it's removed.
+    const dialog = ref.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+
+  const reading = book.reading;
+  const progress = reading?.finished
+    ? "You've finished it."
+    : reading && progressPercent(reading.progress) > 0
+      ? `You've read ${progressPercent(reading.progress)}% of it.`
+      : "You haven't started it yet.";
+
+  return (
+    // Escape closes the dialog; `onClose` keeps React's state in step.
+    <dialog
+      ref={ref}
+      className="book-dialog"
+      aria-labelledby="already-title"
+      onClose={onClose}
+    >
+      <h2 id="already-title">Already in your library</h2>
+      <p>
+        “{book.title}” is already in your library. {progress}
+      </p>
+      <div className="dialog-actions">
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>
+        <button type="button" onClick={onOpen}>
+          Open
+        </button>
+      </div>
+    </dialog>
   );
 }

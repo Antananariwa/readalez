@@ -155,13 +155,18 @@ test("renaming one text and deleting another both survive a reload", async ({
   await expect(titles(page)).toHaveText(["A Christmas Carol"]);
 });
 
-test("the same text saved twice opens the copy already there", async ({
+test("the same text saved twice says it's already there, and Open opens that copy", async ({
   page,
 }) => {
   await page.goto("/");
   await save(page, first, "First");
   await backToLibrary(page);
-  await save(page, first, "Again");
+  await page.getByRole("button", { name: "Add text" }).click();
+  await page.getByLabel("Paste text").fill(first);
+  await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Already in your library" });
+  await expect(dialog).toContainText("“First” is already in your library.");
+  await dialog.getByRole("button", { name: "Open" }).click();
   await expect(page.getByTestId("word")).toHaveText("Marley");
   await backToLibrary(page);
   await expect(titles(page)).toHaveText(["First"]);

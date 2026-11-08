@@ -1,6 +1,6 @@
 # Spec
 
-What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's a living plan.
+What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's an educated guess: thought through, but not assumed always true, and corrected as Readalez grows and meets real books, devices and readers.
 
 ## What Readalez is
 
@@ -37,7 +37,7 @@ A paste box on the Add text screen. Saving adds the text to the library and open
 - **Gutenberg license text.** If the text contains Gutenberg's `*** START OF` and `*** END OF` lines, only the part between them is kept. Why: reading starts at the first real word, as with EPUBs.
 - **Title.** The first line of the text kept (so not Gutenberg's header), cut at a word boundary to at most 60 characters. It can be edited before saving and later in the library; a title left blank saves as the first line. Why: the title should name what you read, and a text always needs one for the library.
 - **Author.** A pasted text's author is "Unknown author", the fallback EPUBs use (feature 2). Why: one rule for every book, with no extra field to fill in (the owner's choice, #12).
-- **Same text twice.** Saving a text already in the library opens the copy you have, with its title and progress, as for EPUBs (feature 2). Texts match by their words (ADR 0007). Why: one book, one entry (the owner's choice, #12).
+- **Same text twice.** Saving a text already in the library adds nothing and says so, as for EPUBs (feature 2), offering Open (the copy you have, with its title and progress) and Cancel. Texts match by their words (ADR 0007). Why: one book, one entry (the owner's choice, #12).
 - **No chapters.** Pasted text is one section. Why: books come in as EPUB; guessing chapters from plain text returns with TXT import, after v1.
 - **No verse.** Pasted text carries no verse markup, so a pasted poem follows the paragraph rules above; verse pauses (feature 6) come from EPUBs.
 
@@ -52,7 +52,7 @@ Checks:
 
 ### 2. Import EPUB files
 
-Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device, added to the library and opened at its first chapter. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
+Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device and added to the library, which shows it marked New; opened for the first time, it starts at its first chapter. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
 
 - **Supported:** EPUB 2 and 3 without DRM. The reading order is the book's spine. The chapter list comes from the book's table of contents, or from its headings if it has none.
 - **Reading starts where the author's text starts** the first time a book opens. Publishing paperwork stays out of the reading flow: the cover, title and half-title pages, copyright and imprint pages, contents pages, lists of illustrations, pages left empty once images are dropped (such as a frontispiece) and Gutenberg's license pages. Everything the author wrote stays in, from dedications, epigraphs and prefaces to afterwords and appendices; a preface counts even when the book's markup places the main text after it, as Standard Ebooks does. Sections are recognised from the book's markup (EPUB 3 semantics or the EPUB 2 guide), then from Gutenberg's markers and section titles. Why: you open a book to read it, not its paperwork.
@@ -63,7 +63,8 @@ Import EPUB on the Add text screen opens the file picker (Files on iPhone). The 
 - **Title and author** come from the book's metadata, falling back to the file name and "Unknown author".
 - **Copy-protected books** (Kindle, Apple Books and Adobe DRM) show "This book is copy-protected (DRM), so Readalez can't open it." Fonts scrambled for licensing (EPUB font obfuscation) are not DRM, and those books open.
 - **Errors.** A file that isn't a readable EPUB shows a clear message, and nothing half-imported appears in the library.
-- **Same book twice.** Importing a book whose text is already in the library opens the copy you have, with its progress. A different edition is a different book.
+- **New mark.** A book just imported shows in the library with a green border and a "New" label beside its options button, until you open a book, go to Add text or reload. Why: after importing you land in the library rather than in the book, so the mark shows which book arrived (the owner, testing #14). Pasted text still opens at once (feature 1), since a paste is usually read straight away.
+- **Same book twice.** Importing a book whose text is already in the library adds nothing and says so, with how far you've read it, offering Open (the copy you have, where you left off) and Cancel. Why: you're told rather than dropped into a book without warning (the owner, testing #14), and the progress stays. A different edition is a different book.
 
 Checks:
 
@@ -72,8 +73,8 @@ Checks:
 - Unit: a DRM-encrypted fixture gives the DRM message; a fixture with obfuscated fonts opens.
 - Unit: a corrupt ZIP and a renamed text file each give an error and leave the library unchanged.
 - Unit: soft hyphens and zero-width characters are gone, and each verse line ends with a line-break pause.
-- E2E: importing a fixture adds it with the title and author from its metadata and opens it at the first chapter; importing it again opens the same copy, with no duplicate.
-- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app opens at chapter 1.
+- E2E: importing a fixture adds it with the title and author from its metadata and shows it in the library marked New, until it is opened, Add text is opened or the page reloads; opening it starts at the first chapter; importing it again says it's already in the library, adds no duplicate, and Open opens the copy there.
+- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app shows in the library marked New and opens at chapter 1.
 - Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone, showing progress, and the app stays responsive. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 
 ### 3. Built-in books
@@ -87,7 +88,7 @@ Three books are always in the library:
 Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
 
 - **Editions:** Standard Ebooks, with the images, the frontispiece page and the list of illustrations removed. Why: proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0, in each book's `src/epub/text/uncopyright.xhtml`, for example [_A Christmas Carol_'s](https://github.com/standardebooks/charles-dickens_a-christmas-carol/blob/fbcca8acb37169bbb560b8796c1f05b0240f6792/src/epub/text/uncopyright.xhtml)), so there's no license text to carry. Their sources are on GitHub (for example `standardebooks/charles-dickens_a-christmas-carol`), which the dev container can reach.
-- **Copyright:** all three authors died over 100 years ago, so the texts are public domain almost everywhere (see [Legal and licensing](#legal-and-licensing)).
+- **Copyright:** all three are public domain (see [Legal and licensing](#legal-and-licensing)).
 - **Permanent:** they can't be deleted or renamed. Their progress works like any book's, and Delete all data resets it. Why: so there's always something to read and to tune with.
 - **One code path:** they ship as EPUB files and go through the same import as the reader's own books.
 - **Offline:** they work without a network after the first visit.
@@ -310,7 +311,7 @@ Ideas for after v1, from the paragraph pacer to stats and more formats, live in 
 
 Working assumptions from public sources, not legal advice. Recheck them before anything that changes the risk: charging money, or adding a server or a catalog.
 
-- **Copyright.** UK copyright lasts 70 years after the author's death, and a translation's lasts 70 years after the translator's; some countries go up to 100. Everything Readalez ships (the built-in books, test fixtures and sample passages) is by authors, translators and illustrators who died over 100 years ago, so it's public domain almost everywhere the app is served or cached. Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
+- **Copyright.** UK copyright lasts 70 years after the author's death, and a translation's lasts 70 years after the translator's; some countries go up to 100. Everything Readalez ships (the built-in books, test fixtures and sample passages) is copyright-free: public-domain books, such as those Project Gutenberg and Standard Ebooks offer. Why: a fixed number of years since the author's death ruled out ordinary public-domain books (the owner, testing #14). Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
 - **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is open: see [docs/roadmap.md](docs/roadmap.md)), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
 - **Focus-point patents.** The fixed focus point in feature 5 is what Spritz's patents describe: US 8,903,174 ("Serial text display for optimal recognition apparatus and method", filed 2012; Google Patents lists it as active, which isn't verified), the related US 9,483,109 and US 10,332,313, and a European family member (validated in Spain as ES 2700224 T3, so UK coverage is possible). The Chinese and Japanese members have lapsed. Free apps use the design openly (the open-source readers in [feature 5](#5-single-word-display)), and the risk is low for a free open-source app. Recheck before charging money, and keep "Spritz" out of the name and the app's text.
 - **Name.** See [What Readalez is](#what-readalez-is).

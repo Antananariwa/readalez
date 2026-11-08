@@ -2,6 +2,7 @@
 // The database's version is the schema version: each change to the stores
 // adds a step to `upgrade`.
 
+import type { Chapter } from "../core/epub.ts";
 import type { BookInfo } from "../core/library.ts";
 import type { Reading } from "../core/position.ts";
 import type { Section } from "../core/text.ts";
@@ -16,6 +17,12 @@ const TEXTS = "texts";
 interface StoredText {
   id: string;
   sections: Section[];
+  /**
+   * An EPUB's chapter list (ADR 0009), stored now so #15 can show it for
+   * books imported before it; empty for pasted text, and absent for texts
+   * stored before #14.
+   */
+  chapters?: Chapter[];
 }
 
 let opening: Promise<IDBDatabase> | null = null;
@@ -97,11 +104,12 @@ export async function getText(id: string): Promise<Section[] | undefined> {
 /**
  * Adds a book and its text in one transaction, so nothing half-saved is left.
  * If a book with the same ID is already stored, nothing changes and that
- * book is returned (SPEC.md feature 1).
+ * book is returned (SPEC.md features 1 and 2).
  */
 export function addBook(
   book: BookInfo,
   sections: Section[],
+  chapters: Chapter[],
 ): Promise<BookInfo> {
   return transaction([BOOKS, TEXTS], "readwrite", async (tx) => {
     const books = tx.objectStore(BOOKS);
@@ -110,7 +118,11 @@ export function addBook(
     );
     if (existing) return existing;
     books.add(book);
-    tx.objectStore(TEXTS).add({ id: book.id, sections } satisfies StoredText);
+    tx.objectStore(TEXTS).add({
+      id: book.id,
+      sections,
+      chapters,
+    } satisfies StoredText);
     return book;
   });
 }
