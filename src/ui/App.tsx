@@ -115,9 +115,8 @@ export default function App() {
       <AddText
         onBack={() => setScreen({ name: "library" })}
         onSave={async ({ title, author, sections, chapters, timing, from }) => {
-          // A book already in the library is handed back, so Add text can
-          // say so; a pasted text already there opens that copy (SPEC.md
-          // features 1 and 2).
+          // A text already in the library is handed back, so Add text can
+          // say so (SPEC.md features 1 and 2).
           const added: BookInfo = {
             id: bookId(sections),
             title,
@@ -127,15 +126,13 @@ export default function App() {
             reading: readingState(timing, progressTable(timing), 0, false),
           };
           const book = await addBook(added, sections, chapters);
-          if (book !== added && from === "epub") return book;
-          if (book === added && from === "epub") {
+          if (book !== added) return book;
+          if (from === "epub") {
             // A new book goes to the library, marked New (SPEC.md feature 2).
             setNewId(book.id);
             back();
-          } else if (book === added) {
-            await read(book, sections, timing);
           } else {
-            await read(book, (await getText(book.id)) ?? sections);
+            await read(book, sections, timing);
           }
           return null;
         }}

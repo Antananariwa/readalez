@@ -22,8 +22,8 @@ export interface NewText {
 interface Props {
   /**
    * Saves the text; rejects if it couldn't be stored. Resolves to the copy
-   * already in the library when an imported book is there already, and to
-   * null otherwise.
+   * already in the library when the text is there already, and to null
+   * otherwise.
    */
   onSave: (text: NewText) => Promise<BookInfo | null>;
   /** Opens a book in the library. */
@@ -46,7 +46,7 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
   const [problem, setProblem] = useState<Problem>(null);
   const [importProblem, setImportProblem] = useState<ImportProblem>(null);
   const [saving, setSaving] = useState(false);
-  /** The copy in the library of a book imported again. */
+  /** The copy in the library of a text added again. */
   const [existing, setExisting] = useState<BookInfo | null>(null);
   const suggested = useMemo(() => suggestedTitle(text), [text]);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -99,7 +99,7 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
     }
     setSaving(true);
     try {
-      await onSave({
+      const copy = await onSave({
         title: title?.trim() || pasted.title,
         author: UNKNOWN_AUTHOR,
         sections: pasted.sections,
@@ -107,6 +107,10 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
         timing: timeWords(words),
         from: "paste",
       });
+      if (copy) {
+        setExisting(copy);
+        setSaving(false);
+      }
     } catch {
       setProblem("storage");
       setSaving(false);
@@ -189,8 +193,8 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
 }
 
 /**
- * Says an imported book is already in the library, and offers to open that
- * copy (SPEC.md feature 2).
+ * Says a text or book is already in the library, and offers to open that
+ * copy (SPEC.md features 1 and 2).
  */
 function AlreadyInLibrary({
   book,
