@@ -166,9 +166,9 @@ Code: `src/core/epub.ts` and `src/core/epub/`. Tests: `src/core/epub.test.ts`, `
 - **Why it's left:** named entities need the document's DTD, which the reader doesn't load (ADR 0009). EPUB 3's XHTML can't use them (not checked), so only EPUB 2 books could.
 - **Suggestions:** a table of XHTML 1.1's named entities, if a real book turns up with them.
 
-### Unusual namespace prefixes lose verse and author roles
+### Unusual namespace prefixes lose verse and the nav
 
-- **What happens:** the XML reader doesn't resolve namespaces (ADR 0009). Verse is found through an `epub:type` attribute and EPUB 2 author roles through a prefixed `role` attribute such as `opf:role` (`src/core/epub/content.ts`, `src/core/epub/package.ts`). A book that binds the EPUB namespace to another prefix has its verse read as prose. Not seen in the fixtures.
+- **What happens:** the XML reader doesn't resolve namespaces (ADR 0009). Verse and the nav's `toc` are found through an attribute written `epub:type` (`src/core/epub/content.ts`, `src/core/epub/toc.ts`). A book that binds the EPUB namespace to another prefix has its verse read as prose, and its chapter list comes from the NCX, or from its headings if it has none. EPUB 2 author roles match a `role` attribute under any prefix (`attributesNamed` in `src/core/epub/package.ts`), so they aren't affected. Not seen in the fixtures.
 - **Why it's left:** EPUB's own examples use `epub:` and `opf:` (not checked against a survey of real books), and resolving namespaces would add code for a case not yet seen.
 - **Suggestions:** resolve `xmlns:` declarations in `xml.ts` and match attributes by namespace.
 

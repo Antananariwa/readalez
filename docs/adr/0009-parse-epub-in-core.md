@@ -17,7 +17,7 @@ Positions are stored by section, paragraph and word (ADR 0008), and texts are st
 
 - **Our own ZIP and XML readers, in `src/core/epub/`, with no new dependency.**
   - `zip.ts` reads the central directory and the stored and deflated entries, which is all EPUB uses. There is no ZIP64, since books are far under 4 GB. Checking CRCs and refusing encrypted entries are left to #16 (broken and copy-protected files).
-  - `xml.ts` is a non-validating reader that builds a small tree of elements and text and checks that tags nest. It replaces XML's five entities and numeric references, and leaves other named entities as written, since they need a DTD, which it never loads (docs/known-issues.md). It doesn't resolve namespaces: elements match by local name, and attributes by their usual prefixed names (`epub:type`, `opf:role`).
+  - `xml.ts` is a non-validating reader that builds a small tree of elements and text and checks that tags nest. It replaces XML's five entities and numeric references, and leaves other named entities as written, since they need a DTD, which it never loads (docs/known-issues.md). It doesn't resolve namespaces: elements match by local name, `epub:type` by that prefixed name, and an author's `role` under any prefix.
   - Rejected: `fflate` or JSZip for the archive, since each dependency adds download size on phones, updates and license notices (CLAUDE.md), and `DecompressionStream` covers the hard part. `DOMParser` is rejected because Node lacks it, so parsing would move into `src/ui/` and lose its unit tests.
 - **Where core's line sits.** This amends ADR 0003's "no browser APIs". Core may use a global only if two things hold:
   - It is in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node. That list includes `DecompressionStream`, `TextDecoder`, `ReadableStream` and `Response`.
@@ -43,6 +43,6 @@ Positions are stored by section, paragraph and word (ADR 0008), and texts are st
 ## Consequences
 
 - `src/core/epub/` and `src/core/epub.ts` hold about 1,000 lines of our own code, comments included, to maintain.
-- Parsing runs on the main thread. In Node on the dev container, the Standard Ebooks fixture (_A Christmas Carol_, 28,626 words by its metadata) parsed in 35 ms. Long books are #16, and performance targets are #73.
-- An EPUB with an unusual prefix for the `epub:` or `opf:` namespaces, or with named entities beyond XML's five, loses verse marks, author roles or those characters (docs/known-issues.md).
+- Parsing runs on the main thread. Long books are #16, and performance targets are #73.
+- An EPUB with an unusual prefix for the `epub:` namespace loses its verse marks and nav, and one with named entities beyond XML's five loses those characters (docs/known-issues.md).
 - `crypto.subtle` and `TextEncoder` are in the Minimum Common Web API too, so `bookId`'s hand-written SHA-256 (ADR 0007) could now use the platform's. That code is unchanged here, and it would also become asynchronous.
