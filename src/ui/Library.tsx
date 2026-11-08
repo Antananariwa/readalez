@@ -14,6 +14,8 @@ interface Props {
   books: readonly BookInfo[] | null;
   /** Set when the library couldn't be read from the device. */
   failed: boolean;
+  /** The book just imported, marked New (SPEC.md feature 2). */
+  newId: string | null;
   onAdd: () => void;
   onOpen: (book: BookInfo) => void;
   onRename: (book: BookInfo, title: string) => void;
@@ -25,12 +27,13 @@ const date = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 /**
  * The library (SPEC.md feature 4), the home screen: every text with its
  * title, author, progress, time left and when it was last opened, most
- * recently opened first.
+ * recently opened first. A book just imported is marked New.
  * Each text's options button opens a dialog to rename or delete it.
  */
 export default function Library({
   books,
   failed,
+  newId,
   onAdd,
   onOpen,
   onRename,
@@ -49,7 +52,7 @@ export default function Library({
       {books && books.length > 0 && (
         <ul className="books" aria-label="Library">
           {libraryOrder(books).map((book) => (
-            <li key={book.id}>
+            <li key={book.id} className={book.id === newId ? "new" : undefined}>
               <button
                 type="button"
                 className="book"
@@ -64,6 +67,7 @@ export default function Library({
                     : `Opened ${date.format(book.openedAt)}`}
                 </span>
               </button>
+              {book.id === newId && <span className="new-label">New</span>}
               <button
                 type="button"
                 className="options"

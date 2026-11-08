@@ -52,7 +52,7 @@ Checks:
 
 ### 2. Import EPUB files
 
-Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device, added to the library and opened at its first chapter. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
+Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device and added to the library, which shows it marked New; opened for the first time, it starts at its first chapter. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
 
 - **Supported:** EPUB 2 and 3 without DRM. The reading order is the book's spine. The chapter list comes from the book's table of contents, or from its headings if it has none.
 - **Reading starts where the author's text starts** the first time a book opens. Publishing paperwork stays out of the reading flow: the cover, title and half-title pages, copyright and imprint pages, contents pages, lists of illustrations, pages left empty once images are dropped (such as a frontispiece) and Gutenberg's license pages. Everything the author wrote stays in, from dedications, epigraphs and prefaces to afterwords and appendices; a preface counts even when the book's markup places the main text after it, as Standard Ebooks does. Sections are recognised from the book's markup (EPUB 3 semantics or the EPUB 2 guide), then from Gutenberg's markers and section titles. Why: you open a book to read it, not its paperwork.
@@ -63,7 +63,8 @@ Import EPUB on the Add text screen opens the file picker (Files on iPhone). The 
 - **Title and author** come from the book's metadata, falling back to the file name and "Unknown author".
 - **Copy-protected books** (Kindle, Apple Books and Adobe DRM) show "This book is copy-protected (DRM), so Readalez can't open it." Fonts scrambled for licensing (EPUB font obfuscation) are not DRM, and those books open.
 - **Errors.** A file that isn't a readable EPUB shows a clear message, and nothing half-imported appears in the library.
-- **Same book twice.** Importing a book whose text is already in the library opens the copy you have, with its progress. A different edition is a different book.
+- **New mark.** A book just imported shows in the library with a green border and a "New" label beside its options button, until you open a book, go to Add text or reload. Why: after importing you land in the library rather than in the book, so the mark shows which book arrived (the owner, testing #14). Pasted text still opens at once (feature 1), since a paste is usually read straight away.
+- **Same book twice.** Importing a book whose text is already in the library opens the copy you have, with its progress and no New mark. Why: the progress stays, and opening the book shows it was already there. A different edition is a different book.
 
 Checks:
 
@@ -72,8 +73,8 @@ Checks:
 - Unit: a DRM-encrypted fixture gives the DRM message; a fixture with obfuscated fonts opens.
 - Unit: a corrupt ZIP and a renamed text file each give an error and leave the library unchanged.
 - Unit: soft hyphens and zero-width characters are gone, and each verse line ends with a line-break pause.
-- E2E: importing a fixture adds it with the title and author from its metadata and opens it at the first chapter; importing it again opens the same copy, with no duplicate.
-- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app opens at chapter 1.
+- E2E: importing a fixture adds it with the title and author from its metadata and shows it in the library marked New, until it is opened, Add text is opened or the page reloads; opening it starts at the first chapter; importing it again opens the same copy, with no duplicate and no New mark.
+- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app shows in the library marked New and opens at chapter 1.
 - Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone, showing progress, and the app stays responsive. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 
 ### 3. Built-in books

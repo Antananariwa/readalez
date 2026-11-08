@@ -138,6 +138,34 @@ describe("readContent", () => {
     ]);
   });
 
+  it("starts a new stanza at an empty line in verse, as Gutenberg's Alice marks them", () => {
+    // As in the Alice fixture: <br/> ends a line, and <br/><br/> a stanza.
+    expect(
+      paragraphs(`
+        <p class="poem">
+          “How doth the little crocodile<br/>
+              Improve his shining tail,<br/>
+          <br/>
+          “How cheerfully he seems to grin,<br/>
+              How neatly spread his claws,
+        </p>
+        <p>Not verse<br/><br/>here.</p>`),
+    ).toEqual([
+      {
+        kind: "verse",
+        lines: ["“How doth the little crocodile", "Improve his shining tail,"],
+      },
+      {
+        kind: "verse",
+        lines: [
+          "“How cheerfully he seems to grin,",
+          "How neatly spread his claws,",
+        ],
+      },
+      { kind: "prose", text: "Not verse\nhere." },
+    ]);
+  });
+
   it("ends each verse line with a line-break pause", () => {
     const words = splitText([
       {

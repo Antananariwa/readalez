@@ -43,6 +43,11 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: "library" });
   const [books, setBooks] = useState<BookInfo[] | null>(null);
   const [failed, setFailed] = useState(false);
+  /**
+   * The book just imported, marked New in the library until you leave it or
+   * reload (SPEC.md feature 2). Only React state, so a reload clears it.
+   */
+  const [newId, setNewId] = useState<string | null>(null);
 
   const reload = useCallback(() => {
     listBooks().then(
@@ -62,6 +67,7 @@ export default function App() {
     timing = timeWords(splitText(sections)),
   ) => {
     await markOpened(book.id, Date.now());
+    setNewId(null);
     const saved = book.reading;
     setScreen({
       name: "reader",
@@ -98,9 +104,9 @@ export default function App() {
     return (
       <AddText
         onBack={() => setScreen({ name: "library" })}
-        onSave={async ({ title, author, sections, chapters, timing }) => {
-          // A text already in the library opens the copy there (SPEC.md
-          // features 1 and 2).
+        onSave={async ({ title, author, sections, chapters, timing, from }) => {
+          // A text already in the library opens the copy there, with its
+          // progress and no New mark (SPEC.md features 1 and 2).
           const added: BookInfo = {
             id: bookId(sections),
             title,
@@ -110,7 +116,11 @@ export default function App() {
             reading: readingState(timing, progressTable(timing), 0, false),
           };
           const book = await addBook(added, sections, chapters);
-          if (book === added) {
+          if (book === added && from === "epub") {
+            // A new book goes to the library, marked New (SPEC.md feature 2).
+            setNewId(book.id);
+            back();
+          } else if (book === added) {
             await read(book, sections, timing);
           } else {
             await read(book, (await getText(book.id)) ?? sections);
@@ -123,7 +133,11 @@ export default function App() {
     <Library
       books={books}
       failed={failed}
-      onAdd={() => setScreen({ name: "addText" })}
+      newId={newId}
+      onAdd={() => {
+        setNewId(null);
+        setScreen({ name: "addText" });
+      }}
       onOpen={(book) => {
         getText(book.id)
           .then((sections) => (sections ? read(book, sections) : reload()))

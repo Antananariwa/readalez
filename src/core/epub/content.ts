@@ -78,8 +78,9 @@ const DROPPED = new Set([
 /**
  * Classes of image blocks and captions that aren't marked as `figure`.
  * Distributed Proofreaders, who prepare many of Gutenberg's books, use
- * these (not checked against their guidelines; tests/fixtures/epub/README.md
- * says which fixtures have them).
+ * these (not checked against their guidelines). The Pride and Prejudice
+ * fixture, which they produced, has `figcenter`, `figleft` and `caption`
+ * (tests/fixtures/epub/README.md).
  */
 const DROPPED_CLASSES = new Set([
   "caption",
@@ -156,7 +157,13 @@ class Builder {
     if (DROPPED.has(name)) return;
     if (tokens(element, "class").some((c) => DROPPED_CLASSES.has(c))) return;
     if (name === "br") {
-      this.lineBreak();
+      // In verse, an empty line between lines ends the stanza, as in
+      // Gutenberg's `<p class="poem">` (tests/fixtures/epub/README.md).
+      if (context.verseDepth !== null && this.line.trim() === "") {
+        if (!this.isEmpty()) this.flush();
+      } else {
+        this.lineBreak();
+      }
       return;
     }
 

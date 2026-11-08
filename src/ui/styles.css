@@ -10,6 +10,8 @@
   --line: #9ca3af;
   --highlight: #c8102e;
   --hover: #f3f4f6;
+  /* The New mark on a book just imported (SPEC.md feature 2). */
+  --new: #15803d;
   --word-size: 2.25rem;
   /* Where the focus letter sits: left of centre, as in Spritz-style readers,
      since most of a word lies right of its focus letter (SPEC.md feature 5). */
@@ -32,6 +34,7 @@
     --line: #6b7280;
     --highlight: #ff6b6b;
     --hover: #262626;
+    --new: #4ade80;
   }
 }
 
@@ -129,6 +132,29 @@ button {
 .book-opened {
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+/* A book just imported: a green border and a New label by its options. */
+.books li.new {
+  border: 2px solid var(--new);
+}
+
+.books li.new + li {
+  border-top: none;
+}
+
+.books li.new .book {
+  padding-left: 0.5rem;
+}
+
+.new-label {
+  align-self: center;
+  padding: 0.125rem 0.375rem;
+  color: var(--new);
+  border: 1px solid var(--new);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .options {

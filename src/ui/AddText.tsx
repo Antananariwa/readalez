@@ -14,6 +14,8 @@ export interface NewText {
   chapters: Chapter[];
   /** `timeWords(splitText(sections))`, worked out once here. */
   timing: Timing;
+  /** Where it came from: an imported book goes to the library, a paste opens. */
+  from: "epub" | "paste";
 }
 
 interface Props {
@@ -63,7 +65,7 @@ export default function AddText({ onSave, onBack }: Props) {
       return;
     }
     try {
-      await onSave({ ...book, timing: timeWords(words) });
+      await onSave({ ...book, timing: timeWords(words), from: "epub" });
     } catch {
       setImportProblem("storage");
       setSaving(false);
@@ -86,6 +88,7 @@ export default function AddText({ onSave, onBack }: Props) {
         sections: pasted.sections,
         chapters: [],
         timing: timeWords(words),
+        from: "paste",
       });
     } catch {
       setProblem("storage");
