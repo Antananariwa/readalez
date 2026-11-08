@@ -61,11 +61,24 @@ test("the New mark goes when you leave the library for Add text", async ({
   await expect(rows(page).getByText("New", { exact: true })).toHaveCount(0);
 });
 
-test("importing a book already in the library opens that copy, with no duplicate and no New mark", async ({
+test("importing a book already in the library says so, and offers to open that copy", async ({
   page,
 }) => {
   await importCarol(page);
   await importCarol(page);
+
+  const dialog = page.getByRole("dialog", { name: "Already in your library" });
+  await expect(dialog).toContainText(
+    "“A Christmas Carol” is already in your library. You haven't started it yet.",
+  );
+  await dialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Add text" })).toBeVisible();
+
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Import EPUB" }).click();
+  await (await chooser).setFiles(CAROL);
+  await dialog.getByRole("button", { name: "Open" }).click();
   await expect(page.getByTestId("word")).toHaveText("A");
 
   await page.getByRole("button", { name: "Back" }).click();

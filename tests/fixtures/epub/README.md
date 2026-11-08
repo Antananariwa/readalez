@@ -1,6 +1,6 @@
 # EPUB fixtures
 
-Books for the EPUB import tests (`tests/epub/fixtures.test.ts`, `e2e/importEpub.spec.ts`; ADR 0009). #15 and #16 reuse them. SPEC.md (Legal and licensing) asks that each be by authors, translators and illustrators who died over 100 years ago; whether _Pride and Prejudice_'s preface and _Sherlock Holmes_ meet that is still to be checked (#14). Each is kept small.
+Books for the EPUB import tests (`tests/epub/fixtures.test.ts`, `e2e/importEpub.spec.ts`; ADR 0009). #15 and #16 reuse them. Each is copyright-free (SPEC.md, Legal and licensing) and kept small.
 
 ## Project Gutenberg's books
 

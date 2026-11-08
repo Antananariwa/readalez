@@ -85,6 +85,16 @@ export default function App() {
     reload();
   };
 
+  /** Opens a book from the library. */
+  const open = (book: BookInfo) => {
+    getText(book.id)
+      .then((sections) => (sections ? read(book, sections) : back()))
+      .catch(() => {
+        setFailed(true);
+        setScreen({ name: "library" });
+      });
+  };
+
   if (screen.name === "reader") {
     const { id, timing, table } = screen;
     return (
@@ -105,8 +115,9 @@ export default function App() {
       <AddText
         onBack={() => setScreen({ name: "library" })}
         onSave={async ({ title, author, sections, chapters, timing, from }) => {
-          // A text already in the library opens the copy there, with its
-          // progress and no New mark (SPEC.md features 1 and 2).
+          // A book already in the library is handed back, so Add text can
+          // say so; a pasted text already there opens that copy (SPEC.md
+          // features 1 and 2).
           const added: BookInfo = {
             id: bookId(sections),
             title,
@@ -116,6 +127,7 @@ export default function App() {
             reading: readingState(timing, progressTable(timing), 0, false),
           };
           const book = await addBook(added, sections, chapters);
+          if (book !== added && from === "epub") return book;
           if (book === added && from === "epub") {
             // A new book goes to the library, marked New (SPEC.md feature 2).
             setNewId(book.id);
@@ -125,7 +137,9 @@ export default function App() {
           } else {
             await read(book, (await getText(book.id)) ?? sections);
           }
+          return null;
         }}
+        onOpen={open}
       />
     );
   }
@@ -138,11 +152,7 @@ export default function App() {
         setNewId(null);
         setScreen({ name: "addText" });
       }}
-      onOpen={(book) => {
-        getText(book.id)
-          .then((sections) => (sections ? read(book, sections) : reload()))
-          .catch(() => setFailed(true));
-      }}
+      onOpen={open}
       onRename={(book, title) => {
         renameBook(book.id, title).then(reload, reload);
       }}

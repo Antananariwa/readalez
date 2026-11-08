@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { parseEpub, type Chapter } from "../core/epub.ts";
-import { UNKNOWN_AUTHOR } from "../core/library.ts";
+import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
+import { progressPercent } from "../core/position.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
 import { splitText, type Section } from "../core/text.ts";
@@ -19,8 +20,14 @@ export interface NewText {
 }
 
 interface Props {
-  /** Saves the text; rejects if it couldn't be stored. */
-  onSave: (text: NewText) => Promise<void>;
+  /**
+   * Saves the text; rejects if it couldn't be stored. Resolves to the copy
+   * already in the library when an imported book is there already, and to
+   * null otherwise.
+   */
+  onSave: (text: NewText) => Promise<BookInfo | null>;
+  /** Opens a book in the library. */
+  onOpen: (book: BookInfo) => void;
   onBack: () => void;
 }
 
@@ -32,13 +39,15 @@ type ImportProblem = Problem | "unreadable";
  * box and a title field. The title field shows the suggested title until
  * it's typed in; a title left blank saves as the suggestion.
  */
-export default function AddText({ onSave, onBack }: Props) {
+export default function AddText({ onSave, onOpen, onBack }: Props) {
   const [text, setText] = useState("");
   /** The title as typed, or null while it follows the suggested title. */
   const [title, setTitle] = useState<string | null>(null);
   const [problem, setProblem] = useState<Problem>(null);
   const [importProblem, setImportProblem] = useState<ImportProblem>(null);
   const [saving, setSaving] = useState(false);
+  /** The copy in the library of a book imported again. */
+  const [existing, setExisting] = useState<BookInfo | null>(null);
   const suggested = useMemo(() => suggestedTitle(text), [text]);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -65,7 +74,15 @@ export default function AddText({ onSave, onBack }: Props) {
       return;
     }
     try {
-      await onSave({ ...book, timing: timeWords(words), from: "epub" });
+      const copy = await onSave({
+        ...book,
+        timing: timeWords(words),
+        from: "epub",
+      });
+      if (copy) {
+        setExisting(copy);
+        setSaving(false);
+      }
     } catch {
       setImportProblem("storage");
       setSaving(false);
@@ -160,6 +177,66 @@ export default function AddText({ onSave, onBack }: Props) {
           Save
         </button>
       </form>
+      {existing && (
+        <AlreadyInLibrary
+          book={existing}
+          onOpen={() => onOpen(existing)}
+          onClose={() => setExisting(null)}
+        />
+      )}
     </main>
+  );
+}
+
+/**
+ * Says an imported book is already in the library, and offers to open that
+ * copy (SPEC.md feature 2).
+ */
+function AlreadyInLibrary({
+  book,
+  onOpen,
+  onClose,
+}: {
+  book: BookInfo;
+  onOpen: () => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    // As in the library's dialog: no cleanup, since an open dialog leaves the
+    // top layer when it's removed.
+    const dialog = ref.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+
+  const reading = book.reading;
+  const progress = reading?.finished
+    ? "You've finished it."
+    : reading && progressPercent(reading.progress) > 0
+      ? `You've read ${progressPercent(reading.progress)}% of it.`
+      : "You haven't started it yet.";
+
+  return (
+    // Escape closes the dialog; `onClose` keeps React's state in step.
+    <dialog
+      ref={ref}
+      className="book-dialog"
+      aria-labelledby="already-title"
+      onClose={onClose}
+    >
+      <h2 id="already-title">Already in your library</h2>
+      <p>
+        “{book.title}” is already in your library. {progress}
+      </p>
+      <div className="dialog-actions">
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>
+        <button type="button" onClick={onOpen}>
+          Open
+        </button>
+      </div>
+    </dialog>
   );
 }
