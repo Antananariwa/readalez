@@ -1,7 +1,7 @@
 # 5. Build and test with Vite, TypeScript 7, Oxlint, Vitest and Playwright
 
 Date: 2026-10-31
-Status: Accepted
+Status: Accepted; its browser list is superseded by ADR 0010
 
 ## Context
 

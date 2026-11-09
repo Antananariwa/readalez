@@ -17,6 +17,9 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     // Why WebKit: ADR 0005.
     { name: "webkit-iphone", use: { ...devices["iPhone 16"] } },
+    // Android Chrome by emulation, a narrow and a wide phone: ADR 0010.
+    { name: "android-small", use: { ...devices["Galaxy S24"] } },
+    { name: "android-large", use: { ...devices["Pixel 7"] } },
   ],
   // Tests run against the production build.
   webServer: {

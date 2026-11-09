@@ -31,7 +31,7 @@ Examples:
 ## Commands
 
 - `npm run check`: typecheck, lint, Prettier format check and unit tests. A Stop hook runs it when you finish a turn, except when `.claude/hooks/check.sh` skips it, and sends failures back to you.
-- `npm run e2e`: Playwright against the production build, in headless Chromium and in WebKit with iPhone emulation, inside the container. Run it before opening a PR that changes the UI, and use Playwright screenshots whenever you need to see the UI.
+- `npm run e2e`: Playwright against the production build, in headless Chromium, in WebKit with iPhone emulation and in Chromium with Android phone emulation, inside the container. Run it before opening a PR that changes the UI, and use Playwright screenshots whenever you need to see the UI.
 
 ## Structure
 

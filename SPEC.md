@@ -4,7 +4,7 @@ What Readalez does and why. Each feature issue links the feature it builds, whos
 
 ## What Readalez is
 
-A free, open-source speed-reading web app for practicing on real, meaningful texts. v1 shows one word at a time with a highlighted focus letter; guided reading through full paragraphs comes later. It's a PWA (ADR 0002), so it installs from the browser on iPhone and desktop.
+A free, open-source speed-reading web app for practicing on real, meaningful texts. v1 shows one word at a time with a highlighted focus letter; guided reading through full paragraphs comes later. It's a PWA (ADR 0002), so it installs from the browser on iPhone, Android and desktop.
 
 - **Public.** Anyone with the link can use it. Why: it's a portfolio piece (#44). So privacy, copyright and polish are judged for strangers, not only for the owner.
 - **Free and open source (MIT).** Why: a public portfolio piece; it also keeps the patent risk low (see [Legal and licensing](#legal-and-licensing)).
@@ -21,8 +21,9 @@ These apply to every feature.
 ## Devices and browsers
 
 - **iPhone:** iOS 18.4 and later, in the installed app and in Safari. Why: 18.4 is the first version where an installed web app can keep the screen awake while you read: MDN's compatibility data lists the Screen Wake Lock API on iOS from 16.4, but not in Home Screen web apps until 18.4 ([`api/WakeLock.json`](https://github.com/mdn/browser-compat-data/blob/8d371e9fb68c0cdc1908fa370358f6659aaec513/api/WakeLock.json#L26-L36)). On earlier versions the screen dims and locks mid-chapter. It covers iPhone XS and XR (2018) and newer. caniuse still lists the Home Screen bug, with no version ([`features-json/wake-lock.json`](https://github.com/Fyrd/caniuse/blob/dfffa8fdef1b8b5896b85717c7d86df11644187d/features-json/wake-lock.json#L24-L28)), so feature 7's screen-awake device check runs as early as possible.
+- **Android:** current Chrome, in the installed app and in a tab. It's checked by the e2e tests in Chromium with Playwright's Android phone emulation on every PR ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), and in real Android Chrome on emulators before v1 (#85), with no device checks ([known issue](docs/known-issues.md#android-is-checked-only-by-emulation)). Why: the owner decided to support it, with no Android phone to check it on reliably (2026-11-09, #84).
 - **Desktop:** current Chrome, Edge and Firefox. Chrome and Edge can install the app; Firefox runs it in a tab. Why: together they cover most desktop users (#44).
-- **Not checked in v1:** Safari on Mac, Android Chrome and iPad. They run the same engines and will likely work, but nobody checks them. Why: every checked browser adds a manual check per release. An Android store app through Capacitor comes later (ADR 0002).
+- **Not checked in v1:** Safari on Mac and iPad. They run the same engine as iPhone Safari (not checked) and will likely work, but nobody checks them. Why: every checked browser adds a manual check per release. An Android store app through Capacitor is an idea for later ([roadmap](docs/roadmap.md#android-store-app)).
 - Portrait and landscape both work. The interface is in English.
 
 ## v1 features
@@ -259,7 +260,7 @@ Checks:
 
 ### 12. Install, offline and updates
 
-- **Install.** Add to Home Screen in iPhone Safari, or the install button in Chrome and Edge, gives a full-screen app named Readalez with its own icon. Firefox runs it in a tab.
+- **Install.** Add to Home Screen in iPhone Safari, Chrome's install option on Android (where Chrome shows it: not checked), or the install button in desktop Chrome and Edge gives a full-screen app named Readalez with its own icon. Firefox runs it in a tab.
 - **Offline.** After the first visit, the app, the built-in books and your own books work without a network.
 - **Updates** download in the background and apply at a later launch, never while you read.
 - **Install tip.** On the first visit in iPhone Safari (not in the installed app), a card explains that Safari and the installed app keep separate libraries, and that Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)); it shows the Add to Home Screen steps. Once dismissed, it doesn't return. Why: books added in a Safari tab don't appear in the installed app, and the installed app is exempt from the seven-day clearing (not checked).
@@ -290,7 +291,7 @@ Checks:
 
 ### 14. Where to find books
 
-A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book, since Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
+A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on Android, download the EPUB in Chrome, then Add text, Import EPUB (where the file lands and how the file picker shows it: not checked); on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book, since Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
 
 Checks:
 
@@ -321,10 +322,10 @@ Working assumptions from public sources, not legal advice. Recheck them before a
 ## How features are checked
 
 - **Unit:** unit tests run by `npm run check`, mostly in `src/core`, where reading rules are tested exactly and quickly (ADR 0003). The Stop hook runs them.
-- **E2E:** Playwright in the dev container, in headless Chromium and in WebKit with iPhone emulation, including screenshots and measurements. Why WebKit, and why the Device checks stay: ADR 0005.
+- **E2E:** Playwright in the dev container, in headless Chromium, in WebKit with iPhone emulation, and in Chromium with Android phone emulation, including screenshots and measurements. Why WebKit, and why the Device checks stay: ADR 0005. Why the Android emulation: [ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md).
 - **Build:** a check that runs as part of the build.
 - **Review:** checked by reading the diff. Each merged PR's review is collected in [docs/reviews.md](docs/reviews.md), to show what the reviews catch.
-- **Device:** the owner on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox. Each PR's How to test lists them.
+- **Device:** the owner on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox; Android has no device checks (see [Devices and browsers](#devices-and-browsers)). Each PR's How to test lists them.
 - **Speed and size targets** are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 - **Test fixtures** follow the copyright rule in [Legal and licensing](#legal-and-licensing).
 
