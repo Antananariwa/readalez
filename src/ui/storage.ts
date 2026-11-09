@@ -5,6 +5,7 @@
 import type { Chapter } from "../core/epub.ts";
 import type { BookInfo } from "../core/library.ts";
 import type { Reading } from "../core/position.ts";
+import type { Part } from "../core/readingFlow.ts";
 import type { Section } from "../core/text.ts";
 
 const DATABASE = "readalez";
@@ -18,11 +19,22 @@ interface StoredText {
   id: string;
   sections: Section[];
   /**
-   * An EPUB's chapter list (ADR 0009), stored now so #15 can show it for
-   * books imported before it; empty for pasted text, and absent for texts
-   * stored before #14.
+   * An EPUB's chapter list (ADR 0009); empty for pasted text, and absent for
+   * texts stored before #14.
    */
   chapters?: Chapter[];
+  /**
+   * An EPUB's reading flow (ADR 0011); empty for pasted text and absent for
+   * texts stored before #15, which read whole.
+   */
+  parts?: Part[];
+}
+
+/** A stored text, as the reader opens it. */
+export interface Text {
+  sections: Section[];
+  chapters: Chapter[];
+  parts: Part[];
 }
 
 let opening: Promise<IDBDatabase> | null = null;
@@ -91,14 +103,20 @@ export function listBooks(): Promise<BookInfo[]> {
   );
 }
 
-/** A book's sections, or undefined if it isn't stored. */
-export async function getText(id: string): Promise<Section[] | undefined> {
+/** A book's text, or undefined if it isn't stored. */
+export async function getText(id: string): Promise<Text | undefined> {
   const stored = await transaction([TEXTS], "readonly", (tx) =>
     request(
       tx.objectStore(TEXTS).get(id) as IDBRequest<StoredText | undefined>,
     ),
   );
-  return stored?.sections;
+  return (
+    stored && {
+      sections: stored.sections,
+      chapters: stored.chapters ?? [],
+      parts: stored.parts ?? [],
+    }
+  );
 }
 
 /**
@@ -106,11 +124,7 @@ export async function getText(id: string): Promise<Section[] | undefined> {
  * If a book with the same ID is already stored, nothing changes and that
  * book is returned (SPEC.md features 1 and 2).
  */
-export function addBook(
-  book: BookInfo,
-  sections: Section[],
-  chapters: Chapter[],
-): Promise<BookInfo> {
+export function addBook(book: BookInfo, text: Text): Promise<BookInfo> {
   return transaction([BOOKS, TEXTS], "readwrite", async (tx) => {
     const books = tx.objectStore(BOOKS);
     const existing = await request(
@@ -118,11 +132,7 @@ export function addBook(
     );
     if (existing) return existing;
     books.add(book);
-    tx.objectStore(TEXTS).add({
-      id: book.id,
-      sections,
-      chapters,
-    } satisfies StoredText);
+    tx.objectStore(TEXTS).add({ id: book.id, ...text } satisfies StoredText);
     return book;
   });
 }

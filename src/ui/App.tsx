@@ -8,6 +8,7 @@ import {
   readingState,
   type ProgressTable,
 } from "../core/position.ts";
+import { flowStart, readingFlow } from "../core/readingFlow.ts";
 import { splitText, type Section } from "../core/text.ts";
 import AddText from "./AddText.tsx";
 import Library from "./Library.tsx";
@@ -20,6 +21,7 @@ import {
   markOpened,
   renameBook,
   saveReading,
+  type Text,
 } from "./storage.ts";
 
 type Screen =
@@ -63,7 +65,7 @@ export default function App() {
   /** Opens `book` where its reading stopped (SPEC.md feature 4). */
   const read = async (
     book: BookInfo,
-    sections: Section[],
+    { sections, parts }: Text,
     timing = timeWords(splitText(sections)),
   ) => {
     await markOpened(book.id, Date.now());
@@ -75,7 +77,9 @@ export default function App() {
       sections,
       timing,
       table: progressTable(timing),
-      start: saved ? findPosition(timing.words, saved.position) : 0,
+      start: saved
+        ? findPosition(timing.words, saved.position)
+        : flowStart(readingFlow(timing.words, parts)),
       startFinished: saved?.finished ?? false,
     });
   };
@@ -88,7 +92,7 @@ export default function App() {
   /** Opens a book from the library. */
   const open = (book: BookInfo) => {
     getText(book.id)
-      .then((sections) => (sections ? read(book, sections) : back()))
+      .then((text) => (text ? read(book, text) : back()))
       .catch(() => {
         setFailed(true);
         setScreen({ name: "library" });
@@ -114,25 +118,41 @@ export default function App() {
     return (
       <AddText
         onBack={() => setScreen({ name: "library" })}
-        onSave={async ({ title, author, sections, chapters, timing, from }) => {
+        onSave={async ({
+          title,
+          author,
+          sections,
+          chapters,
+          parts,
+          timing,
+          from,
+        }) => {
           // A text already in the library is handed back, so Add text can
-          // say so (SPEC.md features 1 and 2).
+          // say so (SPEC.md features 1 and 2). A new book opens first where
+          // its reading flow starts (#15).
+          const flow = readingFlow(timing.words, parts);
           const added: BookInfo = {
             id: bookId(sections),
             title,
             author,
             addedAt: Date.now(),
             // So the library shows 0% and the whole time left at once.
-            reading: readingState(timing, progressTable(timing), 0, false),
+            reading: readingState(
+              timing,
+              progressTable(timing),
+              flowStart(flow),
+              false,
+              flow,
+            ),
           };
-          const book = await addBook(added, sections, chapters);
+          const book = await addBook(added, { sections, chapters, parts });
           if (book !== added) return book;
           if (from === "epub") {
             // A new book goes to the library, marked New (SPEC.md feature 2).
             setNewId(book.id);
             back();
           } else {
-            await read(book, sections, timing);
+            await read(book, { sections, chapters, parts }, timing);
           }
           return null;
         }}

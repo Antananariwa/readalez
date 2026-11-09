@@ -4,6 +4,7 @@
 // the book's text again (ADR 0008).
 
 import { factorDuration, type Timing } from "./durations.ts";
+import { flowProgress, readingFlow, type Flow } from "./readingFlow.ts";
 
 /**
  * A place in a book by section, paragraph and word, the indices `Word`
@@ -23,12 +24,15 @@ export interface Reading {
   position: Position;
   /** True once the Finished card has shown, until Start over. */
   finished: boolean;
-  /** 0 at the first word, 1 at the Finished card. */
+  /**
+   * 0 at the reading flow's first word, 1 at the Finished card (ADR 0011):
+   * `flowProgress`.
+   */
   progress: number;
   /**
-   * The words from the position to the end, as [factor, count] pairs: how
-   * many words have each timing factor. Empty once finished. Time left at any
-   * speed comes from it (`bookTimeLeft`).
+   * The flow's words from the position to its end, as [factor, count] pairs:
+   * how many words have each timing factor. Empty once finished. Time left
+   * at any speed comes from it (`bookTimeLeft`).
    */
   left: [factor: number, count: number][];
 }
@@ -102,24 +106,32 @@ export function progressTable(timing: Timing): ProgressTable {
   return { factors, ids };
 }
 
-/** What to store for reading `timing` at word `index`, or finished. */
+/**
+ * What to store for reading `timing` at word `index`, or finished, with
+ * progress and time left over the reading flow (SPEC.md feature 4).
+ */
 export function readingState(
   timing: Timing,
   table: ProgressTable,
   index: number,
   finished: boolean,
+  flow: Flow = readingFlow(timing.words),
 ): Reading {
   const count = timing.words.length;
   const at = Math.min(Math.max(index, 0), Math.max(count - 1, 0));
   const word = timing.words[at];
   const counts = new Array<number>(table.factors.length).fill(0);
   if (!finished) {
-    for (let i = at; i < count; i++) counts[table.ids[i]!]!++;
+    flow.starts.forEach((start, k) => {
+      if (flow.skipped[k]) return;
+      const end = flow.starts[k + 1] ?? count;
+      for (let i = Math.max(start, at); i < end; i++) counts[table.ids[i]!]!++;
+    });
   }
   return {
     position: word ? positionOf(word) : { section: 0, paragraph: 0, word: 0 },
     finished,
-    progress: finished ? 1 : count === 0 ? 0 : at / count,
+    progress: finished ? 1 : flowProgress(flow, at),
     left: table.factors
       .map((factor, id): [number, number] => [factor, counts[id]!])
       .filter(([, n]) => n > 0),

@@ -87,6 +87,8 @@ export interface TestBook {
   nav?: string;
   /** EPUB 2's NCX `<navMap>` content; no NCX if left out. */
   ncx?: string;
+  /** EPUB 2's `<guide>` content; no guide if left out. */
+  guide?: string;
   /** The package's version attribute. */
   version?: "2.0" | "3.0";
 }
@@ -109,6 +111,7 @@ export function testEpub(book: TestBook): Uint8Array<ArrayBuffer> {
 <metadata>${book.metadata ?? ""}</metadata>
 <manifest>${items}${book.nav === undefined ? "" : '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'}${book.ncx === undefined ? "" : '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>'}</manifest>
 <spine${book.ncx === undefined ? "" : ' toc="ncx"'}>${names.map((_, i) => `<itemref idref="d${i}"/>`).join("")}</spine>
+${book.guide === undefined ? "" : `<guide>${book.guide}</guide>`}
 </package>`,
   };
   for (const name of names) {

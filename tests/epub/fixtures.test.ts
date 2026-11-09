@@ -4,7 +4,13 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseEpub, type EpubBook } from "../../src/core/epub.ts";
+import { parseEpub, type Chapter, type EpubBook } from "../../src/core/epub.ts";
+import {
+  firstWordAt,
+  flowStart,
+  inFlow,
+  readingFlow,
+} from "../../src/core/readingFlow.ts";
 import { splitText, wordText, type Paragraph } from "../../src/core/text.ts";
 
 const FIXTURES = new URL("../fixtures/epub/", import.meta.url);
@@ -36,10 +42,13 @@ function chapterTitles(book: EpubBook) {
   return book.chapters.map((chapter) => [chapter.title, chapter.depth]);
 }
 
-/** The kinds of the paragraphs the chapters start at. */
-function chapterStartKinds(book: EpubBook) {
+/**
+ * The kinds of the paragraphs the chapters start at; the first and last two
+ * are Gutenberg's header, footer and license.
+ */
+function chapterStartKinds(book: EpubBook, chapters: readonly Chapter[]) {
   return new Set(
-    book.chapters.map(
+    chapters.map(
       (chapter) =>
         book.sections[chapter.section]!.paragraphs[chapter.paragraph]!.kind,
     ),
@@ -124,8 +133,9 @@ describe("Gutenberg: Alice's Adventures in Wonderland (EPUB 3)", async () => {
     expect(book.sections[0]!.paragraphs).toEqual([]);
   });
 
-  it("takes the chapter list from the nav, each at a heading", () => {
+  it("takes the chapter list from the nav, each at a heading, and adds Gutenberg's header and footer", () => {
     expect(chapterTitles(book)).toEqual([
+      ["The Project Gutenberg eBook of Alice's Adventures in", 0],
       ["Alice’s Adventures in Wonderland", 0],
       ["THE MILLENNIUM FULCRUM EDITION 3.0", 0],
       ["Contents", 0],
@@ -141,9 +151,12 @@ describe("Gutenberg: Alice's Adventures in Wonderland (EPUB 3)", async () => {
       ["CHAPTER X. The Lobster Quadrille", 0],
       ["CHAPTER XI. Who Stole the Tarts?", 0],
       ["CHAPTER XII. Alice’s Evidence", 0],
+      ["*** END OF THE PROJECT GUTENBERG EBOOK ALICE'S ADVENTURES IN", 0],
       ["THE FULL PROJECT GUTENBERG™ LICENSE", 0],
     ]);
-    expect(chapterStartKinds(book)).toEqual(new Set(["heading"]));
+    expect(chapterStartKinds(book, book.chapters.slice(1, -2))).toEqual(
+      new Set(["heading"]),
+    );
   });
 
   it("reads each stanza of “How doth the little crocodile” as verse, with a pause after each line", () => {
@@ -200,22 +213,29 @@ describe("Gutenberg: Pride and Prejudice (EPUB 2, no images)", async () => {
     expect(book.sections).toHaveLength(17);
   });
 
-  it("takes the chapter list from the NCX, each at a heading", () => {
+  it("takes the chapter list from the NCX, each at a heading, and adds the parts it leaves out", () => {
     // 63 navPoints. Gutenberg's labels keep the captions of the illustrations
     // left out of this edition, as in "I hope Mr. Bingley will like it." (#80)
+    // The NCX lists neither the preface nor the list of illustrations.
     const titles = chapterTitles(book);
-    expect(titles).toHaveLength(63);
-    expect(titles.slice(0, 4)).toEqual([
+    expect(titles).toHaveLength(67);
+    expect(titles.slice(0, 7)).toEqual([
+      ["The Project Gutenberg eBook of Pride and Prejudice", 0],
       ["PRIDE. and PREJUDICE", 0],
+      ["PREFACE.", 0],
+      ["List of Illustrations.", 0],
       ["Chapter I.", 0],
       ["I hope Mr. Bingley will like it. CHAPTER II.", 0],
       ["He rode a black horse. CHAPTER III.", 0],
     ]);
-    expect(titles.slice(-2)).toEqual([
+    expect(titles.slice(-3)).toEqual([
       ["CHAPTER LXI.", 0],
+      ["*** END OF THE PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE", 0],
       ["THE FULL PROJECT GUTENBERG™ LICENSE", 0],
     ]);
-    expect(chapterStartKinds(book)).toEqual(new Set(["heading"]));
+    expect(chapterStartKinds(book, book.chapters.slice(1, -2))).toEqual(
+      new Set(["heading"]),
+    );
   });
 
   it("drops the illustrations' captions from the text", () => {
@@ -235,14 +255,16 @@ describe("Gutenberg: Romeo and Juliet (EPUB 3)", async () => {
 
   it("takes the acts and their scenes from the nav, each at a heading", () => {
     const titles = chapterTitles(book);
-    expect(titles).toHaveLength(35);
-    expect(titles.slice(4, 8)).toEqual([
+    expect(titles).toHaveLength(37);
+    expect(titles.slice(5, 9)).toEqual([
       ["THE PROLOGUE", 0],
       ["ACT I", 0],
       ["SCENE I. A public place.", 1],
       ["SCENE II. A Street.", 1],
     ]);
-    expect(chapterStartKinds(book)).toEqual(new Set(["heading"]));
+    expect(chapterStartKinds(book, book.chapters.slice(1, -2))).toEqual(
+      new Set(["heading"]),
+    );
   });
 
   it("keeps a speaker's name as the first line of the speech", () => {
@@ -266,8 +288,9 @@ describe("Gutenberg: The Adventures of Sherlock Holmes (EPUB 3)", async () => {
 
   it("takes the stories and their parts from the nav, each at a heading", () => {
     const titles = chapterTitles(book);
-    expect(titles).toHaveLength(18);
-    expect(titles.slice(0, 7)).toEqual([
+    expect(titles).toHaveLength(20);
+    expect(titles.slice(0, 8)).toEqual([
+      ["The Project Gutenberg eBook of The Adventures of Sherlock", 0],
       ["The Adventures of Sherlock Holmes", 0],
       ["Contents", 0],
       ["I. A SCANDAL IN BOHEMIA", 0],
@@ -276,7 +299,9 @@ describe("Gutenberg: The Adventures of Sherlock Holmes (EPUB 3)", async () => {
       ["III.", 1],
       ["II. THE RED-HEADED LEAGUE", 0],
     ]);
-    expect(chapterStartKinds(book)).toEqual(new Set(["heading"]));
+    expect(chapterStartKinds(book, book.chapters.slice(1, -2))).toEqual(
+      new Set(["heading"]),
+    );
   });
 });
 
@@ -291,8 +316,9 @@ describe("Gutenberg: Moby Dick (EPUB 3)", async () => {
 
   it("takes the front matter, 135 chapters and the epilogue from the nav, each at a heading", () => {
     const titles = chapterTitles(book);
-    expect(titles).toHaveLength(145);
-    expect(titles.slice(0, 6)).toEqual([
+    expect(titles).toHaveLength(147);
+    expect(titles.slice(0, 7)).toEqual([
+      ["The Project Gutenberg eBook of Moby Dick; Or, The Whale", 0],
       ["MOBY-DICK; or, THE WHALE.", 0],
       ["ETYMOLOGY.", 0],
       ["(Supplied by a Late Consumptive Usher to a Grammar School.)", 1],
@@ -300,12 +326,97 @@ describe("Gutenberg: Moby Dick (EPUB 3)", async () => {
       ["EXTRACTS.", 1],
       ["CHAPTER 1. Loomings.", 0],
     ]);
-    expect(titles.slice(-4)).toEqual([
+    expect(titles.slice(-5)).toEqual([
       ["CHAPTER 135. The Chase.—Third Day.", 0],
       ["Epilogue", 0],
       ["“AND I ONLY AM ESCAPED ALONE TO TELL THEE” Job.", 1],
+      ["*** END OF THE PROJECT GUTENBERG EBOOK MOBY DICK; OR, THE", 0],
       ["THE FULL PROJECT GUTENBERG™ LICENSE", 0],
     ]);
-    expect(chapterStartKinds(book)).toEqual(new Set(["heading"]));
+    expect(chapterStartKinds(book, book.chapters.slice(1, -2))).toEqual(
+      new Set(["heading"]),
+    );
   });
+});
+
+// The reading flow (SPEC.md feature 2, issue #15): where each book starts
+// and ends, and what it skips.
+describe("reading flow", async () => {
+  const cases = [
+    {
+      file: "standard-ebooks-a-christmas-carol.epub",
+      first: "Preface I have endeavoured",
+      last: "Bless Us, Every One!”",
+      skipped: ["Titlepage", "A Christmas Carol", "Colophon"],
+    },
+    {
+      file: "gutenberg-11-alice-in-wonderland-epub3.epub",
+      first: "CHAPTER I. Down the",
+      last: "summer days. THE END",
+      skipped: [
+        "The Project Gutenberg eBook of Alice's Adventures in",
+        "*** END OF THE PROJECT GUTENBERG EBOOK ALICE'S ADVENTURES IN",
+      ],
+    },
+    {
+      file: "gutenberg-1342-pride-and-prejudice-epub2.epub",
+      first: "PREFACE. Walt Whitman has",
+      // The printer's imprint after the novel stays (docs/known-issues.md).
+      last: "CHANCERY LANE, LONDON.",
+      skipped: [
+        "The Project Gutenberg eBook of Pride and Prejudice",
+        "List of Illustrations.",
+        "*** END OF THE PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE",
+      ],
+    },
+    {
+      file: "gutenberg-1661-sherlock-holmes-epub3.epub",
+      first: "I. A SCANDAL IN",
+      last: "with considerable success.",
+      skipped: [
+        "The Project Gutenberg eBook of The Adventures of Sherlock",
+        "*** END OF THE PROJECT GUTENBERG EBOOK THE ADVENTURES OF",
+      ],
+    },
+    {
+      file: "gutenberg-2701-moby-dick-epub3.epub",
+      first: "ETYMOLOGY. (Supplied by a",
+      last: "only found another orphan.",
+      skipped: [
+        "The Project Gutenberg eBook of Moby Dick; Or, The Whale",
+        "*** END OF THE PROJECT GUTENBERG EBOOK MOBY DICK; OR, THE",
+      ],
+    },
+  ];
+
+  for (const { file, first, last, skipped } of cases) {
+    describe(file, async () => {
+      const book = await load(file);
+      const words = splitText(book.sections);
+      const flow = readingFlow(words, book.parts);
+      const read = words.filter((_, i) => inFlow(flow, i)).map(wordText);
+
+      it("starts where the author's text starts and ends with the author's last words", () => {
+        expect(read.slice(0, first.split(" ").length).join(" ")).toBe(first);
+        expect(read.slice(-last.split(" ").length).join(" ")).toBe(last);
+        expect(wordText(words[flowStart(flow)]!)).toBe(first.split(" ")[0]);
+      });
+
+      it("has no license, header or contents words in it", () => {
+        const text = read.join(" ");
+        expect(text).not.toMatch(/gutenberg|\*\*\*|standard ?ebooks/i);
+        expect(read).not.toContain("Contents");
+      });
+
+      it("lists each skipped part in the chapter list", () => {
+        const skippedEntries = book.chapters
+          .filter((chapter) => {
+            const i = firstWordAt(words, chapter);
+            return i < words.length && !inFlow(flow, i);
+          })
+          .map((chapter) => chapter.title);
+        for (const title of skipped) expect(skippedEntries).toContain(title);
+      });
+    });
+  }
 });
