@@ -92,7 +92,7 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 
 ## Copyright
 
-No code yet: the help note is #24. Added in #82.
+Code: `src/core/paste.ts`, `src/core/epub.ts` and `src/ui/AddText.tsx`, which add books without any copyright check; the help note is #24. Added in #82.
 
 ### Readalez doesn't check whether a book is free to read where you live
 

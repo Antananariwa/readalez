@@ -270,7 +270,7 @@ Checks:
 - E2E: after one visit, the app reloads with the network off, and a built-in book plays.
 - E2E: a new version deployed while a book is playing doesn't reload the page, and a later launch runs it.
 - E2E: the install tip shows once in emulated iPhone Safari (not installed) and never in other browsers.
-- E2E: once a book is saved, the app has requested persistent storage.
+- E2E: once one of your own books is saved, the app has requested persistent storage.
 - Device: Add to Home Screen on iPhone gives a Readalez icon that opens full screen, and in Airplane Mode the library and reading still work.
 
 ### 13. About, privacy and licenses
@@ -290,7 +290,7 @@ Checks:
 
 ### 14. Where to find books
 
-A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book. Why: Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
+A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book, since Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
 
 Checks:
 
