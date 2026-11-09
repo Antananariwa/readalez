@@ -1,7 +1,7 @@
 # 7. Store the library in IndexedDB, with books known by a hash of their text
 
 Date: 2026-11-06
-Status: Accepted; same text twice now shows a dialog instead of opening the stored copy (SPEC.md features 1 and 2, #14)
+Status: Accepted; its "Same text twice" rule is superseded by SPEC.md features 1 and 2 (#14)
 
 ## Context
 
