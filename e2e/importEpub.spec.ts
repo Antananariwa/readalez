@@ -39,8 +39,9 @@ test("the New mark goes once the book is opened", async ({ page }) => {
   await importCarol(page);
   await rows(page).locator(".book").click();
 
-  // Until #15, a book opens at the start of its spine: the titlepage.
-  await expect(page.getByTestId("word")).toHaveText("A");
+  // Where the author's text starts: the preface, after the title page and
+  // imprint (#15).
+  await expect(page.getByTestId("word")).toHaveText("Preface");
 
   await page.getByRole("button", { name: "Back" }).click();
   await expect(rows(page).locator(".book-title")).toHaveText([
@@ -79,7 +80,7 @@ test("importing a book already in the library says so, and offers to open that c
   await page.getByRole("button", { name: "Import EPUB" }).click();
   await (await chooser).setFiles(CAROL);
   await dialog.getByRole("button", { name: "Open" }).click();
-  await expect(page.getByTestId("word")).toHaveText("A");
+  await expect(page.getByTestId("word")).toHaveText("Preface");
 
   await page.getByRole("button", { name: "Back" }).click();
   await expect(rows(page).locator(".book-title")).toHaveText([

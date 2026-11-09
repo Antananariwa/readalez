@@ -217,6 +217,80 @@ button {
   margin-top: 0.5rem;
 }
 
+/* The chapter list (#15): the dialog's height fits the screen, and the list
+   scrolls inside it. */
+.chapter-dialog {
+  box-sizing: border-box;
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  color: inherit;
+  background: var(--background);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+}
+
+.chapter-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.chapter-dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+.chapter-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.chapter-dialog h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.chapter-dialog-head button {
+  min-height: 44px;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.chapter-list {
+  margin: 0;
+  padding: 0.25rem 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.chapter-list button {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.chapter-list .skipped {
+  color: var(--muted);
+}
+
+.chapter-list [aria-current] {
+  font-weight: bold;
+  background: var(--hover);
+}
+
 /* One screen high, so the paused text scrolls inside its pane. When the
    screen is too short (a phone in landscape), the page scrolls instead. */
 .reader {
@@ -224,6 +298,11 @@ button {
   flex-direction: column;
   height: 100vh;
   height: 100dvh;
+}
+
+.reader-nav {
+  display: flex;
+  justify-content: space-between;
 }
 
 .back {

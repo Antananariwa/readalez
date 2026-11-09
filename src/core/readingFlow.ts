@@ -243,3 +243,19 @@ export function chapterAt(bounds: ChapterBounds, index: number): number {
   }
   return low;
 }
+
+/**
+ * The chapter-list entry that holds word `index`, from each entry's first
+ * word (`firstWordAt`): the one starting last at or before it, and of
+ * entries starting at the same word, the one listed last, so the deepest
+ * wins. -1 before the first entry.
+ */
+export function entryAt(firstWords: readonly number[], index: number): number {
+  let found = -1;
+  firstWords.forEach((first, i) => {
+    if (first <= index && (found === -1 || first >= firstWords[found]!)) {
+      found = i;
+    }
+  });
+  return found;
+}

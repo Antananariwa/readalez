@@ -8,6 +8,7 @@ import {
 } from "./position.ts";
 import {
   chapterAt,
+  entryAt,
   chapterBounds,
   firstWordAt,
   flowIndex,
@@ -287,5 +288,15 @@ describe("chapters (SPEC.md feature 7)", () => {
     expect(timeLeft(timing, from, 300, flow, bounds.firstWords).chapter).toBe(
       whole - after,
     );
+  });
+});
+
+describe("entryAt", () => {
+  it("finds the entry holding a word, the last listed of those at one word", () => {
+    expect(entryAt([5, 5, 9], 4)).toBe(-1);
+    expect(entryAt([5, 5, 9], 6)).toBe(1);
+    expect(entryAt([5, 5, 9], 9)).toBe(2);
+    // An entry listed out of order still counts by where it starts.
+    expect(entryAt([9, 5], 7)).toBe(1);
   });
 });

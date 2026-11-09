@@ -1,7 +1,7 @@
 # 9. Parse EPUB files in core with our own ZIP and XML readers
 
 Date: 2026-11-07
-Status: Accepted
+Status: Accepted; its section rule is extended by ADR 0011, which adds a section of notes after the spine's
 
 ## Context
 

@@ -3,6 +3,7 @@
 // word and turn a tap on the text into a word.
 
 import { isSceneBreak } from "./words.ts";
+import type { Part, Place } from "./readingFlow.ts";
 import { wordText, type Paragraph, type Section, type Word } from "./text.ts";
 
 /** One paragraph as the paused view shows it. */
@@ -141,13 +142,62 @@ export function wordAtCharacter(
   return first + low;
 }
 
-/** The text's word count, for the Finished card: runs of text between spaces. */
-export function wordCount(sections: readonly Section[]): number {
+/**
+ * The text's word count, for the Finished card: runs of text between spaces
+ * in the reading flow's paragraphs (`parts`, ADR 0011; all of them with
+ * none), so a book's license and notes don't count.
+ */
+export function wordCount(
+  sections: readonly Section[],
+  parts: readonly Part[] = [],
+): number {
   let count = 0;
-  for (const section of sections) {
-    for (const paragraph of section.paragraphs) {
-      count += paragraphText(paragraph).match(/\S+/gu)?.length ?? 0;
+  let next = 0;
+  let skipped = false;
+  sections.forEach((section, s) => {
+    section.paragraphs.forEach((paragraph, p) => {
+      while (
+        next < parts.length &&
+        (parts[next]!.section < s ||
+          (parts[next]!.section === s && parts[next]!.paragraph <= p))
+      ) {
+        skipped = parts[next++]!.skipped;
+      }
+      if (!skipped)
+        count += paragraphText(paragraph).match(/\S+/gu)?.length ?? 0;
+    });
+  });
+  return count;
+}
+
+/** A chapter's paragraphs for the paused view, which may span sections. */
+export interface ChapterText {
+  paragraphs: ParagraphText[];
+  /** Each paragraph's section and index in it. */
+  places: Place[];
+}
+
+/**
+ * The paragraphs from `from` up to `to` (not included; the text's end when
+ * undefined), across sections, from `chapterTexts`. A chapter runs from one
+ * of `chapterBounds`' places to the next (SPEC.md feature 7).
+ */
+export function chapterText(
+  texts: readonly (readonly ParagraphText[])[],
+  from: Place,
+  to: Place | undefined,
+): ChapterText {
+  const paragraphs: ParagraphText[] = [];
+  const places: Place[] = [];
+  for (let s = from.section; s < texts.length; s++) {
+    if (to && s > to.section) break;
+    const section = texts[s]!;
+    const start = s === from.section ? from.paragraph : 0;
+    const end = to && s === to.section ? to.paragraph : section.length;
+    for (let p = start; p < Math.min(end, section.length); p++) {
+      paragraphs.push(section[p]!);
+      places.push({ section: s, paragraph: p });
     }
   }
-  return count;
+  return { paragraphs, places };
 }

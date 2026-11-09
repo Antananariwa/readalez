@@ -4,7 +4,7 @@ Books for the EPUB import tests (`tests/epub/fixtures.test.ts`, `e2e/importEpub.
 
 ## Project Gutenberg's books
 
-Downloaded from Project Gutenberg by the owner and added to the #14 branch on 2026-11-08 (commits `d7ff995` and `5efdc13`), then renamed. Each carries Gutenberg's license pages, which Gutenberg requires of a text that keeps its name (SPEC.md, Legal and licensing). Each starts its spine with a page holding only the cover image, which reads as an empty section. The front matter (Gutenberg's header, the title page and the contents) comes before the author's text; #15 finds where that text starts.
+Downloaded from Project Gutenberg by the owner and added to the #14 branch on 2026-11-08 (commits `d7ff995` and `5efdc13`), then renamed. Each carries Gutenberg's license pages, which Gutenberg requires of a text that keeps its name (SPEC.md, Legal and licensing). Each starts its spine with a page holding only the cover image, which reads as an empty section. The front matter (Gutenberg's header, the title page and the contents) comes before the author's text; the reading-flow tests in `tests/epub/fixtures.test.ts` say where each book's text starts and ends (#15).
 
 | File                                            | Book                                                                                                      | Gutenberg                                                                  | Format                                                  | Size (bytes) | SHA-256                                                            |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------- | ------------ | ------------------------------------------------------------------ |
@@ -24,7 +24,7 @@ What each has, as the tests in `tests/epub/fixtures.test.ts` show:
 - **_Sherlock Holmes_:** twelve stories, some with numbered parts nested in the nav.
 - **_Moby Dick_:** the Etymology and Extracts before chapter 1, and 135 chapters in 11 spine items.
 
-None has links to notes, found by searching the XHTML for links to ids starting with `fn`, `footnote` or `note`. #15 needs a book with notes.
+None has links to notes, found by searching the XHTML for links to ids starting with `fn`, `footnote` or `note`. #15 needs a book with notes; it isn't here yet, since the dev container can't reach gutenberg.org (#71), so the notes rules are tested on small EPUBs built in `src/core/epub/flow.test.ts` and `src/core/epub/content.test.ts`.
 
 ## `standard-ebooks-a-christmas-carol.epub`
 

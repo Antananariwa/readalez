@@ -1,7 +1,7 @@
 # 8. Store reading positions on the book's library entry, with its progress
 
 Date: 2026-11-06
-Status: Accepted
+Status: Accepted; how progress is counted is extended by ADR 0011, which counts the reading flow's words
 
 ## Context
 

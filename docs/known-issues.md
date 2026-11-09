@@ -193,3 +193,25 @@ Code: `src/core/epub.ts` and `src/core/epub/`. Tests: `src/core/epub.test.ts`, `
 - **What happens:** `src/core/epub/content.ts` collapses all whitespace, including inside `pre`, so its lines join into one paragraph. Not seen in the fixtures.
 - **Why it's left:** `pre` is rare in the books Readalez is for (not checked).
 - **Suggestions:** read each line of a `pre` as a line break.
+
+## Reading flow and notes
+
+Code: `src/core/epub/flow.ts`, `src/core/epub/content.ts`, `src/core/readingFlow.ts`. Tests: `src/core/epub/flow.test.ts`, `src/core/readingFlow.test.ts`, `tests/epub/fixtures.test.ts`, `e2e/readingFlow.spec.ts`. Added in #15 (ADR 0011).
+
+### Books imported before #15 read whole
+
+- **What happens:** the reading flow is worked out at import and stored with the text (ADR 0011). A book imported before #15 has none, so it opens, reads and counts progress from its first word to its last, Gutenberg's header and license included. Its chapter list shows, with nothing marked skipped.
+- **Why it's left:** the flow needs the book's markup, which isn't stored, and only books imported between #14 and #15 are affected.
+- **Suggestions:** delete the book and import it again; its reading position is lost.
+
+### Paperwork without markup or a known title stays in the flow
+
+- **What happens:** the flow's rules (SPEC.md feature 2) know paperwork from its markup or a few section titles. Two cases in the fixtures stay in the flow: _Pride and Prejudice_ (checked in `tests/epub/fixtures.test.ts`) ends with its printer's imprint ("CHISWICK PRESS:—CHARLES WHITTINGHAM AND CO. TOOKS COURT, CHANCERY LANE, LONDON."), and _Romeo and Juliet_ (seen with a script not in the repo, #15's PR) ends with a "Transcriber's Notes" box in bold, not a heading ("New original cover art included with this eBook is granted to the public domain.").
+- **Why it's left:** both are a line or two before Gutenberg's footer, and rules for them would be guesses from one book each.
+- **Suggestions:** treat a paragraph that is only "Transcriber's Notes" as a section title; recognise printers' imprints by a short list of words, if more books show them.
+
+### A note marker that's plain text stays
+
+- **What happens:** a marker is dropped only when it's a link (SPEC.md feature 2). A marker written as plain superscript text, with no link, still shows as a word, or as part of the word before it. Not seen: no fixture has notes yet.
+- **Why it's left:** without a link, a number in superscript could also be an exponent or an ordinal.
+- **Suggestions:** check against the notes fixture #15 asked for.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  chapterText,
   chapterTexts,
   paragraphText,
   wordAtCharacter,
@@ -179,5 +180,56 @@ describe("wordCount", () => {
     ).toBe(4);
     expect(wordCount(prose(""))).toBe(0);
     expect(wordCount([])).toBe(0);
+  });
+
+  it("counts only the reading flow's paragraphs", () => {
+    const sections = [
+      ...prose("Title page"),
+      ...prose("Once upon a time.", "The end."),
+      ...prose("License text here"),
+    ];
+    expect(
+      wordCount(sections, [
+        { section: 0, paragraph: 0, skipped: true },
+        { section: 1, paragraph: 1, skipped: false },
+        { section: 2, paragraph: 0, skipped: true },
+      ]),
+    ).toBe(2);
+  });
+});
+
+describe("chapterText", () => {
+  const sections: Section[] = [
+    {
+      paragraphs: [
+        { kind: "prose", text: "A." },
+        { kind: "prose", text: "B." },
+      ],
+    },
+    {
+      paragraphs: [
+        { kind: "prose", text: "C." },
+        { kind: "prose", text: "D." },
+      ],
+    },
+  ];
+  const texts = chapterTexts(sections, splitText(sections));
+
+  it("gives the paragraphs between two places, across sections", () => {
+    const chapter = chapterText(
+      texts,
+      { section: 0, paragraph: 1 },
+      { section: 1, paragraph: 1 },
+    );
+    expect(chapter.paragraphs.map((p) => p.text)).toEqual(["B.", "C."]);
+    expect(chapter.places).toEqual([
+      { section: 0, paragraph: 1 },
+      { section: 1, paragraph: 0 },
+    ]);
+  });
+
+  it("runs to the text's end with no place after", () => {
+    const chapter = chapterText(texts, { section: 1, paragraph: 0 }, undefined);
+    expect(chapter.paragraphs.map((p) => p.text)).toEqual(["C.", "D."]);
   });
 });
