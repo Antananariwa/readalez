@@ -90,6 +90,16 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 - **Why it's left:** letting go moves to the nearest sentence start (SPEC.md feature 7), and the sentence buttons and the paused view then reach the exact place.
 - **Suggestions:** show the word or the percentage under the finger while dragging, or make the bar cover the chapter once EPUBs bring chapters (#15).
 
+## Copyright
+
+No code yet: the help note is #24. Added in #82.
+
+### Readalez doesn't check whether a book is free to read where you live
+
+- **What happens:** Readalez reads any book a reader imports or pastes and checks nothing about its copyright. The only safeguard is a sentence in the help note on the Add text screen (SPEC.md feature 14): copyright laws differ between countries, so check your local laws.
+- **Why it's left:** books readers add stay on their device and are never uploaded, so the app distributes nothing (SPEC.md, Legal and licensing), and a check would need each country's rules. The owner chose a note over any check (#83).
+- **Suggestions:** none for v1. A catalog after v1 would choose its books by a copyright rule (docs/roadmap.md, "Public-domain catalog and proxy").
+
 ## Build and tests
 
 Added in #26.

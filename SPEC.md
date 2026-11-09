@@ -263,14 +263,14 @@ Checks:
 - **Offline.** After the first visit, the app, the built-in books and your own books work without a network.
 - **Updates** download in the background and apply at a later launch, never while you read.
 - **Install tip.** On the first visit in iPhone Safari (not in the installed app), a card explains that Safari and the installed app keep separate libraries, and that Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)); it shows the Add to Home Screen steps. Once dismissed, it doesn't return. Why: books added in a Safari tab don't appear in the installed app, and the installed app is exempt from the seven-day clearing (not checked).
-- **Keep the data.** After the first book is added, pasted or imported, the app asks the browser for persistent storage. Why: a browser that grants it doesn't clear the data to free space.
+- **Keep the data.** The app asks the browser for persistent storage; when it asks is #22's choice. Why: a browser that grants it doesn't clear the data to free space.
 
 Checks:
 
 - E2E: after one visit, the app reloads with the network off, and a built-in book plays.
 - E2E: a new version deployed while a book is playing doesn't reload the page, and a later launch runs it.
 - E2E: the install tip shows once in emulated iPhone Safari (not installed) and never in other browsers.
-- E2E: after the first book is added, the app has requested persistent storage.
+- E2E: once a book is saved, the app has requested persistent storage.
 - Device: Add to Home Screen on iPhone gives a Readalez icon that opens full screen, and in Airplane Mode the library and reading still work.
 
 ### 13. About, privacy and licenses
@@ -290,7 +290,7 @@ Checks:
 
 ### 14. Where to find books
 
-A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that these libraries check copyright for the US only, so readers elsewhere should check their local rules. Why: there's no catalog in v1, so readers need the way to free books.
+A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book. Why: Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
 
 Checks:
 
