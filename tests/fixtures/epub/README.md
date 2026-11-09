@@ -28,7 +28,7 @@ None has links to notes, found by searching the XHTML for links to ids starting 
 
 ## `standard-ebooks-a-christmas-carol.epub`
 
-_A Christmas Carol_ by Charles Dickens (died 1870), EPUB 3. Standard Ebooks dedicate their own work to the public domain (CC0), as the book's `epub/text/uncopyright.xhtml` says.
+_A Christmas Carol_ by Charles Dickens, EPUB 3. Standard Ebooks dedicate their own work to the public domain (CC0), as the book's `epub/text/uncopyright.xhtml` says.
 
 - **Source:** the `src/` folder of [`standardebooks/charles-dickens_a-christmas-carol`](https://github.com/standardebooks/charles-dickens_a-christmas-carol/tree/fbcca8acb37169bbb560b8796c1f05b0240f6792/src) at commit `fbcca8a`, fetched on 2026-11-07.
 - **Left out:** `src/epub/images/`, to keep the file small (`cover.svg` alone is 1,111,104 bytes). The package still lists the images, and the importer never opens them.

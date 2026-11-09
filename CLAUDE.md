@@ -1,6 +1,6 @@
 # Readalez
 
-What Readalez is: SPEC.md's What Readalez is. What to build and why: the rest of SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Bugs to fix: GitHub issues. Each doc's intro says what it holds; docs/known-issues.md's and docs/roadmap.md's also give the shape of an entry, and ADR 0001 gives the ADRs'.
+What Readalez is: SPEC.md's What Readalez is. What to build and why: the rest of SPEC.md, with undecided product questions in its Open questions. Where things are in the code: ARCHITECTURE.md. Why the technical choices were made: docs/adr/. Known problems and edge cases accepted for now: docs/known-issues.md. Ideas for after v1: docs/roadmap.md. Work to do, bugs included: GitHub issues. Each doc's intro says what it holds; docs/known-issues.md's and docs/roadmap.md's also give the shape of an entry, and ADR 0001 gives the ADRs'.
 
 ## Working together
 

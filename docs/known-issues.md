@@ -47,13 +47,13 @@ Code: `src/core/paste.ts`. Tests: `src/core/paste.test.ts`. Added in #9.
 ### Two short lines of similar length join into one paragraph
 
 - **What happens:** `"Hello there\nHow are you?"` comes out as one paragraph, read as "Hello there How are you?". The first line breaks mid-sentence and is the only wrapped line, so it counts as hard-wrapped (`isHardWrapped`). Found by the reviewer in #9.
-- **Why it's left:** it follows SPEC.md feature 1's rule as written (most lines break mid-sentence at similar lengths), and with so few lines a hard-wrapped text looks the same. Longer texts, and a heading above a paragraph line, split as expected (`src/core/paste.test.ts`).
+- **Why it's left:** with so few lines, a hard-wrapped text looks the same. Longer texts, and a heading above a paragraph line, split as expected (`src/core/paste.test.ts`).
 - **Suggestions:** treat text as hard-wrapped only with at least a few wrapped lines, if short pastes turn out to matter.
 
 ### A pasted Gutenberg book's title can be a fragment
 
 - **What happens:** the owner pasted the whole plain text of a Gutenberg book (_The Works of William Shakespeare_, Cambridge Edition, Vol. 8) on the iPhone, testing #57. The suggested title was `THE WORKS`, the first line after the `*** START OF` line, because the title page spreads the title over lines with blank lines between them. The field can be edited before saving.
-- **Why it's left:** the first line is SPEC.md feature 1's rule, and the apps checked don't guess more. [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/app-page.ts#L192-L193) titles pasted text "Pasted Text" unless one is typed. [Calibre](https://github.com/kovidgoyal/calibre/blob/ad42fa09dbc3993846cea83215e81acfd7683765/src/calibre/ebooks/metadata/txt.py#L22-L40) uses a TXT file's name, or its first line when three blank lines and an author line follow it. Neither reads Gutenberg's header.
+- **Why it's left:** the apps checked don't guess more. [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/app-page.ts#L192-L193) titles pasted text "Pasted Text" unless one is typed. [Calibre](https://github.com/kovidgoyal/calibre/blob/ad42fa09dbc3993846cea83215e81acfd7683765/src/calibre/ebooks/metadata/txt.py#L22-L40) uses a TXT file's name, or its first line when three blank lines and an author line follow it. Neither reads Gutenberg's header.
 - **Suggestions:** take the header's `Title:` line when the paste includes Gutenberg's header (not checked: whether every Gutenberg file has that line).
 
 ## Reader
@@ -62,9 +62,9 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 
 ### The browser's Back leaves the app
 
-- **What happens:** the Add text screen and the reader are React state, not history entries. So the browser's Back button, or a swipe back, leaves Readalez instead of returning from the reader to Add text. The reader's own Back button works.
-- **Why it's left:** two screens with one way between them don't need a router, and the library (#12) reshapes the navigation.
-- **Suggestions:** push a history entry when the reader opens and close it on `popstate`, or a router once there are more screens.
+- **What happens:** the library, Add text and the reader are React state, not history entries (`src/ui/App.tsx`). So the browser's Back button, or a swipe back, leaves Readalez instead of returning to the library. The app's own Back buttons work.
+- **Why it's left:** first left when there were two screens (#8), and not revisited since the library (#12) made three.
+- **Suggestions:** push a history entry when Add text or the reader opens and close it on `popstate`, or a router once there are more screens.
 
 ### Reading goes on for a while after swiping to the app switcher
 
@@ -110,7 +110,7 @@ Added in #26.
 
 - **What happens:** SPEC.md supports desktop Firefox, but `npm run e2e` and CI run only Chromium and WebKit. Firefox is checked only by hand, in each PR's Device checks.
 - **Why it's left:** the owner expected adding it to take too much time (#51). #52 plans adding it.
-- **Suggestions:** add `firefox` to `npx playwright install --with-deps --only-shell chromium webkit` in `.devcontainer/Dockerfile` and `.github/workflows/node.js.yml`, rebuild the container, then add a `{ name: "firefox", use: { ...devices["Desktop Firefox"] } }` project to `playwright.config.ts` and update its comment.
+- **Suggestions:** #52 lists the steps.
 
 ## Install and updates
 

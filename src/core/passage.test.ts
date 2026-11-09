@@ -2,7 +2,7 @@
 // goes in as sections and paragraphs, and every shown word and focus letter
 // is compared with a hand-checked list.
 //
-// Sources (authors died over 100 years ago; SPEC.md, Legal and licensing),
+// Sources (copyright-free; SPEC.md, Legal and licensing),
 // from the Standard Ebooks editions (CC0 markup, public-domain text):
 // - Charles Dickens (died 1870), A Christmas Carol, Stave I.
 // - Robert Louis Stevenson (died 1894), The Strange Case of Dr Jekyll and
