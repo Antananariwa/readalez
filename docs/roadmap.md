@@ -74,7 +74,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Android store app
 
-- **What:** an Android app through Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)).
+- **What:** an Android app through Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). The PWA itself already runs in Android Chrome ([SPEC.md, Devices and browsers](../SPEC.md#devices-and-browsers)); a store app stays an idea.
 
 ## Extras
 
