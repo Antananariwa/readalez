@@ -8,7 +8,7 @@ import {
   entryAt,
   firstWordAt,
   flowOrdinal,
-  inFlow,
+  skippedEntries,
   type Flow,
   type Part,
 } from "../core/readingFlow.ts";
@@ -163,7 +163,7 @@ export default function Reader({
         <ChapterList
           chapters={chapters}
           current={entryAt(entryWords, index)}
-          skipped={entryWords.map((i) => i < count && !inFlow(flow, i))}
+          skipped={skippedEntries(flow, entryWords)}
           onPick={(entry) => {
             setListOpen(false);
             moveTo(Math.min(entryWords[entry]!, count - 1));

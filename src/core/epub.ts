@@ -134,8 +134,14 @@ function locator(
   return (path, fragment) => {
     const section = pack.spine.findIndex((item) => item.path === path);
     if (section === -1) return null;
-    if (fragment === null) return { section, paragraph: 0 };
     const content = contents[section]!;
+    if (fragment === null) {
+      // A document of notes only, such as Standard Ebooks' endnotes, has
+      // moved to the notes' section.
+      return content.paragraphs.length === 0 && content.notes.length > 0
+        ? { section: contents.length, paragraph: notes.offsets[section]! }
+        : { section, paragraph: 0 };
+    }
     const paragraph = content.anchors.get(fragment);
     if (paragraph !== undefined) return { section, paragraph };
     const note = content.noteAnchors.get(fragment);

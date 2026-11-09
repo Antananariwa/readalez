@@ -10,6 +10,7 @@ import {
   flowStart,
   inFlow,
   readingFlow,
+  skippedEntries,
 } from "../../src/core/readingFlow.ts";
 import { splitText, wordText, type Paragraph } from "../../src/core/text.ts";
 
@@ -314,6 +315,15 @@ describe("Gutenberg: Moby Dick (EPUB 3)", async () => {
     expect(book.sections).toHaveLength(13);
   });
 
+  it("has Gutenberg's header, the title page, the contents and chapters 1 to 7 in one spine item", () => {
+    const sectionOf = (title: string) =>
+      book.chapters.find((chapter) => chapter.title === title)?.section;
+    expect(sectionOf("ETYMOLOGY.")).toBe(1);
+    expect(sectionOf("CHAPTER 1. Loomings.")).toBe(1);
+    expect(sectionOf("CHAPTER 7. The Chapel.")).toBe(1);
+    expect(sectionOf("CHAPTER 8. The Pulpit.")).toBe(2);
+  });
+
   it("takes the front matter, 135 chapters and the epilogue from the nav, each at a heading", () => {
     const titles = chapterTitles(book);
     expect(titles).toHaveLength(147);
@@ -409,13 +419,14 @@ describe("reading flow", async () => {
       });
 
       it("lists each skipped part in the chapter list", () => {
-        const skippedEntries = book.chapters
-          .filter((chapter) => {
-            const i = firstWordAt(words, chapter);
-            return i < words.length && !inFlow(flow, i);
-          })
+        const marked = skippedEntries(
+          flow,
+          book.chapters.map((chapter) => firstWordAt(words, chapter)),
+        );
+        const titles = book.chapters
+          .filter((_, i) => marked[i])
           .map((chapter) => chapter.title);
-        for (const title of skipped) expect(skippedEntries).toContain(title);
+        for (const title of skipped) expect(titles).toContain(title);
       });
     });
   }

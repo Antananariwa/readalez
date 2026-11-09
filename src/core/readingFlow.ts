@@ -160,13 +160,13 @@ export function flowProgress(flow: Flow, index: number): number {
 /**
  * What follows word `index` while playing: the next word, which skips over
  * skipped parts inside the flow; "stop" at the end of a skipped part, which
- * is read to its end and no further; or "end" after the flow's last word,
- * where the book is finished.
+ * is read to its end and no further, the text's last part included; or
+ * "end" after the flow's last word, where the book is finished.
  */
 export function nextWord(flow: Flow, index: number): number | "stop" | "end" {
   const k = partAt(flow, index);
   if (index + 1 < partEnd(flow, k)) return index + 1;
-  if (flow.skipped[k]) return index + 1 < flow.words ? "stop" : "end";
+  if (flow.skipped[k]) return "stop";
   for (let j = k + 1; j < flow.starts.length; j++) {
     if (!flow.skipped[j]) return flow.starts[j]!;
   }
@@ -258,4 +258,15 @@ export function entryAt(firstWords: readonly number[], index: number): number {
     }
   });
   return found;
+}
+
+/**
+ * For each chapter-list entry, from its first word (`firstWordAt`), true
+ * when the reading flow skips it. An entry past the last word isn't.
+ */
+export function skippedEntries(
+  flow: Flow,
+  firstWords: readonly number[],
+): boolean[] {
+  return firstWords.map((i) => i < flow.words && !inFlow(flow, i));
 }

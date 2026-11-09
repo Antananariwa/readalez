@@ -20,6 +20,7 @@ import {
   partAt,
   readingFlow,
   sentenceStartsAround,
+  skippedEntries,
   type Part,
 } from "./readingFlow.ts";
 import { sentenceStarts } from "./sentences.ts";
@@ -200,8 +201,13 @@ describe("nextWord", () => {
     expect(nextWord(flow, at("one."))).toBe("stop");
   });
 
-  it("finishes after the text's last word, even in a skipped part", () => {
-    expect(nextWord(flow, words.length - 1)).toBe("end");
+  it("stops at the text's last word in a skipped part, without finishing", () => {
+    expect(nextWord(flow, words.length - 1)).toBe("stop");
+  });
+
+  it("finishes after the text's last word when it's in the flow", () => {
+    const whole = readingFlow(words);
+    expect(nextWord(whole, words.length - 1)).toBe("end");
   });
 });
 
@@ -288,6 +294,14 @@ describe("chapters (SPEC.md feature 7)", () => {
     expect(timeLeft(timing, from, 300, flow, bounds.firstWords).chapter).toBe(
       whole - after,
     );
+  });
+});
+
+describe("skippedEntries", () => {
+  it("marks the entries the flow skips", () => {
+    expect(
+      skippedEntries(flow, [0, at("Preface"), at("picture,"), words.length]),
+    ).toEqual([true, false, true, false]);
   });
 });
 

@@ -138,7 +138,10 @@ export function findParts(
     }
   }
 
-  const classes = classify(pieces, bookTitle);
+  // A book whose text sits under a heading with its own title, as a short
+  // story's may, keeps that text: the title rule gives way.
+  let classes = classify(pieces, bookTitle);
+  if (!classes.includes("author")) classes = classify(pieces, null);
   const first = classes.indexOf("author");
   const last = classes.lastIndexOf("author");
   if (first === -1) return [];

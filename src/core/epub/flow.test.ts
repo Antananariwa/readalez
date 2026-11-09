@@ -178,3 +178,38 @@ describe("notes (SPEC.md feature 2)", () => {
     ]);
   });
 });
+
+describe("findParts: a story under its own title", () => {
+  it("keeps the text when the book's title heads it, and still skips Gutenberg's header and footer", async () => {
+    const book = await load({
+      metadata: "<dc:title>The Gift of the Magi</dc:title>",
+      documents: {
+        "story.xhtml": `<header class="pg-boilerplate" id="pg-header"><p>Header.</p></header>
+          <h1>THE GIFT OF THE MAGI</h1><p>by O. Henry</p><p>One dollar and eighty-seven cents.</p>
+          <footer class="pg-boilerplate" id="pg-footer"><p>License.</p></footer>`,
+      },
+    });
+    expect(flowOf(book).read).toBe(
+      "THE GIFT OF THE MAGI by O. Henry One dollar and eighty-seven cents.",
+    );
+  });
+});
+
+describe("notes: a table of contents link to a notes document", () => {
+  it("leads to where its notes went", async () => {
+    const book = await load({
+      documents: {
+        "one.xhtml": `<h1>One</h1><p>It began.</p>`,
+        "notes.xhtml": `<section epub:type="endnotes" role="doc-endnotes"><ol><li id="n1"><p>An endnote.</p></li></ol></section>`,
+        "colophon.xhtml": `<section epub:type="colophon"><p>Set in type.</p></section>`,
+      },
+      nav: `<nav epub:type="toc"><ol><li><a href="one.xhtml">One</a></li><li><a href="notes.xhtml">Endnotes</a></li><li><a href="colophon.xhtml">Colophon</a></li></ol></nav>`,
+    });
+    expect(book.chapters).toContainEqual({
+      title: "Endnotes",
+      depth: 0,
+      section: 3,
+      paragraph: 0,
+    });
+  });
+});
