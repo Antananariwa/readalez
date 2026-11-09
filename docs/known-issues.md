@@ -125,7 +125,7 @@ Added in #26.
 ### Android is checked only by emulation
 
 - **What happens:** SPEC.md supports Android Chrome, but the only automatic check is `npm run e2e` in Chromium with Playwright's Android phone presets, which emulate a phone's screen, touch and user agent, not Android ([ADR 0010](adr/0010-test-android-chrome-by-emulation.md)). Nobody checks the installed app, the file picker or the screen staying on in real Android Chrome.
-- **Why it's left:** the owner has no Android phone to check on (#84). The dev container has no `/dev/kvm`, which an Android emulator needs to run at a usable speed (not checked, #85).
+- **Why it's left:** the owner has no Android phone to check on reliably (#84). The dev container has no `/dev/kvm`, which an Android emulator needs to run at a usable speed (not checked, #85).
 - **Suggestions:** #85 plans a run in real Android Chrome on emulators before v1.
 
 ## Install and updates
