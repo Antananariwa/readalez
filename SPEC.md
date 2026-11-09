@@ -1,6 +1,6 @@
 # Spec
 
-What Readalez does and why. Feature issues are cut from the v1 features below: a feature's checks become the issue's acceptance criteria, and each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's an educated guess: thought through, but not assumed always true, and corrected as Readalez grows and meets real books, devices and readers.
+What Readalez does and why. Each feature issue links the feature it builds, whose checks below are its acceptance criteria, and adds only what is specific to the issue: which part of the feature it covers, its open questions and any extra checks. Each check says where it runs (see [How features are checked](#how-features-are-checked)). The reasons behind technical choices live in [docs/adr](docs/adr/). It's an educated guess: thought through, but not assumed always true, and corrected as Readalez grows and meets real books, devices and readers.
 
 ## What Readalez is
 
@@ -27,7 +27,7 @@ These apply to every feature.
 
 ## v1 features
 
-Fourteen features. The order to build them in is under [Suggested build order](#suggested-build-order).
+Fourteen features.
 
 ### 1. Add text by pasting
 
@@ -48,17 +48,17 @@ Checks:
 - Unit: the title is the first line, cut at a word boundary to 60 characters.
 - E2E: after pasting and saving, the reader opens at the first word, and the library lists the text under its title.
 - Device: an article copied from Safari's Reader view on iPhone reads paragraph by paragraph.
-- Device: a novel's worth of text (about 1 MB) pastes and saves on iPhone without freezing or crashing. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
+- Device: a novel's worth of text (about 1 MB) pastes and saves on iPhone without freezing or crashing.
 
 ### 2. Import EPUB files
 
-Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device and added to the library, which shows it marked New; opened for the first time, it starts at its first chapter. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
+Import EPUB on the Add text screen opens the file picker (Files on iPhone). The book is read on the device and added to the library, marked New. Why: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
 
 - **Supported:** EPUB 2 and 3 without DRM. The reading order is the book's spine. The chapter list comes from the book's table of contents, or from its headings if it has none.
 - **Reading starts where the author's text starts** the first time a book opens. Publishing paperwork stays out of the reading flow: the cover, title and half-title pages, copyright and imprint pages, contents pages, lists of illustrations, pages left empty once images are dropped (such as a frontispiece) and Gutenberg's license pages. Everything the author wrote stays in, from dedications, epigraphs and prefaces to afterwords and appendices; a preface counts even when the book's markup places the main text after it, as Standard Ebooks does. Sections are recognised from the book's markup (EPUB 3 semantics or the EPUB 2 guide), then from Gutenberg's markers and section titles. Why: you open a book to read it, not its paperwork.
-- **The reading flow ends with the author's last words**, where the Finished card shows (feature 7). Notes and back-matter paperwork (colophons, copyright pages, Gutenberg's closing license) come after it. Why: finishing a book shouldn't mean reading its license.
+- **The reading flow ends with the author's last words**, where the Finished card shows (feature 7). Back-matter paperwork (colophons, copyright pages, Gutenberg's closing license) comes after it. Why: finishing a book shouldn't mean reading its license.
 - **Everything skipped stays reachable** from the chapter list. Playing a skipped section reads it to its end and stops there.
-- **Notes.** Note markers (¹, [12], * and other links to notes) never appear in the word stream. The notes themselves are gathered into a Notes section at the end. Why: a marker flashing as its own word breaks the flow.
+- **Notes.** Note markers (¹, [12], * and other links to notes) never appear in the word stream. The notes themselves stay out of the reading flow and can be reached from the chapter list. Why: a marker flashing as its own word breaks the flow.
 - **Kept:** headings, paragraphs, block quotes, list items and table rows (each one a paragraph), and line breaks in verse (each gets a pause, see feature 6). **Dropped:** images, with their alt text and captions, since they describe pictures that aren't shown. Soft hyphens and zero-width characters are removed, and non-breaking spaces read as spaces.
 - **Title and author** come from the book's metadata, falling back to the file name and "Unknown author".
 - **Copy-protected books** (Kindle, Apple Books and Adobe DRM) show "This book is copy-protected (DRM), so Readalez can't open it." Fonts scrambled for licensing (EPUB font obfuscation) are not DRM, and those books open.
@@ -69,23 +69,23 @@ Import EPUB on the Add text screen opens the file picker (Files on iPhone). The 
 Checks:
 
 - Unit: for fixture EPUBs (a Standard Ebooks EPUB 3, a Gutenberg EPUB 3 and a Gutenberg EPUB 2), the chapter list matches each book's contents, and the reading flow starts where the author's text starts, with no cover, title, copyright, contents or license words before it.
-- Unit: no note markers appear in the word stream, and the notes appear in a Notes section after the end of the reading flow.
+- Unit: no note markers appear in the word stream, and the notes are outside the reading flow.
 - Unit: a DRM-encrypted fixture gives the DRM message; a fixture with obfuscated fonts opens.
 - Unit: a corrupt ZIP and a renamed text file each give an error and leave the library unchanged.
 - Unit: soft hyphens and zero-width characters are gone, and each verse line ends with a line-break pause.
-- E2E: importing a fixture adds it with the title and author from its metadata and shows it in the library marked New, until it is opened, Add text is opened or the page reloads; opening it starts at the first chapter; importing it again says it's already in the library, adds no duplicate, and Open opens the copy there.
-- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app shows in the library marked New and opens at chapter 1.
-- Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone, showing progress, and the app stays responsive. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
+- E2E: importing a fixture adds it with the title and author from its metadata and shows it in the library marked New, until it is opened, Add text is opened or the page reloads; opening it starts where the author's text starts; importing it again says it's already in the library, adds no duplicate, and Open opens the copy there.
+- Device: on iPhone, an EPUB downloaded from Standard Ebooks in Safari, saved to Files and imported in the installed app shows in the library marked New and opens where the author's text starts.
+- Device: a 600,000-word EPUB (about the length of _War and Peace_) imports on the owner's iPhone, showing progress, and the app stays responsive.
 
 ### 3. Built-in books
 
 Three books are always in the library:
 
-- _A Christmas Carol_ by Charles Dickens (died 1870)
-- _Alice's Adventures in Wonderland_ by Lewis Carroll (died 1898)
-- _The Strange Case of Dr Jekyll and Mr Hyde_ by Robert Louis Stevenson (died 1894)
+- _A Christmas Carol_ by Charles Dickens
+- _Alice's Adventures in Wonderland_ by Lewis Carroll
+- _The Strange Case of Dr Jekyll and Mr Hyde_ by Robert Louis Stevenson
 
-Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
+Each is a short book, a couple of hours at 300 wpm. Why: so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
 
 - **Editions:** Standard Ebooks, with the images, the frontispiece page and the list of illustrations removed. Why: proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0, in each book's `src/epub/text/uncopyright.xhtml`, for example [_A Christmas Carol_'s](https://github.com/standardebooks/charles-dickens_a-christmas-carol/blob/fbcca8acb37169bbb560b8796c1f05b0240f6792/src/epub/text/uncopyright.xhtml)), so there's no license text to carry. Their sources are on GitHub (for example `standardebooks/charles-dickens_a-christmas-carol`), which the dev container can reach.
 - **Copyright:** all three are public domain (see [Legal and licensing](#legal-and-licensing)).
@@ -96,14 +96,14 @@ Each has roughly 25,000–29,000 words, about two hours at 300 wpm. Why: so a ne
 
 Checks:
 
-- E2E: a fresh install lists the three books, and each opens where its text starts: the opening poem of _Alice_, Dickens's preface to _A Christmas Carol_ and chapter 1 of _Jekyll and Hyde_.
+- E2E: a fresh install lists the three books, and each opens where its author's text starts (feature 2).
 - E2E: built-in books can't be deleted; after Delete all data they're still listed, at 0%.
 - E2E: after the first visit, with the network off, a built-in book opens and plays.
-- Unit: the three shipped EPUBs contain no images. Performance targets are in #73, to be researched near the end of v1 (the owner, reviewing #72).
+- Unit: the three shipped EPUBs contain no images.
 
 ### 4. Library
 
-The app's home screen: every book, built-in and imported, most recently opened first and unopened books last, so the book you're reading is on top. Each shows its title, author, progress, time left at the current speed and when it was last opened. Tapping a book opens it where you left off (feature 7 says where reading resumes). Imported books can be renamed and deleted, with a confirmation.
+The app's home screen: every book, built-in or your own, most recently opened first and unopened books last, so the book you're reading is on top. Each shows its title, author, progress, time left at the current speed and when it was last opened. Tapping a book opens it where you left off (feature 7 says where reading resumes). Your own books (pasted or imported) can be renamed and deleted, with a confirmation.
 
 - **Progress is saved while you read:** on pause and at each move while paused, when you leave the reader, when the app goes to the background, and every 2 seconds while playing. Why: iOS can close a web app in the background without warning; 2 seconds leaves room within the 5 seconds the device check below allows for a write still in flight and a late timer.
 - **Progress and time left** measure the reading flow (feature 2): 0% at its first word and 100% at the Finished card. A position in a skipped section counts as 0% before the flow and 100% after it.
@@ -113,7 +113,7 @@ The app's home screen: every book, built-in and imported, most recently opened f
 Checks:
 
 - E2E: the library shows the title, author, progress, time left and last opened date of each book, sorted by last opened.
-- E2E: renaming one imported book and deleting another both survive a reload.
+- E2E: renaming one of your own books and deleting another both survive a reload.
 - Unit: a saved position still points into the same paragraph after a change to the word-splitting rules (for example, splitting at em dashes).
 - Device: after force-quitting the installed app mid-reading, the word marked in the reopened book is at most 5 seconds of reading behind where it stopped.
 
@@ -134,7 +134,7 @@ One word at a time, in the layout Spritz introduced in 2014 and open-source read
 
 - **Fixed spot.** Each word is placed so its focus letter lands on the same point every time, 40% of the way across the word area: left of centre, since most of a word sits to the right of its focus letter. Why: the eyes never have to move. 40% rather than the third that speedread comes close to (column 20 of 64, [`$ORPvisualpos` and `$cursorpos`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L59-L60)): in the first device trial, a third left 5- and 6-letter words wholly in the left half of the screen, and the owner preferred 40% (#36).
 - **Look.** The focus letter is drawn in the highlight colour (red by default) and the rest of the word in the text colour. Thin lines run above and below the word area, each with a short tick at the focus point; Spritz calls this frame the "redicle".
-- **Highlight settings.** The highlight can be turned off: the focus letter then takes the text colour, and nothing moves. Five highlight colours are offered, each readable on both the light and the dark theme. Why: some readers find the colour distracting, and colour-blind readers and dark mode need choices.
+- **Highlight settings.** The highlight can be turned off: the focus letter then takes the text colour, and nothing moves. A few highlight colours are offered, each readable on both the light and the dark theme. Why: some readers find the colour distracting, and colour-blind readers and dark mode need choices.
 - **Long words.** A word longer than 13 letters is split at its own hyphens first (or at slashes and dots in a web address); only as many of those cuts are kept as needed, so neighbouring pieces rejoin while they fit in 13 letters ("twenty-seven-", then "year-old"). Any part still longer than 13 letters is then split into the fewest even parts of at most 13 letters. Every part but the last ends with a hyphen, unless it already ends in one of those marks, and every part gets its own focus letter. Why: the established approach; 13 letters is what fits. Like SpritzerTextView, Readalez cuts at a hyphen only while a part is still too long ([`Spritzer.java`](https://github.com/andrewgiang/SpritzerTextView/blob/8c5dd53843a6d6525d7faa7a4be9b69ee294142e/lib/src/main/java/com/andrewgiang/textspritzer/lib/Spritzer.java#L213-L268)), which gives fewer, fuller flashes than cutting at every hyphen as speedread does ([`split`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L197)).
 - **Words.** Text between spaces is a word, with its punctuation attached. Hyphenated words stay whole ("well-known"); words joined by a dash without spaces are split ("yes—no" shows "yes—", then "no"); numbers stay whole ("1,000.50"). Gutenberg's `--` counts as a dash, and so do `―`, `⸺` and `⸻`; an en dash (`–`) doesn't split, so ranges such as "1914–1918" stay whole. A dash splits only where both sides have a letter or digit. A piece with no letters or digits isn't shown on its own: a spaced dash or ellipsis joins the word before it as its punctuation, keeping its space ("paused —"), and a line of only symbols (such as `* * *`) is a scene break that counts as a paragraph end. Opening quotes and brackets, `¿` and `¡`, and a symbol with no word before it (a dialogue dash at the start of a paragraph) join the word after them instead ("« Bonjour »", "— Привет,"). The exception is `&`, which shows as a word. Why: the space keeps the text as written, and an opening mark belongs to the word it opens, as in French, Spanish and Russian dialogue.
 - **Accents and scripts.** A letter with accents counts and highlights as one letter, however it's encoded. Greek and Cyrillic words follow the same rules.
@@ -190,7 +190,7 @@ Checks:
 - **Controls.** Tap the word frame to play or pause. Below it, two rows of buttons: slower and faster (10 wpm each) around the current speed, and back and forward a sentence around the word "sentence". Holding slower or faster keeps changing the speed until you let go. Back goes to the first word of the sentence on screen, or to the first word of the sentence before when that word is already on screen. On desktop, Space plays or pauses, ← and → move by a sentence, and ↑ and ↓ change the speed. Why: one big tap target suits a phone. The speed and sentence buttons sit in separate rows, and holding keeps stepping (the owner's choices, reviewing #59). Back stops at the sentence's own start first, since jumping a whole sentence back from mid-sentence looked odd once a word can be picked in the paused view (the owner, reviewing #68).
 - **Resume where you left off.** Pressing play after a pause, or in a book just opened, starts at the word on screen. Why: the paused view shows the sentence around the word and lets you tap any word to start from, so going back to the sentence start only got in the way (the owner, reviewing #68).
 - **Paused view.** When paused, the current word stays in its frame, and the text around it appears below, scrollable through the chapter, with the current word marked. Tapping a word in the text moves the frame to that word, and play then starts exactly there. A tap only moves; play stays with the frame and Space. Why: it helps you recover a lost thread, and the later paragraph pacer can build on it. A second tap on the word doesn't play, as it does in [some other readers](docs/roadmap.md#reader-layout-options): the owner preferred it this way (reviewing #68).
-- **Navigation.** A chapter list, including the skipped front matter, the Notes and the publishing pages; tapping an entry jumps to its start. A draggable progress bar covers the reading flow, and letting go moves to the start of the nearest sentence. Time left shows for the chapter and the book, in minutes and seconds (`h:mm:ss` from an hour). The bar stays on screen while playing, dimmed and locked, so it can be dragged only while paused; time left shows only while paused. Why: seconds, because [feature 6's device check](#6-timing) compares a chapter's time left with a stopwatch to within 2%; hidden while playing, because the times took too much attention from the words (the owner, reviewing #68); the bar locked while playing, because a drag then moved the place mid-reading (the owner, testing #75).
+- **Navigation.** A chapter list, including the skipped front matter, the notes and the publishing pages; tapping an entry jumps to its start. A draggable progress bar covers the reading flow, and letting go moves to the start of the nearest sentence. Time left shows for the chapter and the book, in minutes and seconds (`h:mm:ss` from an hour). The bar stays on screen while playing, dimmed and locked, so it can be dragged only while paused; time left shows only while paused. Why: seconds, because [feature 6's device check](#6-timing) compares a chapter's time left with a stopwatch to within 2%; hidden while playing, because the times took too much attention from the words (the owner, reviewing #68); the bar locked while playing, because a drag then moved the place mid-reading (the owner, testing #75).
 - **Finished card.** After the last word of the last chapter, a card shows the book's word count, your total reading time for it and your real average speed, and the book is marked finished. The card offers Back to library and Start over; Start over goes back to the first word, paused, and the book is no longer marked finished. The keys do nothing while the card shows. The word count counts runs of text between spaces, so "yes—no" is one word. Why: the simplest count; it doesn't need to match the words shown exactly (the owner, reviewing #68).
 - **Pausing by itself.** Reading pauses when the app goes to the background, the screen locks or the tab is hidden, and it never resumes on its own.
 - **Screen awake.** The screen stays on while words are playing, and can lock as usual once paused.
@@ -201,7 +201,7 @@ Checks:
 - E2E: after pausing mid-sentence, pressing play shows the word on screen first.
 - E2E: the back button and ← move to the start of the sentence on screen, or of the one before from a sentence's first word; the forward button and → move to the next sentence start; the speed buttons and ↑ and ↓ change the speed by 10, within 100–1,000.
 - E2E: the paused view marks the current word; after tapping another word in the text, the frame shows that word and play starts at it.
-- E2E: the chapter list shows the front matter, chapters, Notes and publishing pages, and tapping one jumps to its start.
+- E2E: the chapter list shows the front matter, chapters, notes and publishing pages, and tapping one jumps to its start.
 - E2E: dragging the progress bar to the middle lands on a sentence start near the middle of the reading flow; while playing, the bar is dimmed and a drag doesn't move it.
 - E2E: hiding the page pauses reading.
 - E2E: reading the last word shows the Finished card with the word count, reading time and average speed, and the library shows the book as finished.
@@ -212,7 +212,7 @@ Checks:
 
 Speed, highlight on or off, highlight colour, theme (follows the system, or light, or dark), text size, Export backup and Import backup (feature 9), Delete all data, and About (feature 13).
 
-- **Delete all data** asks for confirmation, then removes imported books, progress, settings and reading sessions. The built-in books stay, at 0%.
+- **Delete all data** asks for confirmation, then removes your own books, progress, settings and reading sessions. The built-in books stay, at 0%.
 
 Checks:
 
@@ -222,7 +222,7 @@ Checks:
 
 ### 9. Backup file
 
-- **Export** writes one file with the text of your imported books, the progress of every book, your settings and your reading sessions. On iPhone it can be saved to Files.
+- **Export** writes one file with the text of your own books, the progress of every book, your settings and your reading sessions. On iPhone it can be saved to Files.
 - **Import** reads a backup and merges it into this device. Books missing here are added; for a book on both, the position from whichever device read it last wins; sessions are combined without duplicates. Why: it works as a manual sync between iPhone and desktop.
 - **Settings** from a backup replace this device's only when the device has no reading yet. Why: text size and theme often differ between a phone and a desktop.
 - **Books match across devices** by their text, so the same edition imported on two devices counts as one book.
@@ -260,17 +260,17 @@ Checks:
 ### 12. Install, offline and updates
 
 - **Install.** Add to Home Screen in iPhone Safari, or the install button in Chrome and Edge, gives a full-screen app named Readalez with its own icon. Firefox runs it in a tab.
-- **Offline.** After the first visit, the app, the built-in books and every imported book work without a network.
+- **Offline.** After the first visit, the app, the built-in books and your own books work without a network.
 - **Updates** download in the background and apply at a later launch, never while you read.
-- **Install tip.** On the first visit in iPhone Safari (not in the installed app), a card explains that Safari and the installed app keep separate libraries, and that Safari may clear a site's data after 7 days without a visit; it shows the Add to Home Screen steps. Once dismissed, it doesn't return. Why: books imported in a Safari tab don't appear in the installed app, and the installed app is exempt from the 7-day clearing.
-- **Keep the data.** After the first import, the app asks the browser for persistent storage. Why: a browser that grants it doesn't clear the data to free space.
+- **Install tip.** On the first visit in iPhone Safari (not in the installed app), a card explains that Safari and the installed app keep separate libraries, and that Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)); it shows the Add to Home Screen steps. Once dismissed, it doesn't return. Why: books added in a Safari tab don't appear in the installed app, and the installed app is exempt from the seven-day clearing (not checked).
+- **Keep the data.** The app asks the browser for persistent storage; when it asks is #22's choice. Why: a browser that grants it doesn't clear the data to free space.
 
 Checks:
 
 - E2E: after one visit, the app reloads with the network off, and a built-in book plays.
 - E2E: a new version deployed while a book is playing doesn't reload the page, and a later launch runs it.
 - E2E: the install tip shows once in emulated iPhone Safari (not installed) and never in other browsers.
-- E2E: after the first import, the app has requested persistent storage.
+- E2E: once one of your own books is saved, the app has requested persistent storage.
 - Device: Add to Home Screen on iPhone gives a Readalez icon that opens full screen, and in Airplane Mode the library and reading still work.
 
 ### 13. About, privacy and licenses
@@ -290,12 +290,12 @@ Checks:
 
 ### 14. Where to find books
 
-A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that these libraries check copyright for the US only and that local rules apply elsewhere, giving the UK's rule from [Legal and licensing](#legal-and-licensing). Why: there's no catalog in v1, so readers need the way to free books.
+A short help note on the Add text screen. It links to Project Gutenberg and Standard Ebooks and gives the steps: on iPhone, download the EPUB in Safari (it lands in Files, under Downloads), then Add text, Import EPUB; on desktop, download, then import. It adds that copyright laws differ between countries and asks readers to check their local laws before reading a book, since Readalez itself doesn't check a book's copyright ([known issue](docs/known-issues.md#readalez-doesnt-check-whether-a-book-is-free-to-read-where-you-live)). Why: there's no catalog in v1, so readers need the way to free books.
 
 Checks:
 
 - E2E: the links go to gutenberg.org and standardebooks.org and open in a new tab.
-- Device: following the iPhone steps with a Standard Ebooks book ends with the book open in the installed app.
+- Device: following the iPhone steps with a Standard Ebooks book ends with the book in the installed app's library, marked New.
 
 ## Out of scope for v1
 
@@ -311,8 +311,8 @@ Ideas for after v1, from the paragraph pacer to stats and more formats, live in 
 
 Working assumptions from public sources, not legal advice. Recheck them before anything that changes the risk: charging money, or adding a server or a catalog.
 
-- **Copyright.** UK copyright lasts 70 years after the author's death, and a translation's lasts 70 years after the translator's; some countries go up to 100. Everything Readalez ships (the built-in books, test fixtures and sample passages) is copyright-free: public-domain books, such as those Project Gutenberg and Standard Ebooks offer. Why: a fixed number of years since the author's death ruled out ordinary public-domain books (the owner, testing #14). Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
-- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves. A later catalog has to respect Gutenberg's rules: its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; a text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text; and it checks copyright for the US only. So a catalog offers only works that are public domain in the UK, translators included (the exact rule is open: see [docs/roadmap.md](docs/roadmap.md)), and any proxy cache stays short-lived, because cached copies sit in countries whose rules differ.
+- **Copyright.** Everything Readalez ships (the built-in books, test fixtures and sample passages) is copyright-free, such as the public-domain books Project Gutenberg and Standard Ebooks offer. Why: a fixed number of years since the author's death ruled out ordinary public-domain books (the owner, testing #14). Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
+- **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves (feature 2). A text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text (not checked), so the Gutenberg test fixtures keep their license pages. A later catalog has more of Gutenberg's rules to respect: [docs/roadmap.md](docs/roadmap.md#public-domain-catalog-and-proxy).
 - **Focus-point patents.** The fixed focus point in feature 5 is what Spritz's patents describe: US 8,903,174 ("Serial text display for optimal recognition apparatus and method", filed 2012; Google Patents lists it as active, which isn't verified), the related US 9,483,109 and US 10,332,313, and a European family member (validated in Spain as ES 2700224 T3, so UK coverage is possible). The Chinese and Japanese members have lapsed. Free apps use the design openly (the open-source readers in [feature 5](#5-single-word-display)), and the risk is low for a free open-source app. Recheck before charging money, and keep "Spritz" out of the name and the app's text.
 - **Name.** See [What Readalez is](#what-readalez-is).
 - **Privacy.** With no accounts, analytics, cookies, ads, logging or server of its own, Readalez collects no personal data. Storage on the device holds only what the features a reader uses need, which the UK's rules on device storage (PECR) treat as strictly necessary, so no consent banner is needed. Adding a server, sync or analytics means revisiting UK GDPR first.
@@ -325,22 +325,15 @@ Working assumptions from public sources, not legal advice. Recheck them before a
 - **Build:** a check that runs as part of the build.
 - **Review:** checked by reading the diff. Each merged PR's review is collected in [docs/reviews.md](docs/reviews.md), to show what the reviews catch.
 - **Device:** the owner on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox. Each PR's How to test lists them.
+- **Speed and size targets** are in #73, to be researched near the end of v1 (the owner, reviewing #72).
 - **Test fixtures** follow the copyright rule in [Legal and licensing](#legal-and-licensing).
 
-## Suggested build order
+## Build order
 
-1. Scaffold: build, tests, CI, hosting with PR previews and the PWA shell.
-2. Reading core: splitting text into sections, paragraphs and words, focus letters, long-word splits, timing rules and the schedule (features 5 and 6, as unit tests).
-3. Reader with pasted text (features 1, 5, 6 and 7); the Finished card's numbers arrive with sessions in step 7.
-4. Library and saved positions (feature 4).
-5. EPUB import, then the built-in books (features 2 and 3).
-6. Settings and the tuning screen (features 8 and 11).
-7. Reading sessions and the backup file (features 10 and 9).
-8. Install, offline and updates, About, and where to find books (features 12, 13 and 14).
-
-A check that needs a later feature moves to that feature's issue: for example, feature 1's library check lands with feature 4, and feature 7's chapter-list check with feature 2.
+Each open issue names the issues it builds on. A check that needs a later feature moves to that feature's issue: for example, feature 7's chapter-list check lands with feature 2's reading flow (#15).
 
 ## Open questions
 
 - **Final timing values:** set after tuning on the iPhone (feature 11). The table in feature 6 holds starting values.
 - **App icon and visual style:** not decided, apart from no Warner Bros. references.
+- **What a chapter is,** for the paused view and chapter time left. Today it's one spine item (ADR 0009), and in Gutenberg's _Moby Dick_ 135 chapters sit in 11 spine items ([fixtures](tests/fixtures/epub/README.md)). #15 settles it.

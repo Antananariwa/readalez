@@ -1,5 +1,5 @@
-// Sources for the longer samples (authors died over 100 years ago; SPEC.md,
-// Legal and licensing): Robert Louis Stevenson (died 1894), The Strange Case
+// Sources for the longer samples (copyright-free; SPEC.md, Legal and
+// licensing): Robert Louis Stevenson (died 1894), The Strange Case
 // of Dr Jekyll and Mr Hyde; Victor Hugo (died 1885), Les Misérables; Miguel
 // de Cervantes (died 1616), Don Quijote; Leo Tolstoy (died 1910), Anna
 // Karenina. The rest are short stock phrases.

@@ -56,7 +56,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Public-domain catalog and proxy
 
-- **What:** finding and adding free books from inside the app. It needs a proxy, and [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing) lists what a catalog has to respect, so v1 has readers import by hand and the built-in books cover a first use.
+- **What:** finding and adding free books from inside the app. It needs a proxy, so v1 has readers import by hand and the built-in books cover a first use. A catalog has to respect Project Gutenberg's rules (not checked: no source linked): its website is for human users only, and automated traffic gets IP addresses blocked; bulk users must use its mirrors and offline catalog files; and it checks copyright for the US only. Its license rule is in [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing). Cached copies sit in countries whose rules differ, so a proxy cache stays short-lived.
 - **Open:** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
 
 ### TXT, PDF, Word and other formats
