@@ -66,6 +66,11 @@ test("importing a book already in the library says so, and offers to open that c
   page,
 }) => {
   await importCarol(page);
+  // Stored before the next import loads the page again. In one full run on
+  // #15's branch, the reload came first and no dialog showed.
+  await expect(rows(page).locator(".book-title")).toHaveText([
+    "A Christmas Carol",
+  ]);
   await importCarol(page);
 
   const dialog = page.getByRole("dialog", { name: "Already in your library" });
