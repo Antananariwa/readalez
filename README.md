@@ -41,8 +41,8 @@
 
 - **Paste a text** and start reading. Paragraphs are kept, hard-wrapped text such as Project Gutenberg's plain-text files is joined back into paragraphs, and Gutenberg's header and license are left out. The title comes from the first line, and you can change it.
 - **Import EPUB books** (EPUB 2 and 3), with their title and author. Reading starts where the author's text starts, past Gutenberg's header, the title page and the contents, and the book is finished before Gutenberg's closing license. The skipped pages stay in the chapter list. Notes marked up as notes are gathered into one Notes section, and their markers are left out of the words.
-- **One word at a time.** The focus letter is red and always lands on the same spot, so your eyes don't have to move. Words over 13 letters are split into parts.
-- **Timing that follows the text.** Long words, commas, sentence ends and paragraph ends each show for longer. The speed goes from 100 to 1,000 words per minute, in steps of 10, starting at 300.
+- **One word at a time.** The focus letter is red and always lands on the same spot, so your eyes don't have to move. Very long words are split into parts ([details](SPEC.md#5-single-word-display)).
+- **Timing that follows the text.** Long words, commas, sentence ends and paragraph ends each show for longer, at the speed you set ([details](SPEC.md#6-timing)).
 - **Controls.** Tap the word to play or pause. Buttons change the speed and move back or forward a sentence; on a keyboard, Space, ← → and ↑ ↓ do the same. Drag the progress bar, or jump to a chapter from the chapter list.
 - **Paused view.** When you pause, the chapter's text shows below the word with the current word marked, with time left for the chapter and the book. Tap any word to start from there.
 - **Library.** Your books with their author, progress, time left and when you last opened them, most recent first. Rename or delete a book. Your place is saved as you read, so a book opens where you left off. Adding a book that's already there says so instead of making a copy.
@@ -59,7 +59,7 @@ The `main` branch is deployed to [readalez.pages.dev](https://readalez.pages.dev
 
 ## Run it locally
 
-With Node.js 24, the version the dev container uses:
+With the Node.js version the dev container uses ([`.devcontainer/Dockerfile`](.devcontainer/Dockerfile)):
 
 ```sh
 npm ci
