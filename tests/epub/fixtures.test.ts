@@ -357,13 +357,16 @@ describe("Gutenberg: A Connecticut Yankee in King Arthur's Court (EPUB 3)", asyn
   const flow = readingFlow(words, book.parts);
   const read = words.filter((_, i) => inFlow(flow, i)).map(wordText);
 
-  it("keeps its two footnotes written into the paragraphs in the flow, as text", () => {
-    // Plain text, no link or markup (docs/known-issues.md).
+  it("reads its three plain-text notes in the flow, each with its * marker", () => {
+    // No link or markup marks them (docs/known-issues.md).
     const text = read.join(" ");
     expect(text).toContain(
       "No force,* [*Footnote from M.T.: No matter.] said Merlin",
     );
-    expect(text.match(/\[\*Footnote/g)).toHaveLength(2);
+    expect(text).toContain(
+      "king’s grace.* [*Footnote: The story is borrowed, language and all",
+    );
+    expect(text).toContain("Saints.* [*All the details concerning the hermits");
     expect(book.chapters.map((chapter) => chapter.title)).not.toContain(
       "Notes",
     );

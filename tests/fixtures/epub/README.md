@@ -24,13 +24,13 @@ What each has, as the tests in `tests/epub/fixtures.test.ts` show:
 - **_Romeo and Juliet_:** a play: acts with nested scenes in the nav, and each speech with its speaker's name as its first line (#79).
 - **_Sherlock Holmes_:** twelve stories, some with numbered parts nested in the nav.
 - **_Moby Dick_:** the Etymology and Extracts before chapter 1, and 135 chapters in 11 spine items.
-- **_A Connecticut Yankee_:** a title page with the author's real name, a contents page titled "CONTENTS:", and two footnotes written into the paragraphs as plain text, with no link (docs/known-issues.md).
+- **_A Connecticut Yankee_:** a contents page titled "CONTENTS:", and three notes written as plain text, marked `*`, with no link: one inside its paragraph and two as their own paragraph (docs/known-issues.md).
 
-None has links to notes, found by searching the XHTML for links to ids starting with `fn`, `footnote` or `note`; _A Connecticut Yankee_ was added for its notes, but they turned out to be plain text. #15 needs a book with notes; it isn't here yet, since the dev container can't reach gutenberg.org (#71), so the notes rules are tested on small EPUBs built in `src/core/epub/flow.test.ts` and `src/core/epub/content.test.ts`.
+None has links to notes, found by searching the XHTML for links to ids starting with `fn`, `footnote` or `note`; _A Connecticut Yankee_ was added for its notes, but they're plain text. #15 needs a book with notes; it isn't here yet, since the dev container can't reach gutenberg.org (#71), so the notes rules are tested on small EPUBs built in `src/core/epub/flow.test.ts` and `src/core/epub/content.test.ts`.
 
 ### Taking the illustrations out
 
-The owner downloaded _A Connecticut Yankee_'s EPUB 3 on 2026-11-09 (commit `ede3a27`). It was 26,083,944 bytes, 25,694,962 of them its 227 JPEG images (sizes in the zip). This script copies the EPUB without its images except the cover (the manifest item with `properties="cover-image"`), run as `python3 -I strip_images.py <in.epub> <out.epub>`. The XHTML still points at the images, and the importer never opens them. It writes the zip as the script under _A Christmas Carol_ does:
+_A Connecticut Yankee_'s EPUB 3, downloaded by the owner and added to the #15 branch on 2026-11-09 (commit `ede3a27`), was 26,083,944 bytes, 25,694,962 of them its 227 JPEG images (sizes in the zip). This script copies the EPUB without its images except the cover (the manifest item with `properties="cover-image"`), run as `python3 -I strip_images.py <in.epub> <out.epub>`. The XHTML still points at the images, and the importer never opens them. It writes the zip as the script under _A Christmas Carol_ does:
 
 ```python
 import re, sys, zipfile

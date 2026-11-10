@@ -210,14 +210,10 @@ Code: `src/core/epub/flow.ts`, `src/core/epub/content.ts`, `src/core/readingFlow
 - **Why it's left:** both are a line or two before Gutenberg's footer, and rules for them would be guesses from one book each.
 - **Suggestions:** treat a paragraph that is only "Transcriber's Notes" as a section title; recognise printers' imprints by a short list of words, if more books show them.
 
-### A footnote written into the paragraph stays in the flow
+### A note written as plain text stays in the flow
 
-- **What happens:** _A Connecticut Yankee in King Arthur's Court_ (Gutenberg #86) writes its two footnotes inside the paragraph as plain text, with no link or markup: "No force,\* [\*Footnote from M.T.: No matter.] said Merlin". They're read as part of the sentence (`tests/epub/fixtures.test.ts`).
-- **Why it's left:** it's the book's own text, seen in one book, with two notes.
-- **Suggestions:** move a bracketed `[*Footnote…]` to the Notes section, if more books show this form (not checked).
-
-### A note marker that's plain text stays
-
-- **What happens:** a marker is dropped only when it's a link (SPEC.md feature 2). A marker written as plain superscript text, with no link, still shows as a word, or as part of the word before it. Not seen: no fixture has notes yet.
-- **Why it's left:** without a link, a number in superscript could also be an exponent or an ordinal.
-- **Suggestions:** check against the notes fixture #15 asked for.
+- **What happens:** notes and their markers are taken out only when markup or a link marks them (SPEC.md feature 2). _A Connecticut Yankee in King Arthur's Court_ (Gutenberg #86) writes its three notes as plain text, each marked `*` on the word before it, and they're read in the flow (`tests/epub/fixtures.test.ts`):
+  - one inside its paragraph: "No force,\* [\*Footnote from M.T.: No matter.] said Merlin";
+  - two as their own paragraph after the marked one: "grace.\*" then "[\*Footnote: The story is borrowed, …]", and "Saints.\*" then "[\*All the details concerning the hermits, … —Editor ]".
+- **Why it's left:** it's the book's own text, with nothing to tell a note from the sentence around it; seen in one book. A `*` or a superscript number without a link could also be part of the text.
+- **Suggestions:** treat a bracketed passage starting with `[*` as a note and move it to the Notes section, if more books show this form (not checked). The same book also has a bracketed gloss with no marker, "as he were wood [\*demented], for fear", which that rule would take too.
