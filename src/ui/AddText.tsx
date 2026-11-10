@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { parseEpub, type Chapter } from "../core/epub.ts";
+import type { Part } from "../core/readingFlow.ts";
 import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
 import { progressPercent } from "../core/position.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
@@ -13,6 +14,8 @@ export interface NewText {
   sections: Section[];
   /** The chapter list; empty for pasted text. */
   chapters: Chapter[];
+  /** The reading flow's parts; empty for pasted text, which reads whole. */
+  parts: Part[];
   /** `timeWords(splitText(sections))`, worked out once here. */
   timing: Timing;
   /** Where it came from: an imported book goes to the library, a paste opens. */
@@ -104,6 +107,7 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
         author: UNKNOWN_AUTHOR,
         sections: pasted.sections,
         chapters: [],
+        parts: [],
         timing: timeWords(words),
         from: "paste",
       });

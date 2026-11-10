@@ -32,6 +32,14 @@ export interface Package {
   nav: string | null;
   /** The EPUB 2 NCX's path, if there is one. */
   ncx: string | null;
+  /** EPUB 2's guide: the documents it names, with their types. */
+  guide: GuideReference[];
+}
+
+/** An EPUB 2 guide `reference`, such as `type="toc"`. */
+export interface GuideReference {
+  type: string;
+  target: Target;
 }
 
 /** Thrown when the package can't be found or has no reading order. */
@@ -70,6 +78,7 @@ export function readPackage(opf: XmlElement, path: string): Package {
 
   const ncxId = spine.attributes.get("toc");
   const ncx = (ncxId && items.get(ncxId)?.path) || null;
+  const guide = childrenNamed(opf, "guide")[0];
   return {
     title: metadata ? mainTitle(metadata) : null,
     authors: metadata ? authors(metadata) : [],
@@ -82,6 +91,14 @@ export function readPackage(opf: XmlElement, path: string): Package {
     ),
     nav,
     ncx,
+    guide: guide
+      ? childrenNamed(guide, "reference").flatMap((reference) => {
+          const type = reference.attributes.get("type");
+          const href = reference.attributes.get("href");
+          const target = href === undefined ? null : resolveHref(path, href);
+          return type && target ? [{ type: type.toLowerCase(), target }] : [];
+        })
+      : [],
   };
 }
 

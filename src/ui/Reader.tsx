@@ -1,12 +1,24 @@
-import { useEffect, useMemo } from "react";
-import { chapterTexts, wordCount } from "../core/chapterText.ts";
+import { useEffect, useMemo, useState } from "react";
+import { chapterText, chapterTexts, wordCount } from "../core/chapterText.ts";
 import type { Timing } from "../core/durations.ts";
+import type { Chapter } from "../core/epub.ts";
+import {
+  chapterAt,
+  chapterBounds,
+  entryAt,
+  firstWordAt,
+  flowOrdinal,
+  skippedEntries,
+  type Flow,
+  type Part,
+} from "../core/readingFlow.ts";
 import type { Section } from "../core/text.ts";
 import {
   formatDuration,
   lookUpTimeLeft,
   timeLeftTable,
 } from "../core/timeLeft.ts";
+import ChapterList from "./ChapterList.tsx";
 import FinishedCard from "./FinishedCard.tsx";
 import PausedText from "./PausedText.tsx";
 import ProgressBar from "./ProgressBar.tsx";
@@ -21,6 +33,12 @@ interface Props {
   sections: readonly Section[];
   /** `timeWords(splitText(sections))`. */
   timing: Timing;
+  /** The chapter list; empty for pasted text. */
+  chapters: readonly Chapter[];
+  /** The reading flow's parts (ADR 0011); empty when it's the whole text. */
+  parts: readonly Part[];
+  /** `readingFlow(timing.words, parts)`. */
+  flow: Flow;
   /** The word to open at, from the saved position (#13). */
   start: number;
   /** Opens on the Finished card, for a book already finished. */
@@ -34,20 +52,32 @@ interface Props {
 /**
  * The reader (SPEC.md feature 7): tap the frame to play or pause. Below it,
  * one row changes the speed (held, it keeps changing) and one moves by a
- * sentence; the keyboard does the same. Then the progress bar, and when
- * paused, time left and the chapter's text below; after the last word, the
- * Finished card. Reading pauses when the page is hidden, and the screen stays
- * on while words play. The position is saved as `useSavePosition` says.
+ * sentence; the keyboard does the same. Then the progress bar over the
+ * reading flow, and when paused, time left and the chapter's text below;
+ * after the flow's last word, the Finished card. Chapters, beside Back, opens
+ * the chapter list. Reading pauses when the page is hidden, and the screen
+ * stays on while words play. The position is saved as `useSavePosition` says.
  */
 export default function Reader({
   sections,
   timing,
+  chapters,
+  parts,
+  flow,
   start,
   startFinished,
   onSave,
   onBack,
 }: Props) {
-  const controls = usePlayback(timing, start, startFinished);
+  const bounds = useMemo(
+    () => chapterBounds(timing.words, chapters, parts),
+    [timing, chapters, parts],
+  );
+  const entryWords = useMemo(
+    () => chapters.map((chapter) => firstWordAt(timing.words, chapter)),
+    [timing, chapters],
+  );
+  const controls = usePlayback(timing, start, startFinished, flow);
   const {
     index,
     playing,
@@ -73,7 +103,17 @@ export default function Reader({
     () => chapterTexts(sections, timing.words),
     [sections, timing],
   );
-  const table = useMemo(() => timeLeftTable(timing, wpm), [timing, wpm]);
+  const table = useMemo(
+    () => timeLeftTable(timing, wpm, flow, bounds.firstWords),
+    [timing, wpm, flow, bounds],
+  );
+  const chapter = chapterAt(bounds, index);
+  const shown = useMemo(
+    () =>
+      chapterText(texts, bounds.places[chapter]!, bounds.places[chapter + 1]),
+    [texts, bounds, chapter],
+  );
+  const [listOpen, setListOpen] = useState(false);
 
   useEffect(() => {
     // Meant to cover the app going to the background, the screen locking and
@@ -91,7 +131,7 @@ export default function Reader({
     return (
       <main className="reader">
         <FinishedCard
-          words={wordCount(sections)}
+          words={wordCount(sections, parts)}
           onBack={leave}
           onStartOver={startOver}
         />
@@ -99,13 +139,38 @@ export default function Reader({
     );
   }
   const left = lookUpTimeLeft(table, index);
+  const count = timing.words.length;
   return (
     <main className="reader">
-      <nav>
+      <nav className="reader-nav">
         <button type="button" className="back" onClick={leave}>
           Back
         </button>
+        {chapters.length > 0 && (
+          <button
+            type="button"
+            className="back"
+            onClick={() => {
+              pause();
+              setListOpen(true);
+            }}
+          >
+            Chapters
+          </button>
+        )}
       </nav>
+      {listOpen && (
+        <ChapterList
+          chapters={chapters}
+          current={entryAt(entryWords, index)}
+          skipped={skippedEntries(flow, entryWords)}
+          onPick={(entry) => {
+            setListOpen(false);
+            moveTo(Math.min(entryWords[entry]!, count - 1));
+          }}
+          onClose={() => setListOpen(false)}
+        />
+      )}
       {word && <WordFrame word={word} playing={playing} onToggle={toggle} />}
       <div className="controls">
         <div className="control-row">
@@ -133,8 +198,11 @@ export default function Reader({
       </div>
       <div className="progress-row">
         <ProgressBar
-          index={index}
-          count={timing.words.length}
+          index={Math.min(
+            flowOrdinal(flow, index),
+            Math.max(flow.count - 1, 0),
+          )}
+          count={flow.count}
           disabled={playing}
           onSeek={seek}
         />
@@ -152,9 +220,13 @@ export default function Reader({
       </div>
       {!playing && word && (
         <PausedText
-          paragraphs={texts[word.section] ?? []}
+          paragraphs={shown.paragraphs}
           index={index}
-          paragraph={word.paragraph}
+          paragraph={shown.places.findIndex(
+            (place) =>
+              place.section === word.section &&
+              place.paragraph === word.paragraph,
+          )}
           onTap={moveTo}
         />
       )}
@@ -165,8 +237,8 @@ export default function Reader({
 /**
  * Desktop keys: Space plays or pauses, ← and → move by a sentence, ↑ and ↓
  * change the speed, also with the progress bar focused. Keys with Alt, Ctrl
- * or Meta are left to the browser, and so are keys in text fields. On the
- * Finished card the keys do nothing.
+ * or Meta are left to the browser, and so are keys in text fields and in the
+ * chapter list. On the Finished card the keys do nothing.
  */
 function useKeys(controls: PlaybackControls): void {
   const { finished, toggle, back, forward, slower, faster } = controls;
@@ -180,6 +252,10 @@ function useKeys(controls: PlaybackControls): void {
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (finished) return;
+      // The chapter list's own keys.
+      if (event.target instanceof Element && event.target.closest("dialog")) {
+        return;
+      }
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target;
       if (

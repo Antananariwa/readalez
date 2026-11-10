@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { timeWords, wordDuration } from "./durations.ts";
+import { readingFlow } from "./readingFlow.ts";
 import { splitText } from "./text.ts";
 import {
   formatDuration,
@@ -34,27 +35,53 @@ function sum(from: number, to: number, wpm: number): number {
   return ms;
 }
 
-describe("timeLeft", () => {
-  const chapterEnd = words.findIndex((w) => w.section === 1);
+const chapterEnd = words.findIndex((w) => w.section === 1);
+/** Each stave a chapter, as `chapterBounds` gives their first words. */
+const staves = [0, chapterEnd];
+/** Stave I skipped, as front matter would be. */
+const skipFirst = readingFlow(words, [
+  { section: 0, paragraph: 0, skipped: true },
+  { section: 1, paragraph: 0, skipped: false },
+]);
 
+describe("timeLeft", () => {
   it("sums the remaining words' durations for the chapter and the book", () => {
+    const flow = readingFlow(words);
     for (const index of [0, 3, chapterEnd - 1, chapterEnd, words.length - 1]) {
       const end = index < chapterEnd ? chapterEnd : words.length;
-      expect(timeLeft(timing, index, 300)).toEqual({
+      expect(timeLeft(timing, index, 300, flow, staves)).toEqual({
         chapter: sum(index, end, 300),
         book: sum(index, words.length, 300),
       });
     }
   });
 
+  it("is one chapter without chapter starts", () => {
+    expect(timeLeft(timing, 3, 300).chapter).toBe(sum(3, words.length, 300));
+  });
+
+  it("counts only the reading flow's words for the book", () => {
+    // In the skipped part: its chapter, and all of the flow after it.
+    expect(timeLeft(timing, 2, 300, skipFirst, staves)).toEqual({
+      chapter: sum(2, chapterEnd, 300),
+      book: sum(chapterEnd, words.length, 300),
+    });
+    expect(timeLeft(timing, chapterEnd + 1, 300, skipFirst, staves)).toEqual({
+      chapter: sum(chapterEnd + 1, words.length, 300),
+      book: sum(chapterEnd + 1, words.length, 300),
+    });
+  });
+
   it("uses the current speed", () => {
-    expect(timeLeft(timing, 0, 600)).toEqual({
+    expect(timeLeft(timing, 0, 600, readingFlow(words), staves)).toEqual({
       chapter: sum(0, chapterEnd, 600),
       book: sum(0, words.length, 600),
     });
     // At 300 wpm: Stave, I (heading), Marley, was, dead: (1.5×), to, begin,
     // with. (paragraph) = 200 + 1000 + 200 + 200 + 300 + 200 + 200 + 1000.
-    expect(timeLeft(timing, 0, 300).chapter).toBe(3300);
+    expect(timeLeft(timing, 0, 300, readingFlow(words), staves).chapter).toBe(
+      3300,
+    );
   });
 
   it("is zero past the end", () => {
@@ -68,9 +95,15 @@ describe("timeLeft", () => {
 describe("timeLeftTable", () => {
   it("gives the same time left as timeLeft for every word", () => {
     for (const wpm of [100, 300, 1000]) {
-      const table = timeLeftTable(timing, wpm);
-      for (let i = 0; i <= words.length; i++) {
-        expect(lookUpTimeLeft(table, i)).toEqual(timeLeft(timing, i, wpm));
+      for (const flow of [readingFlow(words), skipFirst]) {
+        for (const starts of [[0], staves]) {
+          const table = timeLeftTable(timing, wpm, flow, starts);
+          for (let i = 0; i <= words.length; i++) {
+            expect(lookUpTimeLeft(table, i)).toEqual(
+              timeLeft(timing, i, wpm, flow, starts),
+            );
+          }
+        }
       }
     }
   });

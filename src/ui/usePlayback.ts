@@ -6,10 +6,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Timing } from "../core/durations.ts";
 import {
+  flowIndex,
+  flowStart,
+  nextWord,
+  readingFlow,
+  sentenceStartsAround,
+  type Flow,
+} from "../core/readingFlow.ts";
+import {
   isFinished,
   play,
   setSpeed,
   tick,
+  type Next,
   type Playback,
 } from "../core/schedule.ts";
 import {
@@ -38,11 +47,14 @@ export interface PlaybackControls {
   back: () => void;
   /** Moves to the start of the next sentence. */
   forward: () => void;
-  /** Moves to the sentence start nearest word `index` (the progress bar). */
-  seek: (index: number) => void;
+  /**
+   * Moves to the sentence start nearest the flow's word `ordinal` (the
+   * progress bar, which covers the reading flow).
+   */
+  seek: (ordinal: number) => void;
   /** Moves to word `index` (a tap in the paused view). */
   moveTo: (index: number) => void;
-  /** Goes back to the first word, paused (the Finished card). */
+  /** Goes back to the flow's first word, paused (the Finished card). */
   startOver: () => void;
   slower: () => void;
   faster: () => void;
@@ -50,12 +62,15 @@ export interface PlaybackControls {
 
 /**
  * Playback of `timing`, paused at word `start`, or on the Finished card when
- * `startFinished` is set (a saved place, #13).
+ * `startFinished` is set (a saved place, #13). Reading follows `flow` (#15):
+ * it jumps over skipped parts, finishes after the flow's last word, and in a
+ * skipped part stops at its end.
  */
 export function usePlayback(
   timing: Timing,
   start = 0,
   startFinished = false,
+  flow: Flow = readingFlow(timing.words),
 ): PlaybackControls {
   const [index, setIndex] = useState(start);
   const [playing, setPlaying] = useState(false);
@@ -67,6 +82,11 @@ export function usePlayback(
   const speed = useRef(DEFAULT_WPM);
   const playback = useRef<Playback | null>(null);
   const starts = useMemo(() => sentenceStarts(timing.words), [timing]);
+  const flowStarts = useMemo(
+    () => sentenceStartsAround(flow, starts, flowStart(flow)),
+    [flow, starts],
+  );
+  const next = useMemo<Next>(() => (i) => nextWord(flow, i), [flow]);
 
   useEffect(() => {
     if (!playing) return;
@@ -74,19 +94,25 @@ export function usePlayback(
     let frame = requestAnimationFrame(function step(now) {
       const current = playback.current;
       if (!current) return;
-      const next = tick(timing, current, now);
-      playback.current = next;
-      if (isFinished(timing, next)) {
+      const after = tick(timing, current, now, next);
+      playback.current = after;
+      if (isFinished(timing, after)) {
         playback.current = null;
         setPlaying(false);
         setFinished(true);
         return;
       }
-      if (next.index !== current.index) setIndex(next.index);
+      if (after.stopped) {
+        // The end of a skipped part (SPEC.md feature 2): paused on its last word.
+        playback.current = null;
+        setPlaying(false);
+        return;
+      }
+      if (after.index !== current.index) setIndex(after.index);
       frame = requestAnimationFrame(step);
     });
     return () => cancelAnimationFrame(frame);
-  }, [playing, timing]);
+  }, [playing, timing, next]);
 
   const pause = useCallback(() => setPlaying(false), []);
 
@@ -113,25 +139,31 @@ export function usePlayback(
     [playing, timing],
   );
 
+  // A sentence move stays in the flow, or in the skipped part it's in.
   const back = useCallback(
-    () => jump(sentenceStartBefore(starts, index)),
-    [jump, starts, index],
+    () =>
+      jump(
+        sentenceStartBefore(sentenceStartsAround(flow, starts, index), index),
+      ),
+    [jump, flow, starts, index],
   );
   const forward = useCallback(
-    () => jump(nextSentenceStart(starts, index)),
-    [jump, starts, index],
+    () =>
+      jump(nextSentenceStart(sentenceStartsAround(flow, starts, index), index)),
+    [jump, flow, starts, index],
   );
 
   const seek = useCallback(
-    (to: number) => jump(nearestSentenceStart(starts, to)),
-    [jump, starts],
+    (ordinal: number) =>
+      jump(nearestSentenceStart(flowStarts, flowIndex(flow, ordinal))),
+    [jump, flow, flowStarts],
   );
   const startOver = useCallback(() => {
     playback.current = null;
-    setIndex(0);
+    setIndex(flowStart(flow));
     setPlaying(false);
     setFinished(false);
-  }, []);
+  }, [flow]);
 
   const changeSpeed = useCallback((steps: number) => {
     const next = stepSpeed(speed.current, steps);

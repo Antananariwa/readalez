@@ -213,3 +213,96 @@ describe("readContent", () => {
     ).toEqual([]);
   });
 });
+
+describe("readContent: notes and markers (#15)", () => {
+  it("drops links marked as note references, and links that read as markers", () => {
+    expect(
+      paragraphs(`
+        <p>One<a epub:type="noteref" href="#n1">1</a> two<a role="doc-noteref" href="n.xhtml#n2">2</a>.</p>
+        <p>Three<a class="fnanchor" href="#f3">[3]</a>, four<a href="#f4">[4]</a> and five<sup><a href="#f5">5</a></sup>.</p>
+        <p>Six<a href="#f6">*</a> seven<a href="#f7">†</a> eight<a href="#f8">²</a> nine<a href="#f9">(a)</a>.</p>`),
+    ).toEqual([
+      { kind: "prose", text: "One two." },
+      { kind: "prose", text: "Three, four and five." },
+      { kind: "prose", text: "Six seven eight nine." },
+    ]);
+  });
+
+  it("keeps other links, bare numbers and links to other sites", () => {
+    expect(
+      paragraphs(`
+        <p>See chapter <a href="#c5">5</a>, <a href="#c1">the start</a> and <a href="https://example.org/">[1]</a>.</p>`),
+    ).toEqual([{ kind: "prose", text: "See chapter 5, the start and [1]." }]);
+  });
+
+  it("keeps the notes apart, with their own anchors, labels included", () => {
+    const content = read(`
+      <p id="p1">Text<a class="fnanchor" href="#Footnote_1">[1]</a> goes on.</p>
+      <div class="footnote"><p><a id="Footnote_1" href="#FNanchor_1" class="label">[1]</a> A note.</p></div>
+      <p>More text.</p>
+      <aside epub:type="footnote" id="fn2"><p>Second note.</p></aside>
+      <section epub:type="endnotes" role="doc-endnotes">
+        <h2>Notes</h2>
+        <ol><li id="en1"><p>An endnote.</p></li></ol>
+      </section>`);
+    expect(content.paragraphs).toEqual([
+      { kind: "prose", text: "Text goes on." },
+      { kind: "prose", text: "More text." },
+    ]);
+    expect(content.notes).toEqual([
+      { kind: "prose", text: "[1] A note." },
+      { kind: "prose", text: "Second note." },
+      { kind: "heading", text: "Notes" },
+      { kind: "prose", text: "An endnote." },
+    ]);
+    expect(content.headings).toEqual([]);
+    expect(content.anchors.get("p1")).toBe(0);
+    expect(content.noteAnchors.get("Footnote_1")).toBe(0);
+    expect(content.noteAnchors.get("fn2")).toBe(1);
+    expect(content.noteAnchors.get("en1")).toBe(3);
+  });
+
+  it("goes on with the text after a note in the same block", () => {
+    expect(
+      paragraphs(
+        `<div>Before <aside epub:type="footnote"><p>Note.</p></aside> after.</div>`,
+      ),
+    ).toEqual([
+      { kind: "prose", text: "Before" },
+      { kind: "prose", text: "after." },
+    ]);
+  });
+});
+
+describe("readContent: roles (#15)", () => {
+  it("marks paperwork and the author's text from EPUB 3 semantics, the nearest winning", () => {
+    const content = read(`
+      <section epub:type="titlepage"><h1>A Title</h1></section>
+      <section epub:type="preface"><p>A preface.</p></section>
+      <section epub:type="frontmatter"><p>Unmarked.</p></section>
+      <section role="doc-toc"><p>Contents</p></section>
+      <section epub:type="bodymatter"><section epub:type="colophon"><p>Set in type.</p></section><p>Back in the body.</p></section>`);
+    expect(content.roles).toEqual([
+      "paperwork",
+      "author",
+      null,
+      "paperwork",
+      "paperwork",
+      "author",
+    ]);
+  });
+
+  it("marks Gutenberg's header and footer as paperwork", () => {
+    const content = read(`
+      <header class="pg-boilerplate pgheader" id="pg-header"><h2>The Project Gutenberg eBook of X</h2><div id="pg-start-separator"><span>*** START OF THE PROJECT GUTENBERG EBOOK X ***</span></div></header>
+      <h1>X</h1>
+      <div class="pg-boilerplate" id="pg-footer"><div id="pg-end-separator">*** END ***</div><p>License.</p></div>`);
+    expect(content.roles).toEqual([
+      "paperwork",
+      "paperwork",
+      null,
+      "paperwork",
+      "paperwork",
+    ]);
+  });
+});

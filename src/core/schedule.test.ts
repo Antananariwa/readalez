@@ -129,3 +129,39 @@ describe("schedule", () => {
     expect(setSpeed(play(timing, 0, 300, 0), 42).wpm).toBe(100);
   });
 });
+
+describe("tick with a reading flow (#15)", () => {
+  const timing = sampleTiming(10);
+  const wpm = 300;
+  // Words 3 to 5 are skipped, and the flow ends after word 7.
+  const next = (index: number) =>
+    index === 2
+      ? 6
+      : index === 5
+        ? ("stop" as const)
+        : index >= 7
+          ? ("end" as const)
+          : index + 1;
+
+  it("jumps over a skipped part on schedule, with no start pause", () => {
+    const start = play(timing, 2, wpm, 0);
+    const jumped = tick(timing, start, start.endsAt, next);
+    expect(jumped.index).toBe(6);
+    expect(jumped.endsAt).toBe(start.endsAt + wordDuration(timing, 6, wpm));
+  });
+
+  it("stops at the end of a skipped part, on its last word", () => {
+    const start = play(timing, 5, wpm, 0);
+    const stopped = tick(timing, start, start.endsAt, next);
+    expect(stopped).toMatchObject({ index: 5, stopped: true });
+    expect(isFinished(timing, stopped)).toBe(false);
+    expect(tick(timing, stopped, start.endsAt + 10_000, next)).toBe(stopped);
+  });
+
+  it("finishes after the flow's last word", () => {
+    const start = play(timing, 7, wpm, 0);
+    expect(isFinished(timing, tick(timing, start, start.endsAt, next))).toBe(
+      true,
+    );
+  });
+});

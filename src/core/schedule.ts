@@ -6,13 +6,27 @@ import { wordDuration, type Timing } from "./durations.ts";
 import { clampSpeed } from "./timingValues.ts";
 
 export interface Playback {
-  /** The word on screen; `timing.words.length` once the last word has ended. */
+  /**
+   * The word on screen; `timing.words.length` once reading has finished
+   * (`isFinished`).
+   */
   readonly index: number;
   /** When the word on screen is due to end, in the caller's milliseconds. */
   readonly endsAt: number;
   /** Words per minute for the next word. */
   readonly wpm: number;
+  /**
+   * True once the word on screen has ended at a stop: the end of a skipped
+   * part, which is read to its end and no further (SPEC.md feature 2).
+   */
+  readonly stopped?: boolean;
 }
+
+/**
+ * What follows word `index`: the next word to show, "stop" to pause on this
+ * one, or "end" when reading has finished (`nextWord` in `readingFlow.ts`).
+ */
+export type Next = (index: number) => number | "stop" | "end";
 
 /**
  * Starts playing at word `index` at time `now`. The first word shows for at
@@ -40,21 +54,32 @@ export function isFinished(timing: Timing, playback: Playback): boolean {
   return playback.index >= timing.words.length;
 }
 
+/** Each word in turn, finishing after the last. */
+function inOrder(timing: Timing): Next {
+  return (index) => (index + 1 < timing.words.length ? index + 1 : "end");
+}
+
 /**
  * Moves on at a frame, at most one word per call, so every word is on
  * screen for at least one frame. Each word ends a fixed time after the one
  * before it was due to end, so late frames don't add up. If that time has
  * already passed (the device stalled), the word is timed from `now`
- * instead: reading slows down rather than skipping words.
+ * instead: reading slows down rather than skipping words. `next` says which
+ * word follows; a jump it makes over skipped parts keeps the schedule, with
+ * no start pause.
  */
 export function tick(
   timing: Timing,
   playback: Playback,
   now: number,
+  next: Next = inOrder(timing),
 ): Playback {
-  if (isFinished(timing, playback) || now < playback.endsAt) return playback;
-  const index = playback.index + 1;
-  if (index >= timing.words.length) return { ...playback, index };
+  if (isFinished(timing, playback) || playback.stopped) return playback;
+  if (now < playback.endsAt) return playback;
+  const following = next(playback.index);
+  if (following === "stop") return { ...playback, stopped: true };
+  if (following === "end") return { ...playback, index: timing.words.length };
+  const index = following;
   const duration = wordDuration(timing, index, playback.wpm);
   const due = playback.endsAt + duration;
   return { index, endsAt: due > now ? due : now + duration, wpm: playback.wpm };
