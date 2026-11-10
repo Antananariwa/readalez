@@ -210,6 +210,12 @@ Code: `src/core/epub/flow.ts`, `src/core/epub/content.ts`, `src/core/readingFlow
 - **Why it's left:** both are a line or two before Gutenberg's footer, and rules for them would be guesses from one book each.
 - **Suggestions:** treat a paragraph that is only "Transcriber's Notes" as a section title; recognise printers' imprints by a short list of words, if more books show them.
 
+### A footnote written into the paragraph stays in the flow
+
+- **What happens:** _A Connecticut Yankee in King Arthur's Court_ (Gutenberg #86) writes its two footnotes inside the paragraph as plain text, with no link or markup: "No force,\* [\*Footnote from M.T.: No matter.] said Merlin". They're read as part of the sentence (`tests/epub/fixtures.test.ts`).
+- **Why it's left:** it's the book's own text, seen in one book, with two notes.
+- **Suggestions:** move a bracketed `[*Footnote…]` to the Notes section, if more books show this form (not checked).
+
 ### A note marker that's plain text stays
 
 - **What happens:** a marker is dropped only when it's a link (SPEC.md feature 2). A marker written as plain superscript text, with no link, still shows as a word, or as part of the word before it. Not seen: no fixture has notes yet.

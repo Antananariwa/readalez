@@ -351,6 +351,25 @@ describe("Gutenberg: Moby Dick (EPUB 3)", async () => {
 
 // The reading flow (SPEC.md feature 2, issue #15): where each book starts
 // and ends, and what it skips.
+describe("Gutenberg: A Connecticut Yankee in King Arthur's Court (EPUB 3)", async () => {
+  const book = await load("gutenberg-86-connecticut-yankee-epub3.epub");
+  const words = splitText(book.sections);
+  const flow = readingFlow(words, book.parts);
+  const read = words.filter((_, i) => inFlow(flow, i)).map(wordText);
+
+  it("keeps its two footnotes written into the paragraphs in the flow, as text", () => {
+    // Plain text, no link or markup (docs/known-issues.md).
+    const text = read.join(" ");
+    expect(text).toContain(
+      "No force,* [*Footnote from M.T.: No matter.] said Merlin",
+    );
+    expect(text.match(/\[\*Footnote/g)).toHaveLength(2);
+    expect(book.chapters.map((chapter) => chapter.title)).not.toContain(
+      "Notes",
+    );
+  });
+});
+
 describe("reading flow", async () => {
   const cases = [
     {
@@ -395,6 +414,17 @@ describe("reading flow", async () => {
       skipped: [
         "The Project Gutenberg eBook of Moby Dick; Or, The Whale",
         "*** END OF THE PROJECT GUTENBERG EBOOK MOBY DICK; OR, THE",
+      ],
+    },
+    {
+      file: "gutenberg-86-connecticut-yankee-epub3.epub",
+      first: "PREFACE The ungentle laws",
+      last: "never finished it.",
+      skipped: [
+        "The Project Gutenberg eBook of A Connecticut Yankee in King",
+        "A CONNECTICUT YANKEE IN KING ARTHUR’S COURT",
+        "CONTENTS:",
+        "*** END OF THE PROJECT GUTENBERG EBOOK A CONNECTICUT YANKEE",
       ],
     },
   ];
