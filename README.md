@@ -76,7 +76,7 @@ Where things are in the code: [ARCHITECTURE.md](ARCHITECTURE.md). Why the techni
 
 ## How it's built
 
-Coding agents write most of the code: they plan, write code and tests, and open pull requests. I direct the work: I decide what gets built, approve plans, test on physical devices and merge every pull request.
+Coding agents write most of the code and tests, and open the pull requests. Planning is shared: the agents draft plans, and I shape them. I decide what gets built and when, push back on details, choose the direction and which projects to look at as examples. I also test on physical devices and merge every pull request.
 
 The agents work in an isolated environment with limited access ([ADR 0004](docs/adr/0004-run-claude-code-in-a-dev-container.md)), and they can't merge. Their working rules are in [CLAUDE.md](CLAUDE.md), and the reasons behind technical choices are in [docs/adr](docs/adr/).
 
