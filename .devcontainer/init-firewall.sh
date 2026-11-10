@@ -135,28 +135,31 @@ else
     echo "Firewall verification passed - able to reach https://example.com as expected"
 fi
 
-# A REJECT rule refused each address in about a second when tried in the
-# container for #71, so a refusal within 10 seconds is the firewall's. A
-# timeout means the packet went out and nothing answered.
-if timeout 10 bash -c 'exec 3<>/dev/tcp/example.com/22' 2>/dev/null; then
-    echo "ERROR: Firewall verification failed - was able to reach example.com port 22"
-    exit 1
-elif [ $? -eq 124 ]; then
-    echo "ERROR: Firewall verification failed - example.com port 22 timed out instead of being refused"
-    exit 1
-else
-    echo "Firewall verification passed - example.com port 22 refused as expected"
-fi
+# Prints how many packets an OUTPUT rule, given as iptables-save prints it, has
+# matched so far.
+packets() {
+    iptables-save -c -t filter | awk -v rule="$1" '
+        { count = $1; $1 = ""; sub(/^ /, "") }
+        $0 == rule { gsub(/[][]/, "", count); split(count, n, ":"); print n[1] }'
+}
 
-if timeout 10 bash -c 'exec 3<>/dev/tcp/192.168.0.1/443' 2>/dev/null; then
-    echo "ERROR: Firewall verification failed - was able to reach 192.168.0.1 port 443"
-    exit 1
-elif [ $? -eq 124 ]; then
-    echo "ERROR: Firewall verification failed - 192.168.0.1 port 443 timed out instead of being refused"
-    exit 1
-else
-    echo "Firewall verification passed - 192.168.0.1 port 443 refused as expected"
-fi
+# Passes only if this firewall's REJECT rule refused the connection, not the
+# far end, whose own refusal would fail the connection the same way.
+check_rejected() {
+    local rule="$1" host="$2" port="$3" before after
+    before=$(packets "$rule")
+    timeout 10 bash -c "exec 3<>/dev/tcp/$host/$port" 2>/dev/null || true
+    after=$(packets "$rule")
+    if [ -n "$before" ] && [ -n "$after" ] && [ "$after" -gt "$before" ]; then
+        echo "Firewall verification passed - $host port $port refused by the firewall as expected"
+    else
+        echo "ERROR: Firewall verification failed - $host port $port was not refused by the firewall"
+        exit 1
+    fi
+}
+
+check_rejected "-A OUTPUT -j REJECT --reject-with icmp-admin-prohibited" example.com 22
+check_rejected "-A OUTPUT -d 192.168.0.0/16 -j REJECT --reject-with icmp-admin-prohibited" 192.168.0.1 443
 
 # Verify GitHub API access
 if ! curl --connect-timeout 5 https://api.github.com/zen >/dev/null 2>&1; then
