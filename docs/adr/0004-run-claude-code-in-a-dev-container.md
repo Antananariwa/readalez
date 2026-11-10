@@ -1,7 +1,7 @@
 # 4. Run Claude Code in Anthropic's reference dev container
 
 Date: 2026-10-30
-Status: Accepted
+Status: Accepted; its outbound firewall rules are superseded by ADR 0012, which opens web ports and closes SSH
 
 ## Context
 

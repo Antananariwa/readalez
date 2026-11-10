@@ -29,10 +29,7 @@ fi
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 # Allow inbound DNS responses
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
-# Allow outbound SSH
-iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
-# Allow inbound SSH responses
-iptables -A INPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+# No outbound SSH: git and gh use HTTPS (ADR 0012).
 # Allow localhost
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
@@ -115,16 +112,50 @@ iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Then allow only specific outbound traffic to allowed domains
 iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
 
+# Block private and local networks (the home network, link-local, carrier-grade
+# NAT). The host network rule above comes first, so Docker's own network still
+# works (ADR 0012).
+for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 169.254.0.0/16 100.64.0.0/10; do
+    iptables -A OUTPUT -d "$net" -j REJECT --reject-with icmp-admin-prohibited
+done
+
+# Allow web ports (HTTP and HTTPS) to any other host, so Claude can read web
+# pages (ADR 0012)
+iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+
 # Explicitly REJECT all other outbound traffic for immediate feedback
 iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 echo "Firewall configuration complete"
 echo "Verifying firewall rules..."
-if curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
-    echo "ERROR: Firewall verification failed - was able to reach https://example.com"
+if ! curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
+    echo "ERROR: Firewall verification failed - unable to reach https://example.com"
     exit 1
 else
-    echo "Firewall verification passed - unable to reach https://example.com as expected"
+    echo "Firewall verification passed - able to reach https://example.com as expected"
+fi
+
+# A REJECT rule refused each address in about a second when tried in the
+# container for #71, so a refusal within 10 seconds is the firewall's. A
+# timeout means the packet went out and nothing answered.
+if timeout 10 bash -c 'exec 3<>/dev/tcp/example.com/22' 2>/dev/null; then
+    echo "ERROR: Firewall verification failed - was able to reach example.com port 22"
+    exit 1
+elif [ $? -eq 124 ]; then
+    echo "ERROR: Firewall verification failed - example.com port 22 timed out instead of being refused"
+    exit 1
+else
+    echo "Firewall verification passed - example.com port 22 refused as expected"
+fi
+
+if timeout 10 bash -c 'exec 3<>/dev/tcp/192.168.0.1/443' 2>/dev/null; then
+    echo "ERROR: Firewall verification failed - was able to reach 192.168.0.1 port 443"
+    exit 1
+elif [ $? -eq 124 ]; then
+    echo "ERROR: Firewall verification failed - 192.168.0.1 port 443 timed out instead of being refused"
+    exit 1
+else
+    echo "Firewall verification passed - 192.168.0.1 port 443 refused as expected"
 fi
 
 # Verify GitHub API access

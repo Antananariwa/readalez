@@ -128,6 +128,16 @@ Added in #26.
 - **Why it's left:** the owner has no Android phone to check on reliably (#84). The dev container has no `/dev/kvm`, which an Android emulator needs to run at a usable speed (not checked, #85).
 - **Suggestions:** #85 plans a run in real Android Chrome on emulators before v1.
 
+## Dev container
+
+Code: `.devcontainer/init-firewall.sh`. Added in #71.
+
+### A web page or an issue can carry instructions for the agent
+
+- **What happens:** the agent reads web pages, since ports 80 and 443 are open, and reads issues and comments that anyone can post on this public repo. Text in them can be written to steer an AI agent (prompt injection). A steered session could send the GitHub token or the Claude login to another server, or put a harmful change in a PR ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md) lists what it can reach). Not seen in this project so far.
+- **Why it's left:** the owner chose open web access over adding sites one by one, and rejected a separate research container because it needs its own paid API key (#71). Both logins can be revoked, and only the owner merges.
+- **Suggestions:** if a session does something unexplained, revoke the GitHub token and log the Claude login out. For more isolation later: research in a separate container with no logins, passing checked text to this one.
+
 ## Install and updates
 
 Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Added in #40.
