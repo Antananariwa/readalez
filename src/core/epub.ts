@@ -5,6 +5,7 @@
 // worked out. The notes follow in one section of their own (ADR 0011).
 
 import { emptyContent, readContent, type Content } from "./epub/content.ts";
+import { lockedPaths } from "./epub/encryption.ts";
 import { findParts, type GuideEntry } from "./epub/flow.ts";
 import {
   isXhtml,
@@ -42,18 +43,22 @@ export interface EpubBook {
   parts: Part[];
 }
 
+/** Thrown when a file the book needs is locked by copy protection (DRM). */
+export class DrmError extends Error {}
+
 /** The chapter-list entry for the section of notes. */
 export const NOTES_TITLE = "Notes";
 
 /**
  * Reads an EPUB file. `fileName` is the title when the metadata has none.
- * Rejects if the file isn't an EPUB this reader understands.
+ * Rejects with `DrmError` if the book is copy-protected, and with another
+ * error if the file isn't an EPUB this reader understands.
  */
 export async function parseEpub(
   bytes: Uint8Array<ArrayBuffer>,
   fileName: string,
 ): Promise<EpubBook> {
-  const zip = openZip(bytes);
+  const zip = await refusingLocked(openZip(bytes));
   const opfPath = rootfilePath(await readXml(zip, "META-INF/container.xml"));
   const pack = readPackage(await readXml(zip, opfPath), opfPath);
 
@@ -241,6 +246,23 @@ async function tocEntries(zip: Zip, pack: Package): Promise<TocEntry[]> {
     return ncxEntries(await readXml(zip, pack.ncx), pack.ncx);
   }
   return [];
+}
+
+/** `META-INF/encryption.xml`'s path, from EPUB 3.3 (`epub/encryption.ts`). */
+const ENCRYPTION = "META-INF/encryption.xml";
+
+/** The archive, with every file copy protection locks refused. */
+async function refusingLocked(zip: Zip): Promise<Zip> {
+  if (!zip.has(ENCRYPTION)) return zip;
+  const locked = lockedPaths(await readXml(zip, ENCRYPTION));
+  return {
+    paths: zip.paths,
+    has: zip.has,
+    read: (path) =>
+      locked.has(path)
+        ? Promise.reject(new DrmError(`${path} is encrypted`))
+        : zip.read(path),
+  };
 }
 
 async function readXml(zip: Zip, path: string) {

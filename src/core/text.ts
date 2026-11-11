@@ -59,9 +59,35 @@ export function wordText(word: Word): string {
 
 /** Splits sections and paragraphs into the words the reader shows, in order. */
 export function splitText(sections: readonly Section[]): Word[] {
+  const steps = splitTextInSteps(sections);
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+  }
+}
+
+/** How far `splitTextInSteps` has got, in paragraphs. */
+export interface SplitProgress {
+  done: number;
+  total: number;
+}
+
+/**
+ * `splitText` in steps of `paragraphsPerStep` paragraphs, so a caller can
+ * show progress between them (SPEC.md feature 2). Yields after each step
+ * but the last, and returns the words. With 100 paragraphs, Moby Dick's
+ * fixture took 28 steps of 64 ms (median) and at most 102 ms each, in Node
+ * in the dev container (#97).
+ */
+export function* splitTextInSteps(
+  sections: readonly Section[],
+  paragraphsPerStep = 100,
+): Generator<SplitProgress, Word[], void> {
+  const total = sections.reduce((sum, s) => sum + s.paragraphs.length, 0);
   const words: Word[] = [];
-  sections.forEach((section, s) => {
-    section.paragraphs.forEach((paragraph, p) => {
+  let done = 0;
+  for (const [s, section] of sections.entries()) {
+    for (const [p, paragraph] of section.paragraphs.entries()) {
       paragraphWords(paragraph).forEach(({ text, end, continues }, w) => {
         words.push({
           section: s,
@@ -72,8 +98,12 @@ export function splitText(sections: readonly Section[]): Word[] {
           continues,
         });
       });
-    });
-  });
+      done++;
+      if (done % paragraphsPerStep === 0 && done < total) {
+        yield { done, total };
+      }
+    }
+  }
   return words;
 }
 

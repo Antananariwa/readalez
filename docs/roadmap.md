@@ -64,6 +64,11 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 - **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
 - **Open:** which comes after EPUB: TXT or PDF.
 
+### Kindle formats (MOBI, AZW, KFX)
+
+- **What:** importing Amazon Kindle's file formats. v1 imports EPUB only ([SPEC.md feature 2](../SPEC.md#2-import-epub-files)). The owner's idea for later (#97).
+- **Open:** whether it's worth it, since books bought in Kindle's store are usually copy-protected (not checked), which would leave only DRM-free Kindle files.
+
 ## Progress and stats
 
 ### Stats screens

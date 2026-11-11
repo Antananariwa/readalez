@@ -57,6 +57,18 @@ button {
   margin-bottom: 1.5rem;
 }
 
+/* The bar under Import EPUB while a book is read (SPEC.md feature 2). */
+.add-text .import-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.add-text .import-progress progress {
+  width: 100%;
+}
+
 .add-text form {
   display: flex;
   flex-direction: column;

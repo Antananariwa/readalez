@@ -3,6 +3,7 @@
 // cover deflated entries.
 
 import { utf8 } from "../bookId.ts";
+import { crc32 } from "./zip.ts";
 
 /** A ZIP archive (APPNOTE.TXT, linked in `zip.ts`) of stored files. */
 export function storedZip(
@@ -66,17 +67,6 @@ export function concat(
   return out;
 }
 
-/** CRC-32 as ZIP uses it (APPNOTE.TXT, section 4.4.7). */
-function crc32(data: Uint8Array<ArrayBuffer>): number {
-  let crc = 0xffffffff;
-  for (const byte of data) {
-    crc ^= byte;
-    for (let k = 0; k < 8; k++)
-      crc = crc & 1 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
-  }
-  return (crc ^ 0xffffffff) >>> 0;
-}
-
 /** What a test EPUB holds; anything left out gets a minimal default. */
 export interface TestBook {
   /** The OPF's `<metadata>` content. */
@@ -91,6 +81,8 @@ export interface TestBook {
   guide?: string;
   /** The package's version attribute. */
   version?: "2.0" | "3.0";
+  /** Other files, by their full path, such as `META-INF/encryption.xml`. */
+  files?: Record<string, string>;
 }
 
 /** An EPUB file with the package at `OEBPS/content.opf`. */
@@ -122,7 +114,7 @@ ${book.guide === undefined ? "" : `<guide>${book.guide}</guide>`}
     files["OEBPS/toc.ncx"] =
       `<?xml version="1.0"?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><navMap>${book.ncx}</navMap></ncx>`;
   }
-  return storedZip(files);
+  return storedZip({ ...files, ...book.files });
 }
 
 /** A content document with `body` as its body's content. */
