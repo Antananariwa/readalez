@@ -68,7 +68,7 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
    * on the page's main thread, and yields between steps of splitting the
    * text so the progress bar is redrawn (docs/known-issues.md). Back is
    * disabled meanwhile: the import ends by showing the library, which would
-   * pull you out of a book opened in between (found reviewing #16).
+   * pull you out of a book opened in between (found reviewing #97).
    */
   const importEpub = async (file: File) => {
     setProblem(null);
@@ -310,7 +310,7 @@ function AlreadyInLibrary({
  * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L452-L453
  * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L546-L552
  * Waiting for `requestAnimationFrame` instead, imports never finished in
- * `e2e/readingFlow.spec.ts`, whose tests pause the page's clock first (#16).
+ * `e2e/readingFlow.spec.ts`, whose tests pause the page's clock first (#97).
  */
 function nextTask(): Promise<void> {
   return new Promise((resolve) => {

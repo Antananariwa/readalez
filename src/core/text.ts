@@ -77,7 +77,7 @@ export interface SplitProgress {
  * show progress between them (SPEC.md feature 2). Yields after each step
  * but the last, and returns the words. With 100 paragraphs, Moby Dick's
  * fixture took 28 steps of 64 ms (median) and at most 102 ms each, in Node
- * in the dev container (#16).
+ * in the dev container (#97).
  */
 export function* splitTextInSteps(
   sections: readonly Section[],
