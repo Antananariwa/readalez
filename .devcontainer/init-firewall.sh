@@ -29,10 +29,7 @@ fi
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 # Allow inbound DNS responses
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
-# Allow outbound SSH
-iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
-# Allow inbound SSH responses
-iptables -A INPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+# No outbound SSH: git and gh use HTTPS (ADR 0012).
 # Allow localhost
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
@@ -115,17 +112,54 @@ iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Then allow only specific outbound traffic to allowed domains
 iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
 
+# Block private and local networks (the home network, link-local, carrier-grade
+# NAT). The host network rule above comes first, so Docker's own network still
+# works (ADR 0012).
+for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 169.254.0.0/16 100.64.0.0/10; do
+    iptables -A OUTPUT -d "$net" -j REJECT --reject-with icmp-admin-prohibited
+done
+
+# Allow web ports (HTTP and HTTPS) to any other host, so Claude can read web
+# pages (ADR 0012)
+iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+
 # Explicitly REJECT all other outbound traffic for immediate feedback
 iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 echo "Firewall configuration complete"
 echo "Verifying firewall rules..."
-if curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
-    echo "ERROR: Firewall verification failed - was able to reach https://example.com"
+if ! curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
+    echo "ERROR: Firewall verification failed - unable to reach https://example.com"
     exit 1
 else
-    echo "Firewall verification passed - unable to reach https://example.com as expected"
+    echo "Firewall verification passed - able to reach https://example.com as expected"
 fi
+
+# Prints how many packets an OUTPUT rule, given as iptables-save prints it, has
+# matched so far.
+packets() {
+    iptables-save -c -t filter | awk -v rule="$1" '
+        { count = $1; $1 = ""; sub(/^ /, "") }
+        $0 == rule { gsub(/[][]/, "", count); split(count, n, ":"); print n[1] }'
+}
+
+# Passes only if this firewall's REJECT rule refused the connection, not the
+# far end, whose own refusal would fail the connection the same way.
+check_rejected() {
+    local rule="$1" host="$2" port="$3" before after
+    before=$(packets "$rule")
+    timeout 10 bash -c "exec 3<>/dev/tcp/$host/$port" 2>/dev/null || true
+    after=$(packets "$rule")
+    if [ -n "$before" ] && [ -n "$after" ] && [ "$after" -gt "$before" ]; then
+        echo "Firewall verification passed - $host port $port refused by the firewall as expected"
+    else
+        echo "ERROR: Firewall verification failed - $host port $port was not refused by the firewall"
+        exit 1
+    fi
+}
+
+check_rejected "-A OUTPUT -j REJECT --reject-with icmp-admin-prohibited" example.com 22
+check_rejected "-A OUTPUT -d 192.168.0.0/16 -j REJECT --reject-with icmp-admin-prohibited" 192.168.0.1 443
 
 # Verify GitHub API access
 if ! curl --connect-timeout 5 https://api.github.com/zen >/dev/null 2>&1; then
