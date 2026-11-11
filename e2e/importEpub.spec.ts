@@ -192,6 +192,9 @@ test("a 600,000-word EPUB shows a moving progress bar, then lands in the library
   await importBytes(page, bytes);
   const bar = page.getByRole("progressbar", { name: "Importing…" });
   await expect(bar).toBeVisible();
+  // Leaving mid-import would let the finished import pull you out of a book
+  // opened meanwhile (found reviewing #16).
+  await expect(page.getByRole("button", { name: "Back" })).toBeDisabled();
   // Seen part of the way through, so the bar moved before the end.
   await expect
     .poll(() => bar.evaluate((el: HTMLProgressElement) => el.value / el.max))

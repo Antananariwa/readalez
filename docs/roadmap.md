@@ -66,7 +66,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Kindle formats (MOBI, AZW, KFX)
 
-- **What:** importing Amazon Kindle's file formats. v1 imports EPUB only, so a Kindle file gets the message for a file that isn't a readable EPUB ([SPEC.md feature 2](../SPEC.md#2-import-epub-files)). The owner's idea for later (#16).
+- **What:** importing Amazon Kindle's file formats. v1 imports EPUB only ([SPEC.md feature 2](../SPEC.md#2-import-epub-files)). The owner's idea for later (#16).
 - **Open:** whether it's worth it, since books bought in Kindle's store are usually copy-protected (not checked), which would leave only DRM-free Kindle files.
 
 ## Progress and stats

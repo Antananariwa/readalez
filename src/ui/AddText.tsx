@@ -64,9 +64,11 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
 
   /**
-   * Reads an EPUB on the device and saves it (SPEC.md feature 2). The page
-   * stays frozen while it works, apart from redrawing the progress bar
-   * between steps of splitting the text (docs/known-issues.md).
+   * Reads an EPUB on the device and saves it (SPEC.md feature 2). It runs
+   * on the page's main thread, and yields between steps of splitting the
+   * text so the progress bar is redrawn (docs/known-issues.md). Back is
+   * disabled meanwhile: the import ends by showing the library, which would
+   * pull you out of a book opened in between (found reviewing #16).
    */
   const importEpub = async (file: File) => {
     setProblem(null);
@@ -160,7 +162,12 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
   return (
     <main className="add-text">
       <nav>
-        <button type="button" className="back" onClick={onBack}>
+        <button
+          type="button"
+          className="back"
+          disabled={saving}
+          onClick={onBack}
+        >
           Back
         </button>
       </nav>
@@ -302,8 +309,8 @@ function AlreadyInLibrary({
  * `MessageChannel` to `setTimeout` because of setTimeout's 4 ms clamping:
  * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L452-L453
  * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L546-L552
- * Unlike `requestAnimationFrame`, it also runs while the page is hidden, and
- * while a test's clock is paused (#16).
+ * Waiting for `requestAnimationFrame` instead, imports never finished in
+ * `e2e/readingFlow.spec.ts`, whose tests pause the page's clock first (#16).
  */
 function nextTask(): Promise<void> {
   return new Promise((resolve) => {
