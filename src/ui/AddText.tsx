@@ -1,11 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { parseEpub, type Chapter } from "../core/epub.ts";
+import { flushSync } from "react-dom";
+import { DrmError, parseEpub, type Chapter } from "../core/epub.ts";
 import type { Part } from "../core/readingFlow.ts";
 import { UNKNOWN_AUTHOR, type BookInfo } from "../core/library.ts";
 import { progressPercent } from "../core/position.ts";
 import { parsePaste, suggestedTitle } from "../core/paste.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
-import { splitText, type Section } from "../core/text.ts";
+import {
+  splitText,
+  splitTextInSteps,
+  type Section,
+  type SplitProgress,
+  type Word,
+} from "../core/text.ts";
 
 /** A text to add to the library, pasted or imported. */
 export interface NewText {
@@ -35,7 +42,7 @@ interface Props {
 }
 
 type Problem = "empty" | "storage" | null;
-type ImportProblem = Problem | "unreadable";
+type ImportProblem = Problem | "unreadable" | "drm";
 
 /**
  * The Add text screen (SPEC.md features 1 and 2): Import EPUB, then a paste
@@ -49,33 +56,53 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
   const [problem, setProblem] = useState<Problem>(null);
   const [importProblem, setImportProblem] = useState<ImportProblem>(null);
   const [saving, setSaving] = useState(false);
+  /** How far an EPUB import has got, or null when none is running. */
+  const [importing, setImporting] = useState<SplitProgress | null>(null);
   /** The copy in the library of a text added again. */
   const [existing, setExisting] = useState<BookInfo | null>(null);
   const suggested = useMemo(() => suggestedTitle(text), [text]);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  /** Reads an EPUB on the device and saves it (SPEC.md feature 2). */
+  /**
+   * Reads an EPUB on the device and saves it (SPEC.md feature 2). The page
+   * stays frozen while it works, apart from redrawing the progress bar
+   * between steps of splitting the text (docs/known-issues.md).
+   */
   const importEpub = async (file: File) => {
     setProblem(null);
     setImportProblem(null);
     setSaving(true);
+    const fail = (problem: ImportProblem) => {
+      setImportProblem(problem);
+      setImporting(null);
+      setSaving(false);
+    };
+    await showProgress({ done: 0, total: 1 });
     let book;
     try {
       book = await parseEpub(
         new Uint8Array(await file.arrayBuffer()),
         file.name,
       );
-    } catch {
-      setImportProblem("unreadable");
-      setSaving(false);
+    } catch (error) {
+      fail(error instanceof DrmError ? "drm" : "unreadable");
       return;
     }
-    const words = splitText(book.sections);
+    let words: Word[];
+    const steps = splitTextInSteps(book.sections);
+    for (;;) {
+      const step = steps.next();
+      if (step.done) {
+        words = step.value;
+        break;
+      }
+      await showProgress(step.value);
+    }
     if (words.length === 0) {
-      setImportProblem("empty");
-      setSaving(false);
+      fail("empty");
       return;
     }
+    await showProgress({ done: 1, total: 1 });
     try {
       const copy = await onSave({
         ...book,
@@ -84,12 +111,21 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
       });
       if (copy) {
         setExisting(copy);
+        setImporting(null);
         setSaving(false);
       }
     } catch {
-      setImportProblem("storage");
-      setSaving(false);
+      fail("storage");
     }
+  };
+
+  /**
+   * Shows `progress` on the bar, then ends the current task, so the browser
+   * can draw the bar before the next step.
+   */
+  const showProgress = async (progress: SplitProgress) => {
+    flushSync(() => setImporting(progress));
+    await nextTask();
   };
 
   const save = async (event: FormEvent) => {
@@ -149,8 +185,19 @@ export default function AddText({ onSave, onOpen, onBack }: Props) {
             if (file) void importEpub(file);
           }}
         />
+        {importing && (
+          <label className="import-progress">
+            Importing…
+            <progress value={importing.done} max={importing.total} />
+          </label>
+        )}
         {importProblem === "unreadable" && (
           <p role="status">Couldn't read this EPUB.</p>
+        )}
+        {importProblem === "drm" && (
+          <p role="status">
+            This book is copy-protected (DRM), so Readalez can't open it.
+          </p>
         )}
         {importProblem === "empty" && (
           <p role="status">This book has no words to read.</p>
@@ -247,4 +294,24 @@ function AlreadyInLibrary({
       </div>
     </dialog>
   );
+}
+
+/**
+ * Resolves in a new task, posted through a `MessageChannel`, as React's
+ * scheduler does when it yields to the browser between tasks. It prefers a
+ * `MessageChannel` to `setTimeout` because of setTimeout's 4 ms clamping:
+ * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L452-L453
+ * https://github.com/facebook/react/blob/e8738f0c628b4c321c5ce8077390ba48a8208341/packages/scheduler/src/forks/Scheduler.js#L546-L552
+ * Unlike `requestAnimationFrame`, it also runs while the page is hidden, and
+ * while a test's clock is paused (#16).
+ */
+function nextTask(): Promise<void> {
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => {
+      channel.port1.close();
+      resolve();
+    };
+    channel.port2.postMessage(null);
+  });
 }

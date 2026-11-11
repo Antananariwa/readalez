@@ -204,6 +204,12 @@ Code: `src/core/epub.ts` and `src/core/epub/`. Tests: `src/core/epub.test.ts`, `
 - **Why it's left:** `pre` is rare in the books Readalez is for (not checked).
 - **Suggestions:** read each line of a `pre` as a line break.
 
+### A long book freezes the page while it's imported and opened
+
+- **What happens:** import and opening run on the page's main thread. While an EPUB is imported, only the progress bar is redrawn, between steps of splitting the text into words (`importEpub` in `src/ui/AddText.tsx`), and taps wait. In Node in the dev container, Moby Dick's fixture (217,867 words) took 65 ms to parse, 1,700 ms to split into words, 96 ms to time and 45 ms to name by its SHA-256 (#16). The test "a 600,000-word EPUB shows a moving progress bar, then lands in the library marked New" in `e2e/importEpub.spec.ts` took 6 to 11 s in the Chromium projects and 7 to 9 s in WebKit, over three runs in the container with other tests running alongside, page load included. Opening a book splits its whole text again (`read` in `src/ui/App.tsx`), with no progress shown. How long either takes on an iPhone is unknown.
+- **Why it's left:** the owner chose a progress bar on the page over importing in the background, as less code (#16). Speed targets are #73.
+- **Suggestions:** split in a Web Worker, or make `splitText` faster, since it takes most of the time.
+
 ## Reading flow and notes
 
 Code: `src/core/epub/flow.ts`, `src/core/epub/content.ts`, `src/core/readingFlow.ts`. Tests: `src/core/epub/flow.test.ts`, `src/core/readingFlow.test.ts`, `tests/epub/fixtures.test.ts`, `e2e/readingFlow.spec.ts`. Added in #15 (ADR 0011).

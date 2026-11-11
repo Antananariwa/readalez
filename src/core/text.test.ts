@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitText, type Word } from "./text.ts";
+import { splitText, splitTextInSteps, type Word } from "./text.ts";
 
 /** A word's text with its end mark, if any: `alone.|paragraph`. */
 function label(word: Word): string {
@@ -130,5 +130,39 @@ describe("splitText", () => {
     expect(splitText([{ paragraphs: [{ kind: "prose", text: "" }] }])).toEqual(
       [],
     );
+  });
+});
+
+describe("splitTextInSteps", () => {
+  const sections = [
+    {
+      paragraphs: [
+        { kind: "prose" as const, text: "One two." },
+        { kind: "prose" as const, text: "Three." },
+      ],
+    },
+    { paragraphs: [] },
+    {
+      paragraphs: [
+        { kind: "prose" as const, text: "Four, five." },
+        { kind: "verse" as const, lines: ["Six", "seven"] },
+        { kind: "prose" as const, text: "Eight." },
+      ],
+    },
+  ];
+
+  it("yields the paragraphs done so far, then returns splitText's words", () => {
+    const steps = splitTextInSteps(sections, 2);
+    const progress = [];
+    let step = steps.next();
+    while (!step.done) {
+      progress.push(step.value);
+      step = steps.next();
+    }
+    expect(progress).toEqual([
+      { done: 2, total: 5 },
+      { done: 4, total: 5 },
+    ]);
+    expect(step.value).toEqual(splitText(sections));
   });
 });

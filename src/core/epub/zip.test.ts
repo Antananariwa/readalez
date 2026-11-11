@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { utf8 } from "../bookId.ts";
 import { storedZip } from "./testZip.ts";
-import { openZip, ZipError } from "./zip.ts";
+import { crc32, openZip, ZipError } from "./zip.ts";
 
 const TEXT = "Marley was dead, to begin with. Marley was dead.";
 
@@ -12,13 +12,26 @@ const DEFLATED = Uint8Array.from([
   215, 3, 0,
 ]);
 
-/** A one-file archive whose entry says it's deflated. */
-function deflatedZip(data: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+/**
+ * A one-file archive whose entry is `data`, deflated, with the CRC-32 and
+ * size of `inflated`.
+ */
+function deflatedZip(
+  data: Uint8Array<ArrayBuffer>,
+  inflated = utf8(TEXT),
+): Uint8Array<ArrayBuffer> {
   const name = "a.txt";
   const bytes = storedZip({ [name]: data });
   const view = new DataView(bytes.buffer);
-  view.setUint16(8, 8, true);
-  view.setUint16(30 + name.length + data.length + 10, 8, true);
+  const directory = 30 + name.length + data.length;
+  for (const [method, crc, size] of [
+    [8, 14, 22],
+    [directory + 10, directory + 16, directory + 24],
+  ] as const) {
+    view.setUint16(method, 8, true);
+    view.setUint32(crc, crc32(inflated), true);
+    view.setUint32(size, inflated.length, true);
+  }
   return bytes;
 }
 
@@ -70,5 +83,34 @@ describe("openZip", () => {
   it("rejects deflated data that doesn't inflate", async () => {
     const zip = openZip(deflatedZip(Uint8Array.from([255, 255, 255, 255])));
     await expect(zip.read("a.txt")).rejects.toThrow();
+  });
+
+  it("rejects a stored file with a damaged byte", async () => {
+    const bytes = storedZip({ "a.txt": TEXT });
+    bytes[30 + "a.txt".length + 7]! ^= 1;
+    await expect(openZip(bytes).read("a.txt")).rejects.toThrow(ZipError);
+  });
+
+  it("rejects a deflated file that inflates to other bytes", async () => {
+    const zip = openZip(deflatedZip(DEFLATED, utf8(TEXT.toUpperCase())));
+    await expect(zip.read("a.txt")).rejects.toThrow(ZipError);
+  });
+
+  it("rejects an archive cut short", () => {
+    const bytes = storedZip({ "a.txt": TEXT });
+    expect(() => openZip(bytes.slice(0, bytes.length - 30))).toThrow(ZipError);
+  });
+
+  it("rejects a file encrypted with ZIP's own encryption", async () => {
+    const bytes = storedZip({ "a.txt": TEXT });
+    const view = new DataView(bytes.buffer);
+    const directory = 30 + "a.txt".length + TEXT.length;
+    view.setUint16(6, view.getUint16(6, true) | 1, true);
+    view.setUint16(
+      directory + 8,
+      view.getUint16(directory + 8, true) | 1,
+      true,
+    );
+    await expect(openZip(bytes).read("a.txt")).rejects.toThrow(ZipError);
   });
 });

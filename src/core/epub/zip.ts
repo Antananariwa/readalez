@@ -4,7 +4,9 @@
 // 4.3.12 (central directory) and 4.3.16 (end of central directory), here in
 // a copy kept on GitHub:
 // https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt
-// Deflated data is inflated by the platform's `DecompressionStream`.
+// Deflated data is inflated by the platform's `DecompressionStream`. Each
+// file read is checked against the CRC-32 and size the directory gives, so a
+// damaged file is an error rather than garbled text (#16).
 
 /** Thrown when the bytes aren't a ZIP file this reader can read. */
 export class ZipError extends Error {}
@@ -16,8 +18,12 @@ const STORED = 0;
 const DEFLATED = 8;
 
 interface Entry {
+  /** The general purpose bit flag (APPNOTE.TXT, section 4.4.4). */
+  flags: number;
   method: number;
+  crc: number;
   compressedSize: number;
+  size: number;
   /** Where the entry's local header starts. */
   offset: number;
 }
@@ -52,8 +58,11 @@ export function openZip(bytes: Uint8Array<ArrayBuffer>): Zip {
     const commentLength = view.getUint16(at + 32, true);
     const path = names.decode(bytes.subarray(at + 46, at + 46 + nameLength));
     entries.set(path, {
+      flags: view.getUint16(at + 8, true),
       method: view.getUint16(at + 10, true),
+      crc: view.getUint32(at + 16, true),
       compressedSize: view.getUint32(at + 20, true),
+      size: view.getUint32(at + 24, true),
       offset: view.getUint32(at + 42, true),
     });
     at += 46 + nameLength + extraLength + commentLength;
@@ -88,6 +97,8 @@ async function readEntry(
   entry: Entry,
 ): Promise<Uint8Array> {
   const { offset, compressedSize, method } = entry;
+  // Bit 0 marks a file encrypted with ZIP's own encryption (section 4.4.4).
+  if (entry.flags & 1) throw new ZipError("Encrypted entry");
   if (
     offset + 30 > view.byteLength ||
     view.getUint32(offset, true) !== LOCAL_HEADER
@@ -103,9 +114,31 @@ async function readEntry(
     view.getUint16(offset + 28, true);
   const data = bytes.subarray(start, start + compressedSize);
   if (data.length !== compressedSize) throw new ZipError("Truncated entry");
-  if (method === STORED) return data;
-  if (method === DEFLATED) return inflateRaw(data);
-  throw new ZipError(`Unsupported compression method ${method}`);
+  let out: Uint8Array;
+  if (method === STORED) out = data;
+  else if (method === DEFLATED) out = await inflateRaw(data);
+  else throw new ZipError(`Unsupported compression method ${method}`);
+  if (out.length !== entry.size || crc32(out) !== entry.crc) {
+    throw new ZipError("Damaged entry");
+  }
+  return out;
+}
+
+let crcTable: Uint32Array | undefined;
+
+/** CRC-32 as ZIP uses it (APPNOTE.TXT, section 4.4.7). */
+export function crc32(data: Uint8Array): number {
+  if (!crcTable) {
+    crcTable = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xedb88320 : c >>> 1;
+      crcTable[n] = c;
+    }
+  }
+  let crc = 0xffffffff;
+  for (const byte of data) crc = crcTable[(crc ^ byte) & 0xff]! ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
 }
 
 /** Inflates raw DEFLATE data (RFC 1951) with the platform's decompressor. */

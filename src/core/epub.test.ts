@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEpub } from "./epub.ts";
+import { DrmError, parseEpub } from "./epub.ts";
 import { storedZip, testEpub, xhtml } from "./epub/testZip.ts";
 import { UNKNOWN_AUTHOR } from "./library.ts";
 
@@ -236,5 +236,72 @@ describe("parseEpub", () => {
     ],
   ])("rejects a file with %s", async (_, bytes) => {
     await expect(parseEpub(bytes, "x.epub")).rejects.toThrow();
+  });
+
+  describe("copy protection", () => {
+    /** `encryption.xml` with one `EncryptedData` for each [algorithm, URI]. */
+    const encryption = (
+      ...entries: [string, string][]
+    ) => `<?xml version="1.0"?>
+<encryption xmlns="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:enc="http://www.w3.org/2001/04/xmlenc#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+${entries
+  .map(
+    ([algorithm, uri]) => `<enc:EncryptedData>
+  <enc:EncryptionMethod Algorithm="${algorithm}"/>
+  <ds:KeyInfo><ds:RetrievalMethod URI="#EK" Type="http://www.w3.org/2001/04/xmlenc#EncryptedKey"/></ds:KeyInfo>
+  <enc:CipherData><enc:CipherReference URI="${uri}"/></enc:CipherData>
+</enc:EncryptedData>`,
+  )
+  .join("\n")}
+</encryption>`;
+    const AES = "http://www.w3.org/2001/04/xmlenc#aes128-cbc";
+    const FONT = "OEBPS/fonts/serif.otf";
+
+    it("rejects a book whose text is encrypted, with DrmError", async () => {
+      const bytes = testEpub({
+        documents: CHAPTERS,
+        files: {
+          "META-INF/encryption.xml": encryption(
+            [AES, "OEBPS/one.xhtml"],
+            [AES, "OEBPS/two.xhtml"],
+          ),
+        },
+      });
+      await expect(parseEpub(bytes, "x.epub")).rejects.toThrow(DrmError);
+    });
+
+    it.each([
+      ["IDPF's", "http://www.idpf.org/2008/embedding"],
+      ["Adobe's", "http://ns.adobe.com/pdf/enc#RC"],
+    ])("opens a book with fonts obfuscated by %s algorithm", async (_, alg) => {
+      const book = await parseEpub(
+        testEpub({
+          documents: CHAPTERS,
+          files: {
+            "META-INF/encryption.xml": encryption([alg, FONT]),
+            [FONT]: "scrambled",
+          },
+        }),
+        "x.epub",
+      );
+      expect(book.sections[0]!.paragraphs.at(-1)).toEqual({
+        kind: "prose",
+        text: "It was a dark night.",
+      });
+    });
+
+    it("opens a book whose only encrypted files are fonts", async () => {
+      const book = await parseEpub(
+        testEpub({
+          documents: CHAPTERS,
+          files: {
+            "META-INF/encryption.xml": encryption([AES, FONT]),
+            [FONT]: "encrypted",
+          },
+        }),
+        "x.epub",
+      );
+      expect(book.sections).toHaveLength(2);
+    });
   });
 });
