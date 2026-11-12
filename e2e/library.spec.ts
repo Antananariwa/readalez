@@ -4,6 +4,7 @@ import { parsePaste } from "../src/core/paste.ts";
 import { splitText } from "../src/core/text.ts";
 import { formatDuration, timeLeft } from "../src/core/timeLeft.ts";
 import { DEFAULT_WPM } from "../src/core/timingValues.ts";
+import { ownRows } from "./helpers.ts";
 
 // The library (issues #12 and #13, SPEC.md feature 4): texts stay on the
 // device, the library lists them most recently opened first with their
@@ -13,9 +14,7 @@ import { DEFAULT_WPM } from "../src/core/timingValues.ts";
 const first = "Marley was dead: to begin with.\n\nThere is no doubt whatever.";
 const second = "Mr. Utterson the lawyer was a man.\n\nHe was never lighted.";
 
-function rows(page: Page) {
-  return page.getByRole("list", { name: "Library" }).getByRole("listitem");
-}
+const rows = ownRows;
 
 function titles(page: Page) {
   return rows(page).locator(".book-title");
@@ -60,11 +59,12 @@ async function remove(page: Page, title: string): Promise<void> {
   await expect(titles(page).getByText(title, { exact: true })).toHaveCount(0);
 }
 
-test("starts empty, and a saved text opens at its first word and is listed", async ({
+test("starts with none of your own, and a saved text opens at its first word and is listed", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByText("No texts yet.")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Library" })).toBeVisible();
+  await expect(rows(page)).toHaveCount(0);
   await save(page, first);
   await expect(page.getByTestId("word")).toHaveText("Marley");
   await backToLibrary(page);
@@ -193,8 +193,8 @@ test("the issue's run: two texts, reopen, rename, reload, delete, reload", async
 });
 
 /**
- * Stores a book that was never opened, as later features add them (the
- * built-in books, #17), straight into IndexedDB (`src/ui/storage.ts`).
+ * Stores a book that was never opened and has no progress, as a book stored
+ * before #13 is, straight into IndexedDB (`src/ui/storage.ts`).
  */
 async function seedUnopened(page: Page, title: string): Promise<void> {
   await page.evaluate(

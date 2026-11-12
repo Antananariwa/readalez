@@ -1,29 +1,49 @@
-// Builds small EPUB files in memory for the tests. Not used by the app.
-// Entries are stored, not deflated; the fixture EPUBs in tests/fixtures/epub
-// cover deflated entries.
+// Builds ZIP files in memory: small EPUBs for the tests, and the built-in
+// books for `scripts/build-books.ts`. Not used by the app.
 
 import { utf8 } from "../bookId.ts";
 import { crc32 } from "./zip.ts";
 
+/** Compresses bytes as raw DEFLATE, such as Node's `zlib.deflateRawSync`. */
+export type Deflate = (data: Uint8Array<ArrayBuffer>) => Uint8Array;
+
 /** A ZIP archive (APPNOTE.TXT, linked in `zip.ts`) of stored files. */
 export function storedZip(
   files: Record<string, string | Uint8Array<ArrayBuffer>>,
+): Uint8Array<ArrayBuffer> {
+  return zipArchive(files);
+}
+
+/**
+ * A ZIP archive of `files`, in the order given. With `deflate`, every file
+ * but `mimetype` is deflated, which EPUB requires to be stored (EPUB 3.3,
+ * `sec-zip-container-mime`). Every entry has the same date, 1 January 1980,
+ * so the same files give the same bytes.
+ */
+export function zipArchive(
+  files: Record<string, string | Uint8Array<ArrayBuffer>>,
+  deflate?: Deflate,
 ): Uint8Array<ArrayBuffer> {
   const parts: Uint8Array<ArrayBuffer>[] = [];
   const directory: Uint8Array<ArrayBuffer>[] = [];
   let offset = 0;
   for (const [path, content] of Object.entries(files)) {
     const name = utf8(path);
-    const data = typeof content === "string" ? utf8(content) : content;
-    const crc = crc32(data);
+    const raw = typeof content === "string" ? utf8(content) : content;
+    const crc = crc32(raw);
+    const deflated = deflate !== undefined && path !== "mimetype";
+    const data = deflated ? new Uint8Array(deflate(raw)) : raw;
+    const method = deflated ? 8 : 0;
     const local = new Uint8Array(30 + name.length);
     const l = new DataView(local.buffer);
     l.setUint32(0, 0x04034b50, true);
     l.setUint16(4, 20, true);
     l.setUint16(6, 0x0800, true); // UTF-8 names
+    l.setUint16(8, method, true);
+    l.setUint16(12, DOS_DATE, true);
     l.setUint32(14, crc, true);
     l.setUint32(18, data.length, true);
-    l.setUint32(22, data.length, true);
+    l.setUint32(22, raw.length, true);
     l.setUint16(26, name.length, true);
     local.set(name, 30);
 
@@ -33,9 +53,11 @@ export function storedZip(
     c.setUint16(4, 20, true);
     c.setUint16(6, 20, true);
     c.setUint16(8, 0x0800, true);
+    c.setUint16(10, method, true);
+    c.setUint16(14, DOS_DATE, true);
     c.setUint32(16, crc, true);
     c.setUint32(20, data.length, true);
-    c.setUint32(24, data.length, true);
+    c.setUint32(24, raw.length, true);
     c.setUint16(28, name.length, true);
     c.setUint32(42, offset, true);
     entry.set(name, 46);
@@ -54,6 +76,9 @@ export function storedZip(
   e.setUint32(16, offset, true);
   return concat([...parts, ...directory, end]);
 }
+
+/** 1 January 1980 in MS-DOS date format: the earliest date a ZIP can hold. */
+const DOS_DATE = (0 << 9) | (1 << 5) | 1;
 
 export function concat(
   parts: readonly Uint8Array<ArrayBuffer>[],

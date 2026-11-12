@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { testEpub } from "../src/core/epub/testZip.ts";
-import { goToAddText } from "./helpers.ts";
+import { goToAddText, ownRows } from "./helpers.ts";
 
 // EPUB import (issue #14, SPEC.md feature 2): Import EPUB opens the file
 // picker, and the book picked is added with its metadata and shown in the
@@ -18,8 +18,7 @@ async function importCarol(page: Page) {
   await (await chooser).setFiles(CAROL);
 }
 
-const rows = (page: Page) =>
-  page.getByRole("list", { name: "Library" }).getByRole("listitem");
+const rows = ownRows;
 
 test("imports an EPUB into the library with its title and author, marked New until a reload", async ({
   page,
@@ -111,7 +110,8 @@ test("a file that isn't an EPUB shows a message and adds nothing", async ({
   await expect(page.getByRole("status")).toHaveText("Couldn't read this EPUB.");
 
   await page.getByRole("button", { name: "Back" }).click();
-  await expect(page.getByText("No texts yet.")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Library" })).toBeVisible();
+  await expect(rows(page)).toHaveCount(0);
 });
 
 /** Picks an EPUB made in the test on the Add text screen. */
@@ -152,7 +152,8 @@ test("a copy-protected EPUB shows the DRM message and adds nothing", async ({
   );
 
   await page.getByRole("button", { name: "Back" }).click();
-  await expect(page.getByText("No texts yet.")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Library" })).toBeVisible();
+  await expect(rows(page)).toHaveCount(0);
 });
 
 test("an EPUB with a damaged file inside shows a message and adds nothing", async ({
@@ -168,7 +169,8 @@ test("an EPUB with a damaged file inside shows a message and adds nothing", asyn
   await expect(page.getByRole("status")).toHaveText("Couldn't read this EPUB.");
 
   await page.getByRole("button", { name: "Back" }).click();
-  await expect(page.getByText("No texts yet.")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Library" })).toBeVisible();
+  await expect(rows(page)).toHaveCount(0);
 });
 
 test("a 600,000-word EPUB shows a moving progress bar, then lands in the library marked New", async ({

@@ -83,31 +83,36 @@ Checks:
 
 ### 3. Built-in books
 
-Three books are always in the library:
+Twenty-four free books are always in the library, on its Free shelf (feature 4), from the first visit. The list, with where each comes from, is `BOOKS` in `scripts/build-books.ts`: from _The Strange Case of Dr. Jekyll and Mr. Hyde_ (25,664 words) to _Dracula_ (161,105), counted by Standard Ebooks. Why: so a new reader can try the app at once without fetching a book, and pick something they like; the owner gets real books for tuning, and they double as test fixtures for EPUB import. The owner asked for 20 or more instead of three, as long as the library stays easy to navigate (#17).
 
-- _A Christmas Carol_ by Charles Dickens
-- _Alice's Adventures in Wonderland_ by Lewis Carroll
-- _The Strange Case of Dr Jekyll and Mr Hyde_ by Robert Louis Stevenson
-
-Each is a short book, a couple of hours at 300 wpm. Why: so a new reader can try the app at once without fetching a book; the owner gets real books for tuning, and they double as test fixtures for EPUB import. Short books keep the download small.
-
-- **Editions:** Standard Ebooks, with the images, the frontispiece page and the list of illustrations removed. Why: proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0, in each book's `src/epub/text/uncopyright.xhtml`, for example [_A Christmas Carol_'s](https://github.com/standardebooks/charles-dickens_a-christmas-carol/blob/fbcca8acb37169bbb560b8796c1f05b0240f6792/src/epub/text/uncopyright.xhtml)), so there's no license text to carry. Their sources are on GitHub (for example `standardebooks/charles-dickens_a-christmas-carol`), which the dev container can reach.
-- **Copyright:** all three are public domain (see [Legal and licensing](#legal-and-licensing)).
-- **Permanent:** they can't be deleted or renamed. Their progress works like any book's, and Delete all data resets it. Why: so there's always something to read and to tune with.
-- **One code path:** they ship as EPUB files and go through the same import as the reader's own books.
-- **Offline:** they work without a network after the first visit.
+- **Which books:**
+  - English prose in Standard Ebooks' editions: novels, novellas, stories and a little non-fiction.
+  - A spread of genres (adventure, mystery, science fiction, horror, humour, children's classics, philosophy) and of lengths, from under 2 hours at 300 wpm to over 10.
+  - No plays or poetry collections, which read badly one word at a time (#79), and no collections of hundreds of thousands of words, such as Standard Ebooks' Poe (318,069 words) or O. Henry (894,604).
+  - Each is public domain in the US (Standard Ebooks' check) and in the UK (see [Legal and licensing](#legal-and-licensing)).
+  - Why: the books should suit reading word by word and a first try at the app.
+- **Editions:** Standard Ebooks, built by `npm run books` from a pinned commit of each book's repository on GitHub, without its pictures. Why:
+  - Proofread, cleanly marked-up EPUB 3, and their own work is dedicated to the public domain (CC0, in each book's `src/epub/text/uncopyright.xhtml`, for example [_A Christmas Carol_'s](https://github.com/standardebooks/charles-dickens_a-christmas-carol/blob/fbcca8acb37169bbb560b8796c1f05b0240f6792/src/epub/text/uncopyright.xhtml)), so there's no license text to carry.
+  - Each book's metadata gives its one-line summary and genres (`schema:abstract` and `schema:genre` in `content.opf`).
+  - Pages left empty without the pictures, such as a frontispiece, and lists of illustrations stay in the file. The reading flow skips them (feature 2), so taking them out too would mean rewriting each book's package and table of contents for no difference in reading.
+- **Copyright:** all are public domain (see [Legal and licensing](#legal-and-licensing)).
+- **Permanent:** they can't be deleted or renamed; the My books chip (feature 4) hides them. Their progress works like any book's, and Delete all data resets it. Why: so there's always something to read and to tune with.
+- **One code path:** they ship as EPUB files and go through the same import as the reader's own books, when one is first opened. A progress bar shows on its row in the library meanwhile, and it then opens where its reading flow starts. Until then, the library lists it from a catalog built with the files (`src/core/builtInBooks.ts`), at 0% with its time left. Why: importing all of them on the first visit would keep the page busy for a long time ([known issue](docs/known-issues.md#a-long-book-keeps-the-page-busy-while-its-imported-and-opened)); [ADR 0013](docs/adr/0013-ship-built-in-books-as-precached-epubs.md).
+- **Offline:** they all download with the app, about 4.2 MB, and work without a network after the first visit. Why: the owner chose every book offline over a smaller first download (#17).
 - **Backups** hold their progress, not their text.
 
 Checks:
 
-- E2E: a fresh install lists the three books, and each opens where its author's text starts (feature 2).
-- E2E: built-in books can't be deleted; after Delete all data they're still listed, at 0%.
-- E2E: after the first visit, with the network off, a built-in book opens and plays.
-- Unit: the three shipped EPUBs contain no images.
+- E2E: a fresh install lists every built-in book at 0%, with its summary, and one opens where its author's text starts (feature 2) and plays.
+- E2E: built-in books offer no rename or delete; after Delete all data they're still listed, at 0%.
+- E2E: after the first visit, with the network off, a built-in book never opened before opens and plays.
+- Unit: every shipped EPUB contains no images, each one's reading flow starts where its author's text starts, and the catalog matches the files.
 
 ### 4. Library
 
-The app's home screen: every book, built-in or your own, most recently opened first and unopened books last, so the book you're reading is on top. Each shows its title, author, progress, time left at the current speed and when it was last opened. Tapping a book opens it where you left off (feature 7 says where reading resumes). Your own books (pasted or imported) can be renamed and deleted, with a confirmation.
+The app's home screen: every book, built-in or your own, most recently opened first and unopened books last, so the book you're reading is on top. Each shows its title, author, progress, time left at the current speed and when it was last opened; built-in books also show their one-line summary. Tapping a book opens it where you left off (feature 7 says where reading resumes). Your own books (pasted or imported) can be renamed and deleted, with a confirmation.
+
+- **Free shelf and My books.** Two chips under the title filter the list: Free shelf shows only the built-in books, My books only your own. At most one is on, and tapping it again shows every book. The chip stays on while you read a book and come back, and a reload shows every book again. Why: one library, filtered by where its books come from, as Play Books (purchases, uploads, samples), Kindle (books, samples, docs) and Spotify's Your Library ("By you", "By Spotify") filter theirs ([Play Books](https://support.google.com/googleplay/answer/9402600), [Kindle](https://www.pcworld.com/article/3538389/how-to-organize-your-kindle-library.html), [Spotify Community](https://community.spotify.com/t5/Spotify-Answers/How-can-I-search-filter-and-sort-in-Spotify/ta-p/4649789); read through web search results, not the pages). With no chip on, every book shows, so the list is never empty by choice. "Free shelf" names where the books come from rather than what they are, so a book that isn't a classic fits too (the owner, #17). Remembering the chip across reloads waits for stored settings (#18). Filters by genre or author, and search: [roadmap](docs/roadmap.md#library-filters-and-search).
 
 - **Progress is saved while you read:** on pause and at each move while paused, when you leave the reader, when the app goes to the background, and every 2 seconds while playing. Why: iOS can close a web app in the background without warning; 2 seconds leaves room within the 5 seconds the device check below allows for a write still in flight and a late timer.
 - **Progress and time left** measure the reading flow (feature 2): 0% at its first word and 100% at the Finished card. A position in a skipped section counts as 0% before the flow and 100% after it, and inside the flow as the flow's next word: progress is the flow's words before it over the flow's words. Why: the simplest rule that keeps progress moving forward through a book.
@@ -118,6 +123,7 @@ Checks:
 
 - E2E: the library shows the title, author, progress, time left and last opened date of each book, sorted by last opened.
 - E2E: renaming one of your own books and deleting another both survive a reload.
+- E2E: Free shelf shows only the built-in books and My books only your own; tapping the chip that's on shows both, and it stays on after reading a book.
 - Unit: a saved position still points into the same paragraph after a change to the word-splitting rules (for example, splitting at em dashes).
 - Device: after force-quitting the installed app mid-reading, the word marked in the reopened book is at most 5 seconds of reading behind where it stopped.
 
@@ -317,6 +323,7 @@ Ideas for after v1, from the paragraph pacer to stats and more formats, live in 
 Working assumptions from public sources, not legal advice. Recheck them before anything that changes the risk: charging money, or adding a server or a catalog.
 
 - **Copyright.** Everything Readalez ships (the built-in books, test fixtures and sample passages) is copyright-free, such as the public-domain books Project Gutenberg and Standard Ebooks offer. Why: a fixed number of years since the author's death ruled out ordinary public-domain books (the owner, testing #14). Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
+  - **Built-in books** are public domain in the US and in the UK: every author and translator died before 1956, which `scripts/build-books.ts` checks against each one's death year. Why: Standard Ebooks says its books "may still be copyrighted in other countries" (each book's `dc:rights`). In the UK, copyright "expires at the end of the period of 70 years from the end of the calendar year in which the author dies" ([Copyright, Designs and Patents Act 1988, section 12(2)](https://www.legislation.gov.uk/ukpga/1988/48/section/12)), so a death in 1955 or earlier means public domain from 2026. Translators count as authors here, to be safe: whether the UK treats a translation that way is not checked. For example, Standard Ebooks' _Art of War_ is out: its translator Lionel Giles died in 1958 ([Wikidata](https://www.wikidata.org/wiki/Q59188)).
 - **Project Gutenberg.** Its name stays out of the app's name. In v1 the app only links to Gutenberg and leaves Gutenberg's license pages out of the reading flow of books readers import for themselves (feature 2). A text that keeps the Project Gutenberg name must carry its license, while one stripped of every Gutenberg mention is a plain public-domain text (not checked), so the Gutenberg test fixtures keep their license pages. A later catalog has more of Gutenberg's rules to respect: [docs/roadmap.md](docs/roadmap.md#public-domain-catalog-and-proxy).
 - **Focus-point patents.** The fixed focus point in feature 5 is what Spritz's patents describe: US 8,903,174 ("Serial text display for optimal recognition apparatus and method", filed 2012; Google Patents lists it as active, which isn't verified), the related US 9,483,109 and US 10,332,313, and a European family member (validated in Spain as ES 2700224 T3, so UK coverage is possible). The Chinese and Japanese members have lapsed. Free apps use the design openly (the open-source readers in [feature 5](#5-single-word-display)), and the risk is low for a free open-source app. Recheck before charging money, and keep "Spritz" out of the name and the app's text.
 - **Name.** See [What Readalez is](#what-readalez-is).

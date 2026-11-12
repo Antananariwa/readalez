@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { goToAddText } from "./helpers.ts";
+import { goToAddText, ownRows } from "./helpers.ts";
 
 // The reading flow and the chapter list (issue #15, SPEC.md features 2 and
 // 7), on Gutenberg's Alice: Gutenberg's header, the title page and the
@@ -22,11 +22,7 @@ async function openAlice(page: Page) {
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Import EPUB" }).click();
   await (await chooser).setFiles(ALICE);
-  await page
-    .getByRole("list", { name: "Library" })
-    .getByRole("listitem")
-    .locator(".book")
-    .click();
+  await ownRows(page).locator(".book").click();
   await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
 }
 
