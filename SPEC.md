@@ -88,7 +88,7 @@ Twenty-four free books are always in the library, on its Free shelf (feature 4),
 - **Which books:**
   - English prose in Standard Ebooks' editions: novels, novellas, stories and a little non-fiction.
   - A spread of genres (adventure, mystery, science fiction, horror, humour, children's classics, philosophy) and of lengths, from under 2 hours at 300 wpm to over 10.
-  - No plays or poetry collections, which read badly one word at a time (#79), and no collections of hundreds of thousands of words, such as Standard Ebooks' Poe (318,069 words) or O. Henry (894,604).
+  - No plays or poetry collections, which read badly one word at a time (#79), and no collections of hundreds of thousands of words, such as Standard Ebooks' Poe ([318,069 words](https://github.com/standardebooks/edgar-allan-poe_short-fiction/blob/6d9f9c4e0330abb5fb31918190d17a86a888329f/src/epub/content.opf#L110)) or O. Henry ([894,604](https://github.com/standardebooks/o-henry_short-fiction/blob/895b7438789028b276739a052da69b08df9d4680/src/epub/content.opf#L102)).
   - Each is public domain in the US (Standard Ebooks' check) and in the UK (see [Legal and licensing](#legal-and-licensing)).
   - Why: the books should suit reading word by word and a first try at the app.
 - **Editions:** Standard Ebooks, built by `npm run books` from a pinned commit of each book's repository on GitHub, without its pictures. Why:
