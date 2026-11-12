@@ -5,9 +5,9 @@ Status: Accepted
 
 ## Context
 
-Issue #17 ships the built-in books (SPEC.md feature 3). The owner widened it from three books to 24 (#17), which changes the costs:
+Issue #17 ships the built-in books (SPEC.md feature 3). It grew from three books to 24, so a new reader has a real choice without importing anything (SPEC.md feature 3), which changes the costs:
 
-- **Size.** The 24 EPUBs built by `npm run books`, without pictures, total 4,244,389 bytes, from 76,181 for _Jekyll and Hyde_ to 377,230 for _Dracula_. Before them, the built app in `dist/` was 332 KB (`du -sh dist`, while planning #17). The owner chose to download them all with the app, so every one works offline after the first visit, over downloading each when first opened (#17).
+- **Size.** The 24 EPUBs built by `npm run books`, without pictures, total 4,244,389 bytes, from 76,181 for _Jekyll and Hyde_ to 377,230 for _Dracula_. Before them, the built app in `dist/` was 332 KB (`du -sh dist`, while planning #17). They all download with the app, so every one works offline after the first visit (SPEC.md feature 12), rather than each downloading when first opened, which would keep the first visit small (#17).
 - **Import time.** Parsing all 24 in Node in the dev container took 501 ms. Parsing and splitting them into words took 12,909 ms (scripts run while planning #17, not in the repo). Import runs on the page's main thread ([known issue](../known-issues.md#a-long-book-keeps-the-page-busy-while-its-imported-and-opened)), so importing all of them on the first visit would keep the page busy for a long time, longer on a phone (not checked).
 - **One code path.** SPEC.md feature 3 has them go through the same import as the reader's own EPUBs, so they test it too.
 - **Where they come from.** The issue asks for a script that builds them from pinned commits of Standard Ebooks' repositories, so anyone can see their source and rebuild them.
