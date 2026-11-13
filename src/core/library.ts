@@ -46,7 +46,7 @@ export interface BuiltInBook {
   reading: Reading;
 }
 
-/** Where a book in the library comes from: the Free shelf or the reader. */
+/** Where a book in the library comes from: built in (Public) or the reader's own. */
 export type BookSource = "free" | "mine";
 
 export function bookSource(book: BookInfo): BookSource {

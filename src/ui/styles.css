@@ -120,7 +120,7 @@ button {
   width: 100%;
 }
 
-/* The All, Free shelf and My books chips (SPEC.md feature 4). */
+/* The All, Public and My books chips (SPEC.md feature 4). */
 .sources {
   display: flex;
   flex-wrap: wrap;

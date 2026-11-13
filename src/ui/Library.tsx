@@ -50,7 +50,7 @@ export type Shelf = "all" | BookSource;
 /** The chips, one always on (SPEC.md feature 4). */
 const SOURCES: [Shelf, string][] = [
   ["all", "All"],
-  ["free", "Free shelf"],
+  ["free", "Public"],
   ["mine", "My books"],
 ];
 
@@ -58,7 +58,7 @@ const SOURCES: [Shelf, string][] = [
  * The library (SPEC.md features 3 and 4), the home screen: every text with
  * its title, author, progress, time left and when it was last opened, most
  * recently opened first. A book just imported is marked New. Three chips, one
- * always on, show every book, only the built-in ones (Free shelf) or only
+ * always on, show every book, only the built-in ones (Public) or only
  * your own. Each of your own texts has an options button that opens a
  * dialog to rename or delete it; built-in books have none.
  */

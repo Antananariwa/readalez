@@ -6,7 +6,7 @@ import { DEFAULT_WPM } from "../src/core/timingValues.ts";
 import { ownRows } from "./helpers.ts";
 
 // The built-in books (issue #17, SPEC.md features 3 and 4): listed in the
-// library from the first visit on the Free shelf, permanent, imported on
+// library from the first visit under the Public chip, permanent, imported on
 // their first open from the EPUB the service worker keeps, and readable
 // offline after the first visit.
 
@@ -65,7 +65,7 @@ test("a fresh visit lists every built-in book at 0%, with its summary and no opt
   );
 });
 
-test("All, Free shelf and My books each show their books, with one chip always on", async ({
+test("All, Public and My books each show their books, with one chip always on", async ({
   page,
 }) => {
   await page.goto("/");
@@ -83,7 +83,7 @@ test("All, Free shelf and My books each show their books, with one chip always o
   await expect(chip(page, "My books")).toHaveAttribute("aria-pressed", "true");
   await expect(titles(page)).toHaveText(["Mine"]);
 
-  await chip(page, "Free shelf").click();
+  await chip(page, "Public").click();
   await expect(chip(page, "My books")).toHaveAttribute("aria-pressed", "false");
   await expect(titles(page)).toHaveCount(BUILT_IN_BOOKS.length);
   await expect(titles(page).getByText("Mine", { exact: true })).toHaveCount(0);
@@ -91,22 +91,13 @@ test("All, Free shelf and My books each show their books, with one chip always o
   // The chip stays on after reading a book.
   await openBook(page, jekyll.title);
   await page.getByRole("button", { name: "Back", exact: true }).click();
-  await expect(chip(page, "Free shelf")).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await expect(chip(page, "Public")).toHaveAttribute("aria-pressed", "true");
 
   // Tapping the chip that's on keeps it on.
-  await chip(page, "Free shelf").click();
-  await expect(chip(page, "Free shelf")).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await chip(page, "Public").click();
+  await expect(chip(page, "Public")).toHaveAttribute("aria-pressed", "true");
   await chip(page, "All").click();
-  await expect(chip(page, "Free shelf")).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
+  await expect(chip(page, "Public")).toHaveAttribute("aria-pressed", "false");
   await expect(titles(page)).toHaveCount(all);
 });
 
