@@ -65,7 +65,7 @@ test("a fresh visit lists every built-in book at 0%, with its summary and no opt
   );
 });
 
-test("the Free shelf and My books chips show one kind, and a second tap shows both", async ({
+test("All, Free shelf and My books each show their books, with one chip always on", async ({
   page,
 }) => {
   await page.goto("/");
@@ -76,6 +76,7 @@ test("the Free shelf and My books chips show one kind, and a second tap shows bo
   await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
   await page.getByRole("button", { name: "Back", exact: true }).click();
   const all = BUILT_IN_BOOKS.length + 1;
+  await expect(chip(page, "All")).toHaveAttribute("aria-pressed", "true");
   await expect(titles(page)).toHaveCount(all);
 
   await chip(page, "My books").click();
@@ -95,7 +96,17 @@ test("the Free shelf and My books chips show one kind, and a second tap shows bo
     "true",
   );
 
+  // Tapping the chip that's on keeps it on.
   await chip(page, "Free shelf").click();
+  await expect(chip(page, "Free shelf")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await chip(page, "All").click();
+  await expect(chip(page, "Free shelf")).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
   await expect(titles(page)).toHaveCount(all);
 });
 
@@ -152,4 +163,20 @@ test("after one visit, a built-in book never opened opens and plays with the net
   await expect(page.getByTestId("word")).toHaveText("Preface");
   await page.getByRole("button", { name: "Play" }).click();
   await expect(page.getByTestId("word")).not.toHaveText("Preface");
+});
+
+test("shows the books saving for offline use, then that the app is ready, and nothing on later visits", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const banner = page.locator(".offline-banner");
+  await expect(banner).toContainText("Saving books for offline use");
+  await expect(banner).toHaveText("Ready to use offline.", {
+    timeout: 30_000,
+  });
+  await page.reload();
+  await expect(titles(page)).toHaveCount(BUILT_IN_BOOKS.length);
+  // Given a moment to count the saved books.
+  await page.waitForTimeout(2000);
+  await expect(banner).toHaveCount(0);
 });

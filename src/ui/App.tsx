@@ -3,11 +3,7 @@ import { flushSync } from "react-dom";
 import { bookId } from "../core/bookId.ts";
 import { BUILT_IN_BOOKS } from "../core/builtInBooks.ts";
 import { timeWords, type Timing } from "../core/durations.ts";
-import {
-  libraryBooks,
-  type BookInfo,
-  type BookSource,
-} from "../core/library.ts";
+import { libraryBooks, type BookInfo } from "../core/library.ts";
 import {
   findPosition,
   progressTable,
@@ -18,7 +14,8 @@ import { flowStart, readingFlow, type Flow } from "../core/readingFlow.ts";
 import { splitText, type SplitProgress } from "../core/text.ts";
 import AddText, { type NewText } from "./AddText.tsx";
 import { readEpub } from "./importEpub.ts";
-import Library from "./Library.tsx";
+import { useOfflineBooks } from "./useOfflineBooks.ts";
+import Library, { type Shelf } from "./Library.tsx";
 import Reader from "./Reader.tsx";
 import {
   addBook,
@@ -67,9 +64,11 @@ export default function App() {
   const [openFailed, setOpenFailed] = useState(false);
   /**
    * The library's filter chip that's on (SPEC.md feature 4). Kept here so
-   * it stays on after reading a book; a reload clears it.
+   * it stays on after reading a book; a reload goes back to All.
    */
-  const [source, setSource] = useState<BookSource | null>(null);
+  const [source, setSource] = useState<Shelf>("all");
+  /** Kept here, so it goes on counting while a book is open. */
+  const offline = useOfflineBooks();
 
   const reload = useCallback(() => {
     listBooks().then(
@@ -232,6 +231,7 @@ export default function App() {
       openFailed={openFailed}
       source={source}
       onSource={setSource}
+      offline={offline}
       onAdd={() => {
         setNewId(null);
         setScreen({ name: "addText" });

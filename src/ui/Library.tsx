@@ -14,6 +14,7 @@ import {
 } from "../core/position.ts";
 import type { SplitProgress } from "../core/text.ts";
 import { formatDuration } from "../core/timeLeft.ts";
+import type { OfflineBooks } from "./useOfflineBooks.ts";
 import { DEFAULT_WPM } from "../core/timingValues.ts";
 
 interface Props {
@@ -27,9 +28,11 @@ interface Props {
   opening: { id: string; progress: SplitProgress } | null;
   /** Set when a built-in book couldn't be opened. */
   openFailed: boolean;
-  /** The chip that's on, or null to show every book. */
-  source: BookSource | null;
-  onSource: (source: BookSource | null) => void;
+  /** The chip that's on: every book, or only one source's. */
+  source: Shelf;
+  onSource: (source: Shelf) => void;
+  /** How far saving the built-in books for offline use has got. */
+  offline: OfflineBooks;
   onAdd: () => void;
   onOpen: (book: BookInfo) => void;
   onRename: (book: BookInfo, title: string) => void;
@@ -41,8 +44,12 @@ const date = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 /** Standard Ebooks' one-line summary of each built-in book, by slug. */
 const summaries = new Map(BUILT_IN_BOOKS.map((b) => [b.slug, b.summary]));
 
-/** The filter chips: what each shows (SPEC.md feature 4). */
-const SOURCES: [BookSource, string][] = [
+/** What the library shows: every book, or only one source's. */
+export type Shelf = "all" | BookSource;
+
+/** The chips, one always on (SPEC.md feature 4). */
+const SOURCES: [Shelf, string][] = [
+  ["all", "All"],
   ["free", "Free shelf"],
   ["mine", "My books"],
 ];
@@ -50,9 +57,9 @@ const SOURCES: [BookSource, string][] = [
 /**
  * The library (SPEC.md features 3 and 4), the home screen: every text with
  * its title, author, progress, time left and when it was last opened, most
- * recently opened first. A book just imported is marked New. Two chips show
- * only the built-in books (Free shelf) or only your own; with neither on, it
- * shows both. Each of your own texts has an options button that opens a
+ * recently opened first. A book just imported is marked New. Three chips, one
+ * always on, show every book, only the built-in ones (Free shelf) or only
+ * your own. Each of your own texts has an options button that opens a
  * dialog to rename or delete it; built-in books have none.
  */
 export default function Library({
@@ -63,6 +70,7 @@ export default function Library({
   openFailed,
   source,
   onSource,
+  offline,
   onAdd,
   onOpen,
   onRename,
@@ -72,12 +80,15 @@ export default function Library({
   const shown =
     books &&
     libraryOrder(
-      source ? books.filter((book) => bookSource(book) === source) : books,
+      source === "all"
+        ? books
+        : books.filter((book) => bookSource(book) === source),
     );
   const busy = opening !== null;
 
   return (
     <main className="library">
+      <OfflineBanner offline={offline} />
       <h1>{APP_NAME}</h1>
       <button type="button" className="add" disabled={busy} onClick={onAdd}>
         Add text
@@ -89,7 +100,7 @@ export default function Library({
             type="button"
             className="chip"
             aria-pressed={source === value}
-            onClick={() => onSource(source === value ? null : value)}
+            onClick={() => onSource(value)}
           >
             {label}
           </button>
@@ -168,6 +179,35 @@ export default function Library({
         />
       )}
     </main>
+  );
+}
+
+/**
+ * A band at the top while the built-in books download for offline use, then
+ * "Ready to use offline" for the rest of the visit (SPEC.md feature 12).
+ * Why a band and not a quiet note: going offline too early left a book that
+ * wouldn't open, testing #17 on the iPhone.
+ */
+function OfflineBanner({ offline }: { offline: OfflineBooks }) {
+  if (offline.state === "hidden") return null;
+  return (
+    <div className="offline-banner" role="status">
+      {offline.state === "ready" ? (
+        "Ready to use offline."
+      ) : (
+        <>
+          <span>
+            Saving books for offline use: {offline.saved} of {offline.total}.
+            Stay online until it's done.
+          </span>
+          <progress
+            aria-label="Saving books for offline use"
+            value={offline.saved}
+            max={offline.total}
+          />
+        </>
+      )}
+    </div>
   );
 }
 

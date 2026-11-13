@@ -61,7 +61,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Library filters and search
 
-- **What:** filtering the library by genre or author, and searching it, beyond v1's Free shelf and My books chips ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds Standard Ebooks' genres (`genres` in `src/core/builtInBooks.ts`). Raised in #17, when the built-in books grew from three to 24: more books make finding one harder.
+- **What:** filtering the library by genre or author, and searching it, beyond v1's All, Free shelf and My books chips ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds Standard Ebooks' genres (`genres` in `src/core/builtInBooks.ts`). Raised in #17, when the built-in books grew from three to 24: more books make finding one harder.
 - **Others:** Google's help says Play Books' genre, author, progress and other library filters need app version 5.3 or later ([Organize your books](https://support.google.com/googleplay/answer/9402600)). Kindle filters its library by type and by collections ([PCWorld](https://www.pcworld.com/article/3538389/how-to-organize-your-kindle-library.html)). Both read through web search results, not the pages, for #17.
 - **Open:** how many books make filters or search worth it, and whether your own books get genres.
 
