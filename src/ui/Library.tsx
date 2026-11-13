@@ -184,9 +184,8 @@ export default function Library({
 
 /**
  * A band at the top while the built-in books download for offline use, then
- * "Ready to use offline" for the rest of the visit (SPEC.md feature 12).
- * Why a band and not a quiet note: going offline too early left a book that
- * wouldn't open, testing #17 on the iPhone.
+ * "Ready to use offline" for the rest of the visit, or that saving failed.
+ * Why: SPEC.md feature 12.
  */
 function OfflineBanner({ offline }: { offline: OfflineBooks }) {
   if (offline.state === "hidden") return null;
@@ -194,6 +193,8 @@ function OfflineBanner({ offline }: { offline: OfflineBooks }) {
     <div className="offline-banner" role="status">
       {offline.state === "ready" ? (
         "Ready to use offline."
+      ) : offline.state === "failed" ? (
+        "Couldn't save the books for offline use. Reload the page to try again."
       ) : (
         <>
           <span>

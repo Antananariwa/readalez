@@ -180,3 +180,23 @@ test("shows the books saving for offline use, then that the app is ready, and no
   await page.waitForTimeout(2000);
   await expect(banner).toHaveCount(0);
 });
+
+test("says so when saving the books for offline use fails, rather than saving forever", async ({
+  page,
+  context,
+  browserName,
+}) => {
+  test.skip(
+    browserName === "webkit",
+    "Playwright's routes don't reach the service worker's requests in WebKit (docs/known-issues.md)",
+  );
+  // One book's download fails, so the service worker's install fails.
+  await context.route("**/books/bram-stoker_dracula.epub*", (route) =>
+    route.abort(),
+  );
+  await page.goto("/");
+  await expect(page.locator(".offline-banner")).toHaveText(
+    "Couldn't save the books for offline use. Reload the page to try again.",
+    { timeout: 30_000 },
+  );
+});

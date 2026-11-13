@@ -11,10 +11,20 @@ export type OfflineBooks =
   | { state: "hidden" }
   | { state: "saving"; saved: number; total: number }
   /** Saved during this visit. */
-  | { state: "ready" };
+  | { state: "ready" }
+  /** The service worker's install failed, so saving stopped. */
+  | { state: "failed" };
 
 /** How often to count the saved books while they download. */
 const POLL_MS = 1000;
+
+/**
+ * Checks in a row, after the page has loaded, with no service worker
+ * registered or installing, before saving counts as failed. The page
+ * registers its worker when it has loaded (`registerServiceWorker.ts`), so
+ * the first checks can come before there's one.
+ */
+const GRACE_CHECKS = 3;
 
 export function useOfflineBooks(): OfflineBooks {
   const [books, setBooks] = useState<OfflineBooks>({ state: "hidden" });
@@ -30,20 +40,39 @@ export function useOfflineBooks(): OfflineBooks {
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let first = true;
+    let missing = 0;
     const check = async () => {
       try {
         const saved = await savedBooks();
         const registration = await navigator.serviceWorker.getRegistration();
-        // The worker is active once it has saved every file it precaches.
+        // A worker becomes active only after its install has stored every
+        // file it precaches: Workbox's install handler stores them
+        // (`PrecacheStrategy` in workbox-precaching), and a worker whose
+        // install fails is discarded rather than activated (Service Worker
+        // spec, https://w3c.github.io/ServiceWorker/#installation-algorithm).
         const done = saved === BUILT_IN_BOOKS.length && !!registration?.active;
         if (stopped) return;
         if (done) {
           setBooks(first ? { state: "hidden" } : { state: "ready" });
           return;
         }
+        // A first install that fails takes its registration with it (same
+        // algorithm), and the page doesn't register again. A failed
+        // `register()` leaves none either.
+        const working =
+          registration?.installing ??
+          registration?.waiting ??
+          registration?.active;
+        missing =
+          document.readyState === "complete" && !working ? missing + 1 : 0;
+        if (missing >= GRACE_CHECKS) {
+          setBooks({ state: "failed" });
+          return;
+        }
         setBooks({ state: "saving", saved, total: BUILT_IN_BOOKS.length });
       } catch {
-        // Storage the browser won't open, as in some private windows.
+        // Cache storage the browser won't open (possibly some private
+        // windows: not checked) leaves nothing to show.
         if (!stopped) setBooks({ state: "hidden" });
         return;
       }
@@ -62,8 +91,10 @@ export function useOfflineBooks(): OfflineBooks {
 
 /**
  * How many built-in books are in the service worker's cache. Workbox stores
- * a file without a hash in its name under its URL plus a revision parameter,
- * so the search part is ignored.
+ * a file listed with a revision under its URL plus a `__WB_REVISION__`
+ * parameter (`createCacheKey` in workbox-precaching 7.4.1:
+ * https://github.com/GoogleChrome/workbox/blob/v7.4.1/packages/workbox-precaching/src/utils/createCacheKey.ts),
+ * and `dist/sw.js` lists each book with one, so the search part is ignored.
  */
 async function savedBooks(): Promise<number> {
   const found = await Promise.all(
