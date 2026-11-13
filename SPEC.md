@@ -279,7 +279,7 @@ Checks:
 Checks:
 
 - E2E: after one visit, the app reloads with the network off, and a built-in book plays.
-- E2E: a first visit shows the books saving, then "Ready to use offline."; a later visit shows neither; a book that fails to download shows that saving failed.
+- E2E: a first visit shows the books saving, then "Ready to use offline."; a later visit shows neither; a book that fails to download shows that saving failed, and a worker script that arrives late still ends in "Ready to use offline."
 - E2E: a new version deployed while a book is playing doesn't reload the page, and a later launch runs it.
 - E2E: the install tip shows once in emulated iPhone Safari (not installed) and never in other browsers.
 - E2E: once one of your own books is saved, the app has requested persistent storage.

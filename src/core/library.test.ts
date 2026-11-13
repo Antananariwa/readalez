@@ -99,7 +99,7 @@ describe("libraryBooks", () => {
 
 describe("bookSource", () => {
   it("tells built-in books from your own", () => {
-    expect(bookSource({ ...book("A"), builtIn: "a" })).toBe("free");
+    expect(bookSource({ ...book("A"), builtIn: "a" })).toBe("public");
     expect(bookSource(book("B"))).toBe("mine");
   });
 });

@@ -47,10 +47,10 @@ export interface BuiltInBook {
 }
 
 /** Where a book in the library comes from: built in (Public) or the reader's own. */
-export type BookSource = "free" | "mine";
+export type BookSource = "public" | "mine";
 
 export function bookSource(book: BookInfo): BookSource {
-  return book.builtIn === undefined ? "mine" : "free";
+  return book.builtIn === undefined ? "mine" : "public";
 }
 
 /**

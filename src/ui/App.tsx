@@ -15,7 +15,7 @@ import { splitText, type SplitProgress } from "../core/text.ts";
 import AddText, { type NewText } from "./AddText.tsx";
 import { readEpub } from "./importEpub.ts";
 import { useOfflineBooks } from "./useOfflineBooks.ts";
-import Library, { type Shelf } from "./Library.tsx";
+import Library, { type LibraryFilter } from "./Library.tsx";
 import Reader from "./Reader.tsx";
 import {
   addBook,
@@ -66,7 +66,7 @@ export default function App() {
    * The library's filter chip that's on (SPEC.md feature 4). Kept here so
    * it stays on after reading a book; a reload goes back to All.
    */
-  const [source, setSource] = useState<Shelf>("all");
+  const [source, setSource] = useState<LibraryFilter>("all");
   /** Kept here, so it goes on counting while a book is open. */
   const offline = useOfflineBooks();
 

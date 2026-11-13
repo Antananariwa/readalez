@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { BUILT_IN_BOOKS } from "../core/builtInBooks.ts";
+import { serviceWorkerRegistration } from "./registerServiceWorker.ts";
 
 export type OfflineBooks =
   /** Nothing to show: no service worker, or saved on an earlier visit. */
@@ -17,14 +18,6 @@ export type OfflineBooks =
 
 /** How often to count the saved books while they download. */
 const POLL_MS = 1000;
-
-/**
- * Checks in a row, after the page has loaded, with no service worker
- * registered or installing, before saving counts as failed. The page
- * registers its worker when it has loaded (`registerServiceWorker.ts`), so
- * the first checks can come before there's one.
- */
-const GRACE_CHECKS = 3;
 
 export function useOfflineBooks(): OfflineBooks {
   const [books, setBooks] = useState<OfflineBooks>({ state: "hidden" });
@@ -40,11 +33,14 @@ export function useOfflineBooks(): OfflineBooks {
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let first = true;
-    let missing = 0;
+    /** Undefined until `register()` settles; null if it failed. */
+    let registration: ServiceWorkerRegistration | null | undefined;
+    void serviceWorkerRegistration().then((result) => {
+      registration = result;
+    });
     const check = async () => {
       try {
         const saved = await savedBooks();
-        const registration = await navigator.serviceWorker.getRegistration();
         // A worker becomes active only after its install has stored every
         // file it precaches: Workbox's install handler stores them
         // (`PrecacheStrategy` in workbox-precaching), and a worker whose
@@ -56,16 +52,18 @@ export function useOfflineBooks(): OfflineBooks {
           setBooks(first ? { state: "hidden" } : { state: "ready" });
           return;
         }
-        // A first install that fails takes its registration with it (same
-        // algorithm), and the page doesn't register again. A failed
-        // `register()` leaves none either.
-        const working =
-          registration?.installing ??
-          registration?.waiting ??
-          registration?.active;
-        missing =
-          document.readyState === "complete" && !working ? missing + 1 : 0;
-        if (missing >= GRACE_CHECKS) {
+        // `register()` resolves only once its worker is installing (same
+        // algorithm, Install's first steps), so a registration with no
+        // worker left means the install failed; the page doesn't register
+        // again, nor after `register()` fails. A slow worker script only
+        // delays both, so saving never fails on time alone.
+        const failed =
+          registration === null ||
+          (registration !== undefined &&
+            !registration.installing &&
+            !registration.waiting &&
+            !registration.active);
+        if (failed) {
           setBooks({ state: "failed" });
           return;
         }

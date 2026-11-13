@@ -179,7 +179,7 @@ test("says so when saving the books for offline use fails, rather than saving fo
 }) => {
   test.skip(
     browserName === "webkit",
-    "Playwright's routes don't reach the service worker's requests in WebKit (docs/known-issues.md)",
+    "In WebKit the route didn't stop the service worker's download: this test reached \"Ready\" there (#98)",
   );
   // One book's download fails, so the service worker's install fails.
   await context.route("**/books/bram-stoker_dracula.epub*", (route) =>
@@ -188,6 +188,22 @@ test("says so when saving the books for offline use fails, rather than saving fo
   await page.goto("/");
   await expect(page.locator(".offline-banner")).toHaveText(
     "Couldn't save the books for offline use. Reload the page to try again.",
+    { timeout: 30_000 },
+  );
+});
+
+test("a service worker script that arrives late still ends in ready, not failed", async ({
+  page,
+  context,
+}) => {
+  // A slow first download of the worker, as a phone's network may give.
+  await context.route("**/sw.js", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    await route.continue();
+  });
+  await page.goto("/");
+  await expect(page.locator(".offline-banner")).toHaveText(
+    "Ready to use offline.",
     { timeout: 30_000 },
   );
 });

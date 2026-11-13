@@ -29,8 +29,8 @@ interface Props {
   /** Set when a built-in book couldn't be opened. */
   openFailed: boolean;
   /** The chip that's on: every book, or only one source's. */
-  source: Shelf;
-  onSource: (source: Shelf) => void;
+  source: LibraryFilter;
+  onSource: (source: LibraryFilter) => void;
   /** How far saving the built-in books for offline use has got. */
   offline: OfflineBooks;
   onAdd: () => void;
@@ -45,12 +45,12 @@ const date = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 const summaries = new Map(BUILT_IN_BOOKS.map((b) => [b.slug, b.summary]));
 
 /** What the library shows: every book, or only one source's. */
-export type Shelf = "all" | BookSource;
+export type LibraryFilter = "all" | BookSource;
 
 /** The chips, one always on (SPEC.md feature 4). */
-const SOURCES: [Shelf, string][] = [
+const SOURCES: [LibraryFilter, string][] = [
   ["all", "All"],
-  ["free", "Public"],
+  ["public", "Public"],
   ["mine", "My books"],
 ];
 
