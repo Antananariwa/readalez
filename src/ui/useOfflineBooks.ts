@@ -52,9 +52,11 @@ export function useOfflineBooks(): OfflineBooks {
           setBooks(first ? { state: "hidden" } : { state: "ready" });
           return;
         }
-        // `register()` resolves only once its worker is installing (same
-        // algorithm, Install's first steps), so a registration with no
-        // worker left means the install failed; the page doesn't register
+        // A registration `register()` resolves with always has a worker:
+        // on a first visit it's already installing (same algorithm,
+        // Install's first steps), and later the existing one is returned
+        // (https://w3c.github.io/ServiceWorker/#register-algorithm). So one
+        // with no worker left means the install failed; the page doesn't register
         // again, nor after `register()` fails. A slow worker script only
         // delays both, so saving never fails on time alone.
         const failed =
