@@ -104,6 +104,47 @@ button {
   padding: 0.5rem 1rem;
 }
 
+/* Saving the built-in books for offline use (SPEC.md feature 12). */
+.offline-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.offline-banner progress {
+  width: 100%;
+}
+
+/* The All, Public and My books chips (SPEC.md feature 4). */
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.chip {
+  /* The same 44px minimum as the reader's buttons. */
+  min-height: 44px;
+  padding: 0 1rem;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip[aria-pressed="true"] {
+  color: var(--background);
+  background: var(--text);
+  border-color: var(--text);
+}
+
 .books {
   list-style: none;
   margin: 1rem 0 0;
@@ -140,10 +181,24 @@ button {
 }
 
 .book-author,
+.book-summary,
 .book-progress,
-.book-opened {
+.book-opened,
+.book-opening {
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+/* The bar on a built-in book while its first open imports it (feature 3). */
+.book-opening {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.book-opening progress {
+  width: 100%;
 }
 
 /* A book just imported: a green border and a New label by its options. */

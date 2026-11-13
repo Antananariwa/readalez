@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 // Helpers shared by the reader's tests. Playwright's clock drives
 // requestAnimationFrame and performance.now(), so word changes are checked
@@ -32,4 +32,16 @@ export async function openReader(page: Page, text: string): Promise<void> {
   await page.getByRole("button", { name: "Save" }).click();
   // Saving stores the text first, so the reader opens a moment later.
   await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
+}
+
+/**
+ * The library's rows for your own books, leaving out the built-in books
+ * listed from the first visit (SPEC.md feature 3): those have no options
+ * button, since they can't be renamed or deleted.
+ */
+export function ownRows(page: Page): Locator {
+  return page
+    .getByRole("list", { name: "Library" })
+    .getByRole("listitem")
+    .filter({ has: page.getByRole("button", { name: /^Options for / }) });
 }

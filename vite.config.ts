@@ -21,6 +21,11 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ["icon.svg", "apple-touch-icon.png"],
       workbox: {
+        // Workbox's default, plus the built-in books, so they open offline
+        // after the first visit (SPEC.md feature 3, ADR 0013). Each is under
+        // Workbox's default limit of 2 MiB per file
+        // (`maximumFileSizeToCacheInBytes`, in workbox-build's schema).
+        globPatterns: ["**/*.{js,wasm,css,html}", "books/*.epub"],
         skipWaiting: false,
         clientsClaim: false,
         navigateFallback: "/index.html",

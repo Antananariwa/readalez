@@ -14,7 +14,8 @@
     "check": "npm run -s typecheck && npm run -s lint && npm run -s format:check && vitest run",
     "test": "npm run check",
     "e2e": "playwright test",
-    "icons": "node scripts/render-icons.ts"
+    "icons": "node scripts/render-icons.ts",
+    "books": "node scripts/build-books.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

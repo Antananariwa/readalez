@@ -12,7 +12,7 @@ import { SAVE_EVERY_MS } from "../src/ui/useSavePosition.ts";
 import { splitText, wordText } from "../src/core/text.ts";
 import { formatDuration, timeLeft } from "../src/core/timeLeft.ts";
 import { DEFAULT_WPM } from "../src/core/timingValues.ts";
-import { openReader } from "./helpers.ts";
+import { openReader, ownRows } from "./helpers.ts";
 
 // Saved reading positions and progress in the library (issue #13, SPEC.md
 // features 4 and 7). Playwright's clock drives the reader, so where reading
@@ -27,8 +27,7 @@ const title = parsePaste(chapter).title;
 
 const frameWord = (page: Page) => page.getByTestId("word");
 const marked = (page: Page) => page.getByTestId("current-word");
-const row = (page: Page) =>
-  page.getByRole("list", { name: "Library" }).getByRole("listitem");
+const row = ownRows;
 
 /** The word on screen, from the progress bar, which has a step per word. */
 async function wordIndex(page: Page): Promise<number> {
