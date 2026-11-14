@@ -96,7 +96,7 @@ Code: `src/core/paste.ts`, `src/core/epub.ts` and `src/ui/AddText.tsx`, which ad
 ### Readalez doesn't check whether a book is free to read where you live
 
 - **What happens:** Readalez reads any book a reader imports or pastes and checks nothing about its copyright. The only safeguard is a sentence in the help note on the Add text screen (SPEC.md feature 14): copyright laws differ between countries, so check your local laws.
-- **Why it's left:** books readers add stay on their device and are never uploaded, so the app distributes nothing (SPEC.md, Legal and licensing), and a check would need each country's rules (#83).
+- **Why it's left:** books readers add stay on their device and are never uploaded, so the app distributes nothing (SPEC.md, Legal and licensing), and a check would need each country's rules. #83 added the note instead.
 - **Suggestions:** none for v1. A catalog after v1 would choose its books by a copyright rule (docs/roadmap.md, "Public-domain catalog and proxy").
 
 ## Build and tests
@@ -134,7 +134,7 @@ Code: `.devcontainer/init-firewall.sh`. Added in #71.
 ### A web page or an issue can carry instructions for the agent
 
 - **What happens:** the agent reads web pages, since ports 80 and 443 are open, and reads issues and comments that anyone can post on this public repo. Text in them can be written to steer an AI agent (prompt injection). A steered session could send the GitHub token or the Claude login to another server, put a harmful change in a PR, or probably merge one ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md) lists what it can reach). Not seen in this project so far.
-- **Why it's left:** a separate research container would need its own paid API key ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md)). Both logins can be revoked.
+- **Why it's left:** allowing sites one by one was too much work, and a separate research container would need its own paid API key ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md)). Both logins can be revoked.
 - **Suggestions:** if a session does something unexplained, revoke the GitHub token and log the Claude login out. For more isolation later: research in a separate container with no logins, passing checked text to this one.
 
 ## Install and updates
