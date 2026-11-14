@@ -1,6 +1,6 @@
 # Known issues
 
-Problems seen in the app or its tooling and accepted for now, grouped by area. A fix removes its entry. Each section names its code, tests and the issue that added it, when there are any. Each entry has a title saying what happens, then **What happens**, **Why it's left** and, when there are any, **Suggestions** (a possible cause or fix).
+Problems seen in the app or its tooling and accepted for now, grouped by area. A fix removes its entry. Each section names its code, tests and the issue that added it, when there are any. Each entry has a title saying what happens, then **What happens** and, when there are any, **Why it's left** and **Suggestions** (a possible cause or fix).
 
 ## Timing and sentences
 
@@ -69,19 +69,18 @@ Code: `src/ui/App.tsx`, `src/ui/Reader.tsx`, `src/ui/ProgressBar.tsx`. Added in 
 ### Reading goes on for a while after swiping to the app switcher
 
 - **What happens:** in the installed app on the owner's iPhone, swiping up from the bottom while words played left reading running with the app off screen. It stopped late, hard to tell exactly when. Pausing first, then switching apps, left it paused on return. Seen once, testing #59.
-- **Why it's left:** reading does pause and never resumes on its own, as SPEC.md feature 7 asks. The owner chose to note it for later; it may also interact with notifications.
+- **Why it's left:** reading does pause and never resumes on its own, as SPEC.md feature 7 asks. It may also interact with notifications.
 - **Suggestions:** Possible cause: the page counts as visible while the app shows as a card in the switcher, and `visibilitychange` (`src/ui/Reader.tsx`) fires only once the app is fully in the background (not checked). Also pausing on the window's `blur` or `pagehide` event might stop it sooner (not checked), to be tried on the iPhone.
 
 ### A stray tap or drag loses your place
 
 - **What happens:** tapping a word in the paused view or moving the progress bar moves the frame there at once, and nothing leads back to where you were reading. The owner found it very annoying when it happened by accident, reviewing #68.
-- **Why it's left:** the owner chose to record it for later (#68).
 - **Suggestions:** after a tap or a drag, show a "Back to where you were" button for a while that returns to the word before the move. The open-source reader [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader#readme) has a "Back to my position" link for scrolling away while paused. Kindle's "Go back to page …" after jumping to another place is a similar idea (not checked).
 
 ### A tap on the marked word's left edge after a dash can pick the word before
 
 - **What happens:** from reading the code, not checked in a browser: in the paused view, a tap on the left edge of the marked word's first letter, when a dash joins it to the word before ("yes—no" with "no" marked), can move the frame to the word before. The caret then sits at the end of the text before the `<mark>`, and `characterAt` (`src/ui/PausedText.tsx`) takes the character before the caret. Found while fixing the reviewer's finding in #68.
-- **Why it's left:** it needs a tap on a sliver of one letter, and only where a dash joins two words. The owner chose to leave it for later (#68).
+- **Why it's left:** it needs a tap on a sliver of one letter, and only where a dash joins two words.
 - **Suggestions:** when the caret is at the end of a text node, measure the first character of the next text node instead.
 
 ### The progress bar moves hundreds of words per pixel in a novel
@@ -97,7 +96,7 @@ Code: `src/core/paste.ts`, `src/core/epub.ts` and `src/ui/AddText.tsx`, which ad
 ### Readalez doesn't check whether a book is free to read where you live
 
 - **What happens:** Readalez reads any book a reader imports or pastes and checks nothing about its copyright. The only safeguard is a sentence in the help note on the Add text screen (SPEC.md feature 14): copyright laws differ between countries, so check your local laws.
-- **Why it's left:** books readers add stay on their device and are never uploaded, so the app distributes nothing (SPEC.md, Legal and licensing), and a check would need each country's rules. The owner chose a note over any check (#83).
+- **Why it's left:** books readers add stay on their device and are never uploaded, so the app distributes nothing (SPEC.md, Legal and licensing), and a check would need each country's rules. #83 added the note instead.
 - **Suggestions:** none for v1. A catalog after v1 would choose its books by a copyright rule (docs/roadmap.md, "Public-domain catalog and proxy").
 
 ## Build and tests
@@ -135,7 +134,7 @@ Code: `.devcontainer/init-firewall.sh`. Added in #71.
 ### A web page or an issue can carry instructions for the agent
 
 - **What happens:** the agent reads web pages, since ports 80 and 443 are open, and reads issues and comments that anyone can post on this public repo. Text in them can be written to steer an AI agent (prompt injection). A steered session could send the GitHub token or the Claude login to another server, put a harmful change in a PR, or probably merge one ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md) lists what it can reach). Not seen in this project so far.
-- **Why it's left:** the owner chose open web access over adding sites one by one, and rejected a separate research container because it needs its own paid API key (#71). Both logins can be revoked.
+- **Why it's left:** allowing sites one by one was too much work, and a separate research container would need its own paid API key ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md)). Both logins can be revoked.
 - **Suggestions:** if a session does something unexplained, revoke the GitHub token and log the Claude login out. For more isolation later: research in a separate container with no logins, passing checked text to this one.
 
 ## Install and updates
@@ -207,7 +206,7 @@ Code: `src/core/epub.ts` and `src/core/epub/`. Tests: `src/core/epub.test.ts`, `
 ### A long book keeps the page busy while it's imported and opened
 
 - **What happens:** import and opening run on the page's main thread. While an EPUB is imported, by Import EPUB or by a built-in book's first open (SPEC.md feature 3), the page gets a turn only between steps of splitting the text into words (`readEpub` in `src/ui/importEpub.ts`): reviewing #97 in Playwright, typing into the paste box mid-import worked in Chromium and in WebKit. Reading the file, timing the words, naming the book and saving it each run in one go; whether the page answers taps during them is not checked. In Node in the dev container, Moby Dick's fixture (217,867 words) took 65 ms to parse, 1,700 ms to split into words, 96 ms to time and 45 ms to name by its SHA-256 (#97). The test "a 600,000-word EPUB shows a moving progress bar, then lands in the library marked New" in `e2e/importEpub.spec.ts` took 6 to 11 s in the Chromium projects and 7 to 10 s in WebKit, over four runs in the container with other tests running alongside, page load included. Opening a book splits its whole text again in one go (`read` in `src/ui/App.tsx`), with no progress shown. How long either takes on an iPhone is unknown.
-- **Why it's left:** the owner chose a progress bar on the page over importing in the background, as less code (#97). Speed targets are #73.
+- **Why it's left:** a progress bar on the page is less code than importing in the background (#97). Speed targets are #73.
 - **Suggestions:** split in a Web Worker, or make `splitText` faster, since it takes most of the time.
 
 ## Reading flow and notes
