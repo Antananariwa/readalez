@@ -39,7 +39,8 @@ In every text (docs, comments, test names, issues, PRs):
 Each kind of text has its own job. Apply the lines for the text you are writing:
 
 - **SPEC.md** says what the app does and why. It leaves out who decided, when or where a reason was given, and how a line came about.
-- **ARCHITECTURE.md, docs/known-issues.md, docs/roadmap.md, comments and test names** say what is. Each doc's intro gives the shape of its entries. For a why, link SPEC.md or the ADR.
+- **ARCHITECTURE.md, comments and test names** say what the code is and does. For a why, link SPEC.md or the ADR.
+- **docs/known-issues.md and docs/roadmap.md:** each one's intro says what it holds and gives the shape of an entry. Follow the intro.
 - **An ADR** holds one decision with what was known when it was made, alternatives included, in ADR 0001's shape. Once accepted, it changes only in its Status line. A new ADR supersedes it.
 - **An issue or a PR** holds the path: what was asked, tried and dropped, what changed along the way, and what the owner decided. History belongs here, not in the docs above. The title says what is done, written as an order ("Lock the progress bar", not "Locked" or "Locking"). The body follows its template.
 - One home per fact. Elsewhere, link to it.
