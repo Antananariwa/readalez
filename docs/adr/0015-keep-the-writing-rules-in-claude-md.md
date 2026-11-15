@@ -30,7 +30,7 @@ The rules live in three places, each with one job:
 | Each doc's intro, and each template    | The shape of that file's entries                               | Edited in a PR   |
 | ADRs, this one and ADR 0014 among them | Why a standard or a home was chosen, with what was read for it | Status line only |
 
-CLAUDE.md alone is the home, with no guide beside it. Nearly every task writes a PR, a comment or a test name, so the rules are needed in every session. A pointer to a second file is the step that failed in #117. This differs from Backstage, which points from its agent file to a guide: Backstage's guide serves many human contributors, and here Claude Code writes the docs (ADR 0004).
+CLAUDE.md alone is the home, with no guide beside it. Nearly every task writes a PR, a comment or a test name, so the rules are needed in every session. Behind a pointer, #110 kept six lines of the rules, and the line #117 needed was not among them. This differs from Backstage, which points from its agent file to a guide: Backstage's guide serves many human contributors, and here Claude Code writes the docs (ADR 0004).
 
 The section sorts rules by kind of statement: something seen here, what the code does, a fact from outside the repo, a decision or a judgment, a guess, and history. #117's errors came from treating one kind as another.
 
@@ -40,7 +40,7 @@ This supersedes in ADR 0014:
 - The Consequences line that a step which finds a misfit "proposes a new ADR that supersedes this one". A rule is corrected by editing CLAUDE.md. A new ADR is needed only when a standard chosen in ADR 0014's table is replaced.
 - Local rule 2, in part: rules about who may do what still live only in CLAUDE.md and `.claude/agents/`. Writing rules now live in CLAUDE.md too.
 
-ADR 0014's table of chosen standards, its sources and its other local rules stand.
+ADR 0014's table of chosen standards, its sources and its other local rules stand as the record of what was chosen. ADR 0014 says "Where the standard has a rule, that is the rule"; each rule its table quotes is now written out in CLAUDE.md, in a doc's intro or in a template, and where they differ, those files hold the live rule. Written out in this change because they were in none of those files: "Change your documentation in the same CL as the code change" and "Default to delete" (Kinds of file), "Do not synthesize meaning from multiple sources" (Prose), the first line of a change "written as though it were an order" (Changes), and the Agent file row's rules for CLAUDE.md itself. The glossary (Names) waits for #106.
 
 A new rule about how to work or write goes in CLAUDE.md, and its source or reason goes in the PR that adds it. That is ADR 0014's Changes row: the body of a change says what and why.
 
@@ -53,7 +53,7 @@ Local rules added, which no source read gives:
 
 ## Consequences
 
-- CLAUDE.md grows from 46 lines to 54. Every session pays for the longer section, including sessions that write no docs.
+- CLAUDE.md grows from 46 lines to 57. Every session pays for the longer section, including sessions that write no docs.
 - The reason for a writing rule is no longer beside the rule. It is in this ADR for the rules above, and in the PR for a later one (`git blame CLAUDE.md`).
 - Per-file shapes are not gathered in one place. `docs/known-issues.md`, `docs/roadmap.md`, ADR 0001 and `.github/pull_request_template.md` each hold their own already. SPEC.md's is #106's to design.
 - `.claude/agents/reviewer.md` checks against CLAUDE.md only.

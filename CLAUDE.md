@@ -28,7 +28,7 @@ This covers docs, comments, test names, issues and PRs. First decide what kind o
 
 - **Something seen here:** say what happened, where and how often, and link the issue or PR. Don't widen it into a rule or a cause.
 - **What the code does:** name the file or test.
-- **A fact from outside the repo** (browsers, devices, laws, other projects): link what you read or ran.
+- **A fact from outside the repo** (browsers, devices, laws, other projects): link what you read or ran. Don't combine sources into a conclusion that none of them states.
 - **A decision or a judgment:** say what and why, plainly. A preference is a reason. It needs no source and no label. Don't say who decided, or where or when the reason was given.
   - Not "the owner chose 40%", but "40%, because at a third, 5- and 6-letter words sat wholly in the left half of the screen (#36)".
   - Not "Android phones are very common (not checked)", but "Android Chrome is supported because Android phones are common, so a public app gets opened on them".
@@ -36,10 +36,13 @@ This covers docs, comments, test names, issues and PRs. First decide what kind o
 - **A guess:** mark it ("Possible cause: …", "(not checked)"), or write "unknown". These marks are for facts nobody has checked, never for a decision or a judgment.
 - **History:** how a line came about, and what it said before, belong in the PR, not in the doc.
 - One home per fact. Elsewhere, link to it.
+- Change a doc in the same PR as the code it describes. Delete a doc or a line that is stale or unused.
 - One term per thing. Write about the feature, not the words on its button. Where a line names a UI label, put the label in bold.
 - One idea per sentence, in the active voice.
 - Each doc's intro, and each template, gives the shape of its entries. ADR 0001 gives the ADRs'.
 - An accepted ADR changes only in its Status line. A new ADR supersedes it.
+- A commit's or a PR's title says what is done, written as an order ("Lock the progress bar", not "Locked" or "Locking"). The body says what and why.
+- This file stays under 200 lines, holds only what can't be found by reading the repo, and uses no added emphasis.
 
 ## Workflow
 
