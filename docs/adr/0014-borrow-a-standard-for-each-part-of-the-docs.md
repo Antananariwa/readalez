@@ -1,7 +1,7 @@
 # 14. Borrow a published standard for each part of the docs
 
 Date: 2026-11-14
-Status: Accepted
+Status: Accepted. Superseded in part by [ADR 0015](0015-keep-the-writing-rules-in-claude-md.md): the live writing rules are in CLAUDE.md, and this ADR is the record of which standards were chosen.
 
 ## Context
 
