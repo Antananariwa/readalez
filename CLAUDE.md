@@ -29,11 +29,11 @@ In every text (docs, comments, test names, issues, PRs):
 - **Something seen here:** say what happened, where and how often, and link the issue or PR. Don't widen it into a rule or a cause.
 - **What the code does:** name the file or test.
 - **A fact from outside the repo** (browsers, devices, laws, other projects): link what you read or ran. Don't combine sources into a conclusion that none of them states.
-- **A guess:** mark it ("Possible cause: …", "(not checked)"), or write "unknown". "(not checked)" is for a claim you tried to check and couldn't. It doesn't stand in for checking.
-- **A reason** (why a rule, a decision or a choice is as it is): always give it, as the reasoning that led there. Where it rests on a claim that can be checked, check the claim when you write it and link what you read, even when it seems common knowledge. A reason with no source reads as an opinion, and may stand as one. Write "a preference" or "No reason recorded" only when there is clearly no reasoning to give.
+- **A guess:** mark it ("Possible cause: …", "(not checked)"), or write "unknown". Try to check first: "(not checked)" doesn't stand in for a check you could make now.
+- **A reason** (why a rule, a decision or a choice is as it is): always give it, as the reasoning that led there. "The owner chose it" is not a reason. Where it rests on a claim that can be checked, check the claim when you write it and link what you read, even when it seems common knowledge. A reason with no source reads as an opinion, and may stand as one. Write "a preference" or "No reason recorded" only when there is clearly no reasoning to give.
   - Not "40% is easier to read", but "40%, because at a third, 5- and 6-letter words sat wholly in the left half of the screen (#36)".
-  - Not "Android phones are very common (not checked)", but "Android Chrome is supported because Android runs on 72% of phones worldwide ([StatCounter, October 2026](https://gs.statcounter.com/os-market-share/mobile/worldwide)), so a public app gets opened on them".
-- One term per thing. Name a feature by its term, not by the words on its button. Those words have one home, the code, so that changing them changes no doc. Quote them only where a reader must find the control on the screen, as in the README's steps, and put them in bold there.
+  - Not "Android phones are very common (not checked)", but "Android Chrome is supported because Android has 72% of mobile web use worldwide ([StatCounter, October 2026](https://gs.statcounter.com/os-market-share/mobile/worldwide)), so a public app gets opened on them".
+- One term per thing. Name a feature by its term, not by the words on its button. Those words live in the code. SPEC.md holds them once where the wording is itself a product choice, with its reason. Elsewhere, quote them only where a reader must find the control on the screen, as in the README's steps, or where an issue or a PR changes them. Put quoted words in bold.
 - One idea per sentence, in the active voice.
 - One home per fact. Elsewhere, link to it.
 - Change a doc in the same PR as the code it describes. Delete a doc or a line that is stale or unused.
