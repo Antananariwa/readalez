@@ -9,9 +9,9 @@ How long each word shows (SPEC.md feature 6) needs values before anyone can tune
 
 The open-source Spritz-style readers that were read:
 
-- [speedread](https://github.com/pasky/speedread) shows a word for 2× at a comma and 3× at a full stop ([`$commatime` and `$fstoptime`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L53-L54)).
+- [speedread](https://github.com/pasky/speedread) shows a word for 0.9 × 60 ÷ wpm seconds, plus 0.04 × √length of the same unit. At a comma the 0.9 becomes 2, and at a full stop 3 ([`$wordtime` to `$fstoptime`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L51-L54), [`word_time`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L129-L138)).
 - [Speeedy](https://github.com/sami-29/speeedy) shows a word for 2× at a sentence end and 1.4× at a comma. Its sentence-pause setting scales both, and a paragraph pause comes on top ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643), [where it's scaled](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L420-L427)).
-- Both show an ordinary word for 60,000 ÷ wpm milliseconds, with pauses on top.
+- Speeedy ([`msPerWord`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L417)) and Readalez show an ordinary word for 60,000 ÷ wpm milliseconds, with pauses on top. speedread's ordinary word comes close to that.
 
 The first values, tried on the iPhone in #36, were 3× at a sentence end, 4× at a paragraph end, and 3× for the first word after play:
 

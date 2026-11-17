@@ -33,14 +33,14 @@ What Readalez changes:
 
 1. **No ID line and no keywords other than `Rationale:`.** OpenFastTrace gives each item an ID such as `` `req~name~1` ``, and the keywords `Needs`, `Covers`, `Depends`, `Status`, `Tags` and `Comment`. Why: they feed its tracing tool, which Readalez doesn't run. Code and tests already point back at the feature by number.
 2. **Features keep their numbered headings, and each rule under a feature is a heading one level down.** Why: code, tests, docs and open issues cite features by number and by heading anchor.
-3. **The rationale is written as `Rationale:` followed by its text.** OpenFastTrace's own file puts the text on the next line. Why: Markdown would join the two lines into one paragraph anyway, so the text starts on the same line.
-4. **No checks.** Each check moves to the test that holds it, or, until one does, to the feature's issue. A by-hand check moves to the checklist of what hasn't been checked by hand (#74). The section "How features are checked" stays, and says where checks live. Why: the sources above. Also, `.github/workflows/reviews.yml` cites the heading.
+3. **The rationale is written as `Rationale:` followed by its text, in one paragraph.** The guide's example puts the text on the next line with no blank line between, which Markdown renders as one paragraph. OpenFastTrace's own system requirements put a blank line after `Rationale:`. Why: one paragraph keeps the label with its text, as the guide's example renders.
+4. **No checks.** Each check moves to the test that holds it, or, until one does, to the feature's issue. A device check of a built feature moves to the checklist of what hasn't been checked by hand (#74), and one of an unbuilt feature to its issue. The section "How features are checked" stays, and says where checks live. Why: the sources above. Also, `.github/workflows/reviews.yml` cites the heading.
 5. **A glossary closes the file.** Why: ADR 0014's Names row puts it in SPEC.md.
 6. **Content rules from the sources above.** SPEC.md holds behaviour and its reasons. Code detail leaves when the code or a test holds it. History leaves, since issues and PRs hold it. Where the reason for a rule is a convention, the rationale links one place it is seen. Contrasts with other apps leave, and a decision whose alternatives matter gets its own ADR.
 
-OpenFastTrace's documentation is under GPL-3.0 ([repository](https://github.com/itsallcode/openfasttrace)). SPEC.md takes the item's shape and quotes one sentence with a link. It copies no other text.
+OpenFastTrace's documentation is under GPL-3.0 ([repository](https://github.com/itsallcode/openfasttrace)). SPEC.md takes the item's shape and copies no text. This ADR quotes one sentence, with a link.
 
-This supersedes ADR 0014's local rule 1.
+This supersedes ADR 0014's local rule 1, and its table row for what the app does ("None. SPEC.md keeps its shape").
 
 ## Consequences
 

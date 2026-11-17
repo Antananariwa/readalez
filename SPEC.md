@@ -101,15 +101,19 @@ Rationale: Reading starts at the first real word, as with EPUBs.
 
 The title is the first line of the text kept, cut at a word boundary to at most 60 characters. It can be edited before saving, and later in the library. A title left blank saves as the first line.
 
+Rationale: The title should name what you read, and the library needs one for every text.
+
 #### Author
 
-A pasted text's author is "Unknown author", as for an EPUB with none (feature 2).
+A pasted text's author is **Unknown author**, as for an EPUB with none (feature 2).
 
 Rationale: One rule for every book, with no extra field to fill in.
 
 #### Same text twice
 
 Saving a text already in the library adds nothing, and says so. It offers to open the copy already there, with its title and progress, or to cancel. Texts match by their words (ADR 0007).
+
+Rationale: One book, one entry.
 
 #### No chapters, no verse
 
@@ -119,7 +123,7 @@ Rationale: Books come in as EPUB, which marks chapters and verse. Other formats 
 
 ### 2. Import EPUB files
 
-Importing an EPUB on the Add text screen opens the file picker. The book is read on the device and added to the library, marked New.
+Importing an EPUB on the Add text screen opens the file picker. The book is read on the device and added to the library with a New mark.
 
 Rationale: Project Gutenberg, Standard Ebooks and Wikisource all offer EPUB, and it marks chapters and paragraphs.
 
@@ -159,15 +163,17 @@ Rationale: A marker flashing as its own word breaks the flow, and one entry reac
 
 Headings, paragraphs, block quotes, list items and table rows each read as a paragraph. Each line of verse ends with a pause (feature 6). Images are dropped, with their alt text and captions. Soft hyphens and zero-width characters are removed, and non-breaking spaces read as spaces.
 
+Rationale: Alt text and captions describe pictures that aren't shown.
+
 #### Title and author
 
-From the book's metadata, falling back to the file name and "Unknown author".
+From the book's metadata, falling back to the file name and **Unknown author**.
 
 #### Copy-protected books
 
-A copy-protected book shows a message saying so, and isn't added. A book whose only scrambled files are fonts is not copy-protected, and opens.
+A copy-protected book shows a message saying so, and isn't added. A book is copy-protected when a file Readalez reads is encrypted with anything other than font obfuscation. A book whose only scrambled files are fonts opens.
 
-Rationale: Font obfuscation scrambles fonts for licensing, and Readalez never reads fonts. Kindle formats are an idea for after v1 ([roadmap](docs/roadmap.md#kindle-formats-mobi-azw-kfx)).
+Rationale: Font obfuscation scrambles fonts for licensing, and Readalez never reads fonts. A locked file Readalez doesn't read, such as an image, doesn't stop reading. Kindle formats are an idea for after v1 ([roadmap](docs/roadmap.md#kindle-formats-mobi-azw-kfx)).
 
 #### Errors
 
@@ -189,9 +195,11 @@ Rationale: After an import you land in the library, not in the book, so the mark
 
 Importing a book whose text is already in the library adds nothing. It says so, with how far you've read it, and offers to open that copy where you left off, or to cancel. A different edition is a different book.
 
+Rationale: You are told, rather than dropped into a book without warning, and your progress stays.
+
 ### 3. Built-in books
 
-Twenty-four free books are in the library from the first visit, under the Public library filter (feature 4).
+Twenty-four free books are in the library from the first visit, under the built-in books' library filter (feature 4).
 
 Rationale: A new reader can try the app at once, with no import first, and pick something they like. The books also serve for tuning and as test fixtures. Two dozen gives a real choice without making the app noticeably slower or heavier.
 
@@ -213,7 +221,7 @@ Rationale: They are proofread, cleanly marked-up EPUB 3. Their contributors dedi
 
 #### Permanent
 
-Built-in books can't be deleted or renamed. The My books library filter hides them. Their progress works like any book's, and deleting all data resets it.
+Built-in books can't be deleted or renamed. The own books' library filter hides them. Their progress works like any book's, and deleting all data resets it.
 
 Rationale: There is always something to read and to tune with.
 
@@ -248,7 +256,7 @@ A built-in book also shows its one-line summary. Tapping a book opens it where y
 
 Three library filters choose which books the list shows: all of them, only the built-in books, or only your own. They show as chips under the title, labelled **All**, **Public** and **My books**. One is always on, all books at first. The filter stays on while you read a book and come back. A reload goes back to all books.
 
-Rationale: One library, filtered by where its books come from. Three choices with one always on show plainly what the list holds. "Public" says the books are free for anyone, as public-domain books are, without naming a genre, so a book that isn't a classic fits too. Keeping the filter across reloads waits for stored settings (#18). Filters by genre or author, and search, are ideas for after v1 ([roadmap](docs/roadmap.md#library-filters-and-search)).
+Rationale: Other reading apps, such as Google Play Books and Kindle, filter a library by where its books come from (not checked: their help pages were read only through search results). Three choices with one always on show plainly what the list holds. **Public** says the books are free for anyone, as public-domain books are, without naming a genre, so a book that isn't a classic fits too. Keeping the filter across reloads waits for stored settings (#18). Filters by genre or author, and search, are ideas for after v1 ([roadmap](docs/roadmap.md#library-filters-and-search)).
 
 #### Saving progress
 
@@ -296,13 +304,13 @@ Which letter is the focus letter depends on how many letters the word has. Only 
 
 Words over 13 letters are split first ([Long words](#long-words)).
 
-Rationale: The rows are the convention's, as in speedread's [`find_ORP`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L93-L98).
+Rationale: The rows are the convention's, as in speedread's [`find_ORP`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L93-L98). speedread counts punctuation too. Readalez doesn't, so that a quote mark doesn't move the focus letter.
 
 #### Fixed spot
 
 Each word is placed so that its focus letter lands on the focus point, 40% of the way across the word frame.
 
-Rationale: The eyes never have to move. 40% because at a third, 5- and 6-letter words sat wholly in the left half of the screen (#36).
+Rationale: The eyes never have to move. Left of centre, since most of a word sits to the right of its focus letter. 40% because at a third, 5- and 6-letter words sat wholly in the left half of the screen (#36).
 
 #### Look
 
@@ -312,7 +320,7 @@ The focus letter is drawn in the highlight colour, red by default, and the rest 
 
 The highlight can be turned off. The focus letter then takes the text colour, and stays in place. A few highlight colours are offered. Each has a contrast ratio of at least 3:1 against the background, in both themes.
 
-Rationale: Some readers find the colour distracting, and colour-blind readers need a choice. 3:1 is WCAG's minimum for large-scale text ([WCAG 2.2, 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)), and a word in the word frame is large-scale text.
+Rationale: Some readers find the colour distracting, and colour-blind readers need a choice. 3:1 is WCAG's minimum for large-scale text, 18 point or more ([WCAG 2.2, 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)). Whether a word shrunk to fit, or the smallest text size, stays that large is not checked.
 
 #### Long words
 
@@ -323,7 +331,7 @@ A word over 13 letters is shown in parts of at most 13 letters, each with its ow
 - A part still over 13 letters is cut into the fewest even parts.
 - Every part but the last ends with a hyphen, unless it already ends with a hyphen, slash or dot.
 
-Rationale: Cutting at a hyphen only while a part is too long gives fewer, fuller flashes. SpritzerTextView does the same ([`Spritzer.java`](https://github.com/andrewgiang/SpritzerTextView/blob/8c5dd53843a6d6525d7faa7a4be9b69ee294142e/lib/src/main/java/com/andrewgiang/textspritzer/lib/Spritzer.java#L213-L268)).
+Rationale: 13 letters fit the word frame at the largest text size ([Text size](#text-size)). Cutting at a hyphen only while a part is too long gives fewer, fuller flashes. SpritzerTextView does the same ([`Spritzer.java`](https://github.com/andrewgiang/SpritzerTextView/blob/8c5dd53843a6d6525d7faa7a4be9b69ee294142e/lib/src/main/java/com/andrewgiang/textspritzer/lib/Spritzer.java#L213-L268)).
 
 #### Words
 
@@ -332,9 +340,9 @@ Text between spaces is a word, with its punctuation attached.
 - Hyphenated words and numbers stay whole ("well-known", "1,000.50").
 - Words joined by a dash with no spaces split after the dash, where both sides have a letter or digit. So "yes—no" shows "yes—", then "no".
 - `--`, `―`, `⸺` and `⸻` count as dashes. An en dash (`–`) doesn't, so "1914–1918" stays whole.
-- A spaced dash or ellipsis joins the word before it, with its space ("paused —").
+- A piece with no letters or digits isn't shown on its own. A spaced dash or ellipsis joins the word before it, with its space ("paused —").
 - A line of only symbols, such as `* * *`, is a scene break, and ends a paragraph.
-- Some marks join the word after them: opening quotes and brackets, `¿` and `¡`, and a dash at the start of a paragraph ("« Bonjour »", "— Привет,").
+- Some marks join the word after them: opening quotes and brackets, `¿` and `¡`, and a symbol with no word before it, such as a dialogue dash at the start of a paragraph ("« Bonjour »", "— Привет,").
 - `&` shows as a word.
 
 Rationale: The spaces keep the text as written. An opening mark belongs to the word it opens, as in French, Spanish and Russian dialogue.
@@ -357,7 +365,7 @@ Each word shows for a time set by the speed, with pauses on top at punctuation, 
 
 100 to 1,000 words per minute, in steps of 10, starting at 300. One speed applies to all books.
 
-Rationale: Above about 1,000 wpm, a word gets fewer than 4 screen refreshes at 60 Hz. In Low Power Mode, iPhone Safari throttles animation frames to 30 per second ([WebKit bug 215745](https://bugs.webkit.org/show_bug.cgi?id=215745)), so timing would turn uneven. One speed for all books is the simplest.
+Rationale: No reason is recorded for the lower bound of 100. Above about 1,000 wpm, a word gets fewer than 4 screen refreshes at 60 Hz. In Low Power Mode, iPhone Safari throttles animation frames to 30 per second ([WebKit bug 215745](https://bugs.webkit.org/show_bug.cgi?id=215745)), so timing would turn uneven. One speed for all books is the simplest.
 
 #### What the speed means
 
@@ -464,7 +472,7 @@ Rationale: This is KOReader's rule ([readertoc.lua](https://github.com/koreader/
 
 #### Finished card
 
-After the reading flow's last word, a card shows three numbers: the book's word count, your total reading time for it, and your real average speed. The book is marked finished. The card offers to go back to the library, or to start over. Starting over goes to the flow's first word, paused, and the book is no longer marked finished. The keys do nothing while the card shows. The word count counts runs of text between spaces, so "yes—no" is one word.
+After the reading flow's last word, a card shows three numbers: the word count of the reading flow, so without the license or notes, your total reading time for it, and your real average speed. The book is marked finished. The card offers to go back to the library, or to start over. Starting over goes to the flow's first word, paused, and the book is no longer marked finished. The keys do nothing while the card shows. The word count counts runs of text between spaces, so "yes—no" is one word.
 
 Rationale: The simplest count. It needn't match the words shown exactly.
 
@@ -540,13 +548,13 @@ In v1, sessions show only on the Finished card. They go into backups. Deleting a
 
 The tuning screen has a slider for every value in the timing table (feature 6), and one for the long-word threshold. It plays a passage from a built-in book at the current speed with the current values. It can copy the values to the clipboard, as text to paste into an issue, and reset them to the defaults. The values apply on this device only, until a PR makes them the defaults. It is reached through About, not from the main settings.
 
-Rationale: Timing feels robotic until it is tuned by feel on a device, and a PR records the result. The screen sets the defaults and isn't for readers, so it sits behind About.
+Rationale: Timing feels robotic until it is tuned by feel on a device, and a PR records the result. No reason is recorded for its place behind About.
 
 ### 12. Install, offline and updates
 
 #### Install
 
-The app installs as a full-screen app named Readalez, with its own icon. On iPhone it installs with Safari's Add to Home Screen. On Android and desktop it installs with Chrome's or Edge's install option. Firefox runs it in a tab.
+The app installs as a full-screen app named Readalez, with its own icon. On iPhone it installs with Safari's Add to Home Screen. On Android it installs with Chrome's install option, and on desktop with Chrome's or Edge's. Firefox runs it in a tab.
 
 #### Offline
 
@@ -560,7 +568,7 @@ Updates download in the background and apply at a later launch, never while you 
 
 #### Install tip
 
-On the first visit in iPhone Safari, outside the installed app, a card explains two things. Safari and the installed app keep separate libraries. Safari deletes a site's data after seven days of use without a visit to the site. The card shows how to add the app to the Home Screen. Once dismissed, it doesn't return.
+On the first visit in iPhone Safari, outside the installed app, a card explains two things. Safari and the installed app keep separate libraries. Safari deletes a site's script-writable storage after seven days of Safari use without interaction with the site. The card shows how to add the app to the Home Screen. Once dismissed, it doesn't return.
 
 Rationale: Books added in a Safari tab don't appear in the installed app. Web apps added to the Home Screen "are not part of Safari and thus have their own counter of days of use" ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)).
 
@@ -612,7 +620,7 @@ These are working assumptions from public sources, not legal advice. Recheck the
 
 Everything Readalez ships is free of copyright: the built-in books, test fixtures and sample passages. Books readers import stay on their devices and are never uploaded, so the app distributes nothing else.
 
-Rationale: The app is public, so what it ships must be free to copy wherever it is opened.
+Rationale: Everyone who opens the app gets a copy of what it ships.
 
 ### Built-in books' copyright
 
@@ -628,7 +636,7 @@ Rationale: Gutenberg's license, which each of its books carries, says that "If y
 
 ### Focus-point patents
 
-The fixed focus point (feature 5) is what Spritz's patents describe: US 8,903,174, the related US 9,483,109 and US 10,332,313, and a European family member validated in Spain as ES 2700224 T3. Keep "Spritz" out of the name and the app's text, and recheck before charging money.
+The fixed focus point (feature 5) is what Spritz's patents describe: [US 8,903,174](https://patents.google.com/patent/US8903174B2/en), the related US 9,483,109 and US 10,332,313, and a European family member validated in Spain as ES 2700224 T3. Whether that family covers the UK is unknown. Keep "Spritz" out of the name and the app's text, and recheck before charging money.
 
 Rationale: The risk is low for a free, open-source app. Free apps use the design openly, such as the open-source readers in [feature 5](#5-single-word-display).
 
@@ -636,11 +644,11 @@ Rationale: The risk is low for a free, open-source app. Free apps use the design
 
 Readalez collects no personal data ([Everything stays on the device](#everything-stays-on-the-device)). Storage on the device holds only what the features a reader uses need, so no consent banner is needed. Adding a server, sync or analytics means revisiting UK GDPR first.
 
-Rationale: The UK's rules on device storage (PECR) exempt storage that is strictly necessary for a service the user asks for (not checked: [the ICO's page on the exceptions](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/what-are-the-exceptions/) returned HTTP 403 on 2026-11-17).
+Rationale: The UK's rules on device storage (PECR) exempt storage that is "strictly necessary for the provision of an information society service requested by the subscriber or user" ([PECR, Schedule A1, paragraph 4](https://www.legislation.gov.uk/uksi/2003/2426/schedule/A1)).
 
 ### Licenses of code
 
-Dependencies stay permissive, and their notices ship in the app (feature 13). Code copied or adapted from Speeedy (`sami-29/speeedy`, MIT) keeps its copyright notice. Speeedy's test fixtures are never copied, since one of them is a copyrighted book. The Standard Ebooks editions are credited as a courtesy.
+Dependencies stay permissive, and their notices ship in the app (feature 13). Code copied or adapted from Speeedy (`sami-29/speeedy`, MIT) keeps its copyright notice. Speeedy's test fixtures are never copied, since one of them is a copyrighted book ([`test-fixtures/01-11-2020-212827The 7 Habits of Highly Effective People.pdf`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/test-fixtures/01-11-2020-212827The%207%20Habits%20of%20Highly%20Effective%20People.pdf)). The Standard Ebooks editions are credited as a courtesy.
 
 ## How features are checked
 
@@ -650,7 +658,7 @@ A feature's checks live in its tests, which cite the feature by number, and in t
 - **E2E:** Playwright against the production build, in Chromium, in WebKit with iPhone emulation, and in Chromium with Android emulation (ADR 0005, [ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)).
 - **Build:** a check that runs as part of the build.
 - **Review:** checked by reading the diff. [docs/reviews.md](docs/reviews.md) collects each merged PR's review.
-- **Device:** checked by hand on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox. #74 lists the device checks not yet done. Android has no device checks ([Devices and browsers](#devices-and-browsers)).
+- **Device:** checked by hand on the iPhone (installed app, iOS 18.4 or later) and in desktop Chrome, Edge and Firefox. #74 lists the device checks of built features not yet done, and a feature's issue lists its own until it is built. Android has no device checks ([Devices and browsers](#devices-and-browsers)).
 
 Test fixtures follow the [copyright rule](#copyright).
 
@@ -679,6 +687,7 @@ One term per thing, in this file, in the other docs and in the code. A term in b
 | Focus point          | The fixed spot in the word frame where every focus letter lands (feature 5).                                                                                                                                             |
 | Install tip          | The card in iPhone Safari that explains installing to the Home Screen (feature 12).                                                                                                                                      |
 | Library filter       | Which books the library lists: all, the built-in books or the own books (feature 4). Shown as **All**, **Public** and **My books**.                                                                                      |
+| New mark             | The mark on a book just imported, until a book is opened, the Add text screen is opened or the page reloads (feature 2). Shown as **New**.                                                                               |
 | Note marker          | A link in the text that leads to a note. It never shows as a word (feature 2).                                                                                                                                           |
 | Own book             | A book the reader added by pasting or importing.                                                                                                                                                                         |
 | Part                 | A stretch of an EPUB, cut at its chapter-list entries, its headings and changes in the markup's role. Each part is in the reading flow or skipped (feature 2).                                                           |
