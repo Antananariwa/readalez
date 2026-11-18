@@ -32,7 +32,7 @@ For every feature.
 
 ### Everything stays on the device
 
-No accounts, own server, analytics, cookies or ads. Texts, progress, settings and reading sessions live in browser storage; the backup file (feature 9) moves them between devices.
+No accounts, own server, analytics, cookies or ads. Texts, progress, settings and reading sessions live in browser storage; the backup file ([feature 9](#9-backup-file)) moves them between devices.
 
 Rationale: Privacy without paperwork ([Privacy](#privacy)). No server to run or pay for ([ADR 0006](docs/adr/0006-host-on-cloudflare-pages.md)). Works offline.
 
@@ -74,6 +74,21 @@ Portrait and landscape. Interface in English.
 
 ## v1 features
 
+1. [Add text by pasting](#1-add-text-by-pasting)
+2. [Import EPUB files](#2-import-epub-files)
+3. [Built-in books](#3-built-in-books)
+4. [Library](#4-library)
+5. [Single-word display](#5-single-word-display)
+6. [Timing](#6-timing)
+7. [Reader](#7-reader)
+8. [Settings](#8-settings)
+9. [Backup file](#9-backup-file)
+10. [Reading sessions](#10-reading-sessions)
+11. [Tuning screen](#11-tuning-screen)
+12. [Install, offline and updates](#12-install-offline-and-updates)
+13. [About, privacy and licenses](#13-about-privacy-and-licenses)
+14. [Where to find books](#14-where-to-find-books)
+
 ### 1. Add text by pasting
 
 A paste box on the Add text screen. Saving adds the text to the library and opens it at the first word.
@@ -94,7 +109,7 @@ Rationale: Reading starts at the first real word, as with EPUBs.
 
 #### Title and author
 
-Title: the first line of the kept text, cut at a word boundary to at most 60 characters. Editable before saving and later in the library; left blank, it saves as the first line. Author: **Unknown author**, as for an EPUB with none (feature 2): no extra field to fill in.
+Title: the first line of the kept text, cut at a word boundary to at most 60 characters. Editable before saving and later in the library; left blank, it saves as the first line. Author: **Unknown author**, as for an EPUB with none ([feature 2](#2-import-epub-files)): no extra field to fill in.
 
 #### Same text twice
 
@@ -118,7 +133,7 @@ EPUB 2 and 3 without DRM.
 
 #### Reading flow
 
-From where the author's text starts to the author's last words, then the Finished card (feature 7). A book first opens at the flow's first word. Publishing paperwork stays out:
+From where the author's text starts to the author's last words, then the Finished card ([feature 7](#7-reader)). A book first opens at the flow's first word. Publishing paperwork stays out:
 
 - cover, title and half-title pages
 - copyright and imprint pages
@@ -139,7 +154,7 @@ Rationale: A marker flashing as a word breaks the flow. One entry reaches every 
 #### Kept and dropped
 
 - Headings, paragraphs, block quotes, list items, table rows: each reads as a paragraph.
-- Each verse line ends with a pause (feature 6).
+- Each verse line ends with a pause ([feature 6](#6-timing)).
 - Images: dropped, with their alt text and captions.
 - Soft hyphens and zero-width characters: removed. Non-breaking spaces: read as spaces.
 
@@ -169,7 +184,7 @@ As for pasted text ([Same text twice](#same-text-twice)). A different edition is
 
 ### 3. Built-in books
 
-Free books in the library from the first visit, under the built-in books' library filter (feature 4). Public domain in the US and the UK ([Built-in books' copyright](#built-in-books-copyright)). They can't be deleted or renamed.
+Free books in the library from the first visit, under the built-in books' library filter ([feature 4](#4-library)). Public domain in the US and the UK ([Built-in books' copyright](#built-in-books-copyright)). They can't be deleted or renamed.
 
 Rationale: A new reader can try the app at once, with no import. Always something to read and to tune with; also test fixtures.
 
@@ -189,9 +204,9 @@ Rationale: Importing all of them on the first visit would keep the page busy for
 
 The home screen. Lists every book, built-in or own: most recently opened first, unopened last.
 
-- Each book: title, author, progress, time left (feature 6), when last opened. A finished book shows as finished instead of progress and time left.
+- Each book: title, author, progress, time left ([feature 6](#6-timing)), when last opened. A finished book shows as finished instead of progress and time left.
 - A built-in book: also its one-line summary.
-- Tapping a book opens it where you left off (feature 7), or a finished one on its Finished card.
+- Tapping a book opens it where you left off ([feature 7](#7-reader)), or a finished one on its Finished card.
 - Own books: rename, and delete with a confirmation.
 
 #### Library filters
@@ -213,7 +228,7 @@ Rationale: A backgrounded app can be closed without warning. Target: a reopened 
 
 #### Progress and time left
 
-Both measure the reading flow (feature 2): 0% at its first word, 100% at the Finished card. Progress: the flow's words before the position ÷ the flow's words. A position in a skipped part counts as 0% before the flow, 100% after it, and inside the flow as the flow's next word.
+Both measure the reading flow ([feature 2](#2-import-epub-files)): 0% at its first word, 100% at the Finished card. Progress: the flow's words before the position ÷ the flow's words. A position in a skipped part counts as 0% before the flow, 100% after it, and inside the flow as the flow's next word.
 
 Rationale: The simplest rule that keeps progress moving forward through a book.
 
@@ -330,7 +345,7 @@ Rationale: The simplest form of what sentence splitters such as [pySBD](https://
 
 English, and European languages in Latin, Greek or Cyrillic script. Their quote marks and punctuation count as punctuation; Greek `;` is a question mark. Tuned on English first.
 
-Rationale: These scripts split words at spaces and read left to right, as features 5 and 6 assume ([Out of scope](#out-of-scope-for-v1)). The built-in books are in English.
+Rationale: These scripts split words at spaces and read left to right, as features [5](#5-single-word-display) and [6](#6-timing) assume ([Out of scope](#out-of-scope-for-v1)). The built-in books are in English.
 
 #### No drift, no skipped words
 
@@ -347,12 +362,13 @@ The screen where a book plays, one word at a time, in the word frame.
 #### Controls
 
 - Tapping the word frame plays or pauses.
-- Below the frame, row 1: slower and faster, by 10 wpm, either side of the current speed. Row 2: back and forward a sentence.
+- Below the frame, row 1: slower and faster, by 10 wpm, either side of the current speed. Row 2: Back and Forward.
 - Holding slower or faster keeps changing the speed until you let go.
-- Desktop: Space plays or pauses; ← and → move by a sentence; ↑ and ↓ change the speed.
-- Back a sentence: to the first word of the sentence on screen; if that word is already on screen, to the first word of the sentence before.
+- Back: to the start of the sentence on screen; already at its start, to the start of the sentence before.
+- Forward: to the start of the next sentence.
+- Desktop: Space plays or pauses; ← and → are Back and Forward; ↑ and ↓ change the speed.
 
-Rationale: One big tap target suits a phone. A second row costs screen space but keeps the controls apart for a first-time reader. Holding saves many taps, as on iPhone, where [`UIStepper`'s `autorepeat`](https://developer.apple.com/documentation/uikit/uistepper/autorepeat) is on by default. A whole sentence back from mid-sentence looks odd.
+Rationale: One big tap target suits a phone. A second row costs screen space but keeps the controls apart for a first-time reader. Holding saves many taps, as on iPhone, where [`UIStepper`'s `autorepeat`](https://developer.apple.com/documentation/uikit/uistepper/autorepeat) is on by default. Back goes to the sentence start because play resumes at the word on screen, not the sentence start ([Resume where you left off](#resume-where-you-left-off)).
 
 #### Resume where you left off
 
@@ -368,7 +384,7 @@ Rationale: Helps you recover a lost thread. No reason recorded for a second tap 
 
 #### Chapter list
 
-The chapters and every skipped part, including the notes and the publishing paperwork. Skipped entries marked as skipped; the current entry highlighted. Tapping an entry jumps to its start, paused. A part missing from the book's table of contents gets an entry titled with its first paragraph, cut as a pasted title is (feature 1).
+The chapters and every skipped part, including the notes and the publishing paperwork. Skipped entries marked as skipped; the current entry highlighted. Tapping an entry jumps to its start, paused. A part missing from the book's table of contents gets an entry titled with its first paragraph, cut as a pasted title is ([feature 1](#1-add-text-by-pasting)).
 
 #### Progress bar
 
@@ -378,7 +394,7 @@ Rationale: A drag while playing would move the place mid-reading.
 
 #### Time left in the reader
 
-The chapter's and the book's (feature 6), only while paused, in minutes and seconds (`h:mm:ss` from an hour).
+The chapter's and the book's ([feature 6](#6-timing)), only while paused, in minutes and seconds (`h:mm:ss` from an hour).
 
 Rationale: Seconds, so a chapter's time left can be checked with a stopwatch to within 2%. Hidden while playing: it draws attention from the words.
 
@@ -419,9 +435,9 @@ The screen stays on while words play; once paused, it can lock as usual.
 - highlight on or off, and its colour
 - theme: follows the system, or light or dark
 - text size
-- backup file export and import (feature 9)
+- backup file export and import ([feature 9](#9-backup-file))
 - delete all data
-- About (feature 13)
+- About ([feature 13](#13-about-privacy-and-licenses))
 
 #### Delete all data
 
@@ -433,13 +449,13 @@ One file carries own books' text, every book's progress, settings and reading se
 
 #### Import
 
-Merges a backup into this device. Books match by text, as on one device (feature 1), so the same edition imported on two devices is one book. Books missing here are added. For a book on both, the position from whichever device read it last wins. Sessions are combined without duplicates.
+Merges a backup into this device. Books match by text, as on one device ([feature 1](#1-add-text-by-pasting)), so the same edition imported on two devices is one book. Books missing here are added. For a book on both, the position from whichever device read it last wins. Sessions are combined without duplicates.
 
 Rationale: A manual sync between iPhone and desktop.
 
 #### Settings in a backup
 
-Replace this device's settings only when the device has no reading yet.
+A fresh device takes the backup's settings; a device already in use keeps its own. What counts as fresh: #21.
 
 Rationale: Text size and theme often differ between a phone and a desktop.
 
@@ -464,7 +480,7 @@ Rationale: A 5-minute break ends a sitting. Counting only playing time keeps the
 
 ### 11. Tuning screen
 
-- A slider for every value in the timing table (feature 6), and one for the long-word threshold.
+- A slider for every value in the timing table ([feature 6](#6-timing)), and one for the long-word threshold.
 - Plays a passage from a built-in book at the current speed with the current values.
 - Copies the values to the clipboard, as text to paste into an issue. Resets them to the defaults.
 - Values apply on this device only, until a PR makes them the defaults.
@@ -558,13 +574,13 @@ Rationale: Standard Ebooks says each book is "believed to be in the United State
 
 ### Project Gutenberg
 
-Gutenberg's name stays out of the app's name; v1 only links to Gutenberg. Its license pages stay out of the reading flow (features 1 and 2) but stay in the Gutenberg test fixtures.
+Gutenberg's name stays out of the app's name; v1 only links to Gutenberg. Its license pages stay out of the reading flow (features [1](#1-add-text-by-pasting) and [2](#2-import-epub-files)) but stay in the Gutenberg test fixtures.
 
 Rationale: Gutenberg's license, in each of its books: "If you are redistributing or providing access to a work with the phrase “Project Gutenberg” associated with or appearing on the work, you must comply" with its terms (section 1.E.2, read in `tests/fixtures/epub/gutenberg-11-alice-in-wonderland-epub3.epub`). A catalog would bring more of its rules ([roadmap](docs/roadmap.md#public-domain-catalog-and-proxy)).
 
 ### Focus-point patents
 
-The fixed focus point (feature 5) is what Spritz's patents describe: [US 8,903,174](https://patents.google.com/patent/US8903174B2/en), the related US 9,483,109 and US 10,332,313, and a European family member validated in Spain as ES 2700224 T3. UK coverage: unknown. "Spritz" stays out of the name and the app's text.
+The fixed focus point ([feature 5](#5-single-word-display)) is what Spritz's patents describe: [US 8,903,174](https://patents.google.com/patent/US8903174B2/en), the related US 9,483,109 and US 10,332,313, and a European family member validated in Spain as ES 2700224 T3. UK coverage: unknown. "Spritz" stays out of the name and the app's text.
 
 Rationale: Low risk for a free, open-source app. Free apps use the design openly, such as the readers in [feature 5](#5-single-word-display).
 
@@ -591,41 +607,42 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 
 ## Open questions
 
-- **Final timing values:** set after tuning on a device (feature 11); feature 6 holds starting values.
+- **Final timing values:** set after tuning on a device ([feature 11](#11-tuning-screen)); [feature 6](#6-timing) holds starting values.
 - **Speed and size targets:** which ones v1 sets, and at what values (#73).
 - **App icon and visual style:** not decided.
-- **Narrowest screen for the largest text size:** feature 5 uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where "comprehension" fits with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
+- **Play from the sentence start:** play now resumes at the word on screen ([feature 7](#7-reader)); whether the sentence start becomes the default or a setting.
+- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where "comprehension" fits with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
 
 ## Glossary
 
 One term per thing, in this file, the other docs and the code.
 
-| Term                 | Definition                                                                                                                                                                |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backup file          | the file that moves a reader's data between devices (feature 9).                                                                                                          |
-| Base speed           | the speed setting, in words per minute: an ordinary word's time, before pauses (feature 6).                                                                               |
-| Book                 | any text in the library: built-in or own.                                                                                                                                 |
-| Built-in book        | a book shipped with the app (feature 3).                                                                                                                                  |
-| Chapter              | from one chapter-list entry to the next ([What a chapter is](#what-a-chapter-is)).                                                                                        |
-| Chapter list         | the reader's list of a book's chapters and skipped parts (features 2 and 7).                                                                                              |
-| Copy-protected       | an EPUB Readalez won't import because a file it reads is encrypted (feature 2).                                                                                           |
-| Finished card        | shown after the reading flow's last word (feature 7).                                                                                                                     |
-| Focus letter         | the letter of a word that lands on the focus point, in the highlight colour (feature 5).                                                                                  |
-| Focus point          | the fixed spot in the word frame where every focus letter lands (feature 5).                                                                                              |
-| Install tip          | the iPhone Safari card on installing to the Home Screen (feature 12).                                                                                                     |
-| Library filter       | which books the library lists: all, built-in or own (feature 4).                                                                                                          |
-| New mark             | the mark on a book just imported (feature 2).                                                                                                                             |
-| Note marker          | a link in the text to a note (feature 2).                                                                                                                                 |
-| Own book             | a book the reader added by pasting or importing.                                                                                                                          |
-| Part                 | a stretch of an EPUB, cut at its chapter-list entries, its headings and changes in the markup's role. In the reading flow or skipped (feature 2).                         |
-| Paused view          | the chapter's text under the word frame while paused (feature 7).                                                                                                         |
-| Position             | a place in a book, to the word, saved so reading resumes there (feature 4, ADR 0008).                                                                                     |
-| Progress             | how far a position is through the reading flow, 0% to 100% (feature 4).                                                                                                   |
-| Publishing paperwork | the parts of a book that aren't the author's text, such as cover, copyright and license pages (feature 2). Front matter comes before the reading flow, back matter after. |
-| Reading flow         | what plays from start to finish: the author's text, without paperwork or notes (feature 2, ADR 0011).                                                                     |
-| Reading session      | one sitting of reading a book, recorded on the device (feature 10).                                                                                                       |
-| Section              | a stretch of a book's stored text: one per file in an EPUB's reading order, plus one for its notes if any; one for a whole pasted text (features 1 and 2).                |
-| Time left            | how long the rest of a chapter or of the reading flow takes at the current speed (feature 6).                                                                             |
-| Tuning screen        | the screen with a slider for each timing value (feature 11).                                                                                                              |
-| Word                 | what the word frame shows at one time; feature 5 says where text is cut into words.                                                                                       |
-| Word frame           | where the word shows in the reader (feature 5).                                                                                                                           |
+| Term                 | Definition                                                                                                                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Backup file          | the file that moves a reader's data between devices ([feature 9](#9-backup-file)).                                                                                                                           |
+| Base speed           | the speed setting, in words per minute: an ordinary word's time, before pauses ([feature 6](#6-timing)).                                                                                                     |
+| Book                 | any text in the library: built-in or own.                                                                                                                                                                    |
+| Built-in book        | a book shipped with the app ([feature 3](#3-built-in-books)).                                                                                                                                                |
+| Chapter              | from one chapter-list entry to the next ([What a chapter is](#what-a-chapter-is)).                                                                                                                           |
+| Chapter list         | the reader's list of a book's chapters and skipped parts (features [2](#2-import-epub-files) and [7](#7-reader)).                                                                                            |
+| Copy-protected       | an EPUB Readalez won't import because a file it reads is encrypted ([feature 2](#2-import-epub-files)).                                                                                                      |
+| Finished card        | shown after the reading flow's last word ([feature 7](#7-reader)).                                                                                                                                           |
+| Focus letter         | the letter of a word that lands on the focus point, in the highlight colour ([feature 5](#5-single-word-display)).                                                                                           |
+| Focus point          | the fixed spot in the word frame where every focus letter lands ([feature 5](#5-single-word-display)).                                                                                                       |
+| Install tip          | the iPhone Safari card on installing to the Home Screen ([feature 12](#12-install-offline-and-updates)).                                                                                                     |
+| Library filter       | which books the library lists: all, built-in or own ([feature 4](#4-library)).                                                                                                                               |
+| New mark             | the mark on a book just imported ([feature 2](#2-import-epub-files)).                                                                                                                                        |
+| Note marker          | a link in the text to a note ([feature 2](#2-import-epub-files)).                                                                                                                                            |
+| Own book             | a book the reader added by pasting or importing.                                                                                                                                                             |
+| Part                 | a stretch of an EPUB, cut at its chapter-list entries, its headings and changes in the markup's role. In the reading flow or skipped ([feature 2](#2-import-epub-files)).                                    |
+| Paused view          | the chapter's text under the word frame while paused ([feature 7](#7-reader)).                                                                                                                               |
+| Position             | a place in a book, to the word, saved so reading resumes there ([feature 4](#4-library), ADR 0008).                                                                                                          |
+| Progress             | how far a position is through the reading flow, 0% to 100% ([feature 4](#4-library)).                                                                                                                        |
+| Publishing paperwork | the parts of a book that aren't the author's text, such as cover, copyright and license pages ([feature 2](#2-import-epub-files)). Front matter comes before the reading flow, back matter after.            |
+| Reading flow         | what plays from start to finish: the author's text, without paperwork or notes ([feature 2](#2-import-epub-files), ADR 0011).                                                                                |
+| Reading session      | one sitting of reading a book, recorded on the device ([feature 10](#10-reading-sessions)).                                                                                                                  |
+| Section              | a stretch of a book's stored text: one per file in an EPUB's reading order, plus one for its notes if any; one for a whole pasted text (features [1](#1-add-text-by-pasting) and [2](#2-import-epub-files)). |
+| Time left            | how long the rest of a chapter or of the reading flow takes at the current speed ([feature 6](#6-timing)).                                                                                                   |
+| Tuning screen        | the screen with a slider for each timing value ([feature 11](#11-tuning-screen)).                                                                                                                            |
+| Word                 | what the word frame shows at one time; [feature 5](#5-single-word-display) says where text is cut into words.                                                                                                |
+| Word frame           | where the word shows in the reader ([feature 5](#5-single-word-display)).                                                                                                                                    |
