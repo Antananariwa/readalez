@@ -32,7 +32,7 @@ It was chosen over OpenSpec and BCP 14 as the simplest of the three: a title, a 
 What Readalez changes:
 
 1. **No ID line and no keywords other than `Rationale:`.** OpenFastTrace gives each item an ID such as `` `req~name~1` ``, and the keywords `Needs`, `Covers`, `Depends`, `Status`, `Tags` and `Comment`. Why: they feed its tracing tool, which Readalez doesn't run. Code and tests already point back at the feature by number.
-2. **Features keep their numbered headings, and each rule under a feature is a heading one level down.** Why: code, tests, docs and open issues cite features by number and by heading anchor.
+2. **Features keep their numbered headings. Under a feature, a rule, or a few closely related rules, get a heading one level down.** Why: code, tests, docs and open issues cite features by number and by heading anchor. Grouping related rules keeps the file short.
 3. **The rationale is written as `Rationale:` followed by its text, in one paragraph.** The guide's example puts the text on the next line with no blank line between, which Markdown renders as one paragraph. OpenFastTrace's own system requirements put a blank line after `Rationale:`. Why: one paragraph keeps the label with its text, as the guide's example renders.
 4. **No checks.** Each check moves to the test that holds it, or, until one does, to the feature's issue. A device check of a built feature moves to the checklist of what hasn't been checked by hand (#74), and one of an unbuilt feature to its issue. The section "How features are checked" stays, and says where checks live. Why: the sources above. Also, `.github/workflows/reviews.yml` cites the heading.
 5. **A glossary closes the file.** Why: ADR 0014's Names row puts it in SPEC.md.
