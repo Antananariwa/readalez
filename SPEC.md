@@ -32,7 +32,7 @@ For every feature.
 
 ### Everything stays on the device
 
-No accounts, own server, analytics, cookies or ads. Texts, progress, settings and reading sessions live in browser storage; the backup file ([feature 9](#9-backup-file)) moves them between devices.
+No accounts, own server, analytics, cookies or ads. Books, progress, settings and reading sessions live in browser storage; the backup file ([feature 9](#9-backup-file)) moves them between devices.
 
 Rationale: Privacy without paperwork ([Privacy](#privacy)). No server to run or pay for ([ADR 0006](docs/adr/0006-host-on-cloudflare-pages.md)). Works offline.
 
@@ -93,13 +93,13 @@ Portrait and landscape. Interface in English.
 
 A paste box on the Add text screen. Saving adds the text to the library and opens it at the first word.
 
-Rationale: The quickest way in for articles and snippets. On iPhone, Safari's Reader view gives clean text to copy. A pasted text is usually read straight away, so it opens at once.
+Rationale: The quickest way in for articles and snippets. On iPhone, copy from Safari's Reader view. A pasted text is usually read straight away, so it opens at once.
 
 #### Paragraphs
 
 Blank lines separate paragraphs. Hard-wrapped text (most lines break mid-sentence at similar lengths): single line breaks join with spaces. Otherwise each line is a paragraph. One section: no chapters, no verse lines, so a pasted poem follows these rules too.
 
-Rationale: Safari's Reader view copies one paragraph per line. Gutenberg's plain text wraps about every 70 characters. Plain text doesn't mark chapters or verse; guessing them comes with TXT import ([roadmap](docs/roadmap.md#txt-pdf-word-and-other-formats)).
+Rationale: Safari's Reader view copies one paragraph per line. Gutenberg's plain text wraps about every 70 characters. Plain text doesn't mark chapters or verse; guessing chapters comes with TXT import ([roadmap](docs/roadmap.md#txt-pdf-word-and-other-formats)).
 
 #### Gutenberg license text
 
@@ -131,7 +131,7 @@ EPUB 2 and 3 without DRM.
 
 - Reading order: the book's spine.
 - Chapter list: the book's table of contents, or its headings if it has none.
-- Title and author: the book's metadata. Fallbacks: the file name, **Unknown author**.
+- Title and author: the book's metadata. Fallbacks: the file name, and an unknown author.
 
 #### Reading flow
 
@@ -164,7 +164,7 @@ Rationale: Alt text and captions describe pictures that aren't shown.
 
 #### Copy-protected and broken files
 
-Not added, with a message saying why: a copy-protected book (a file Readalez reads is encrypted with anything other than font obfuscation), a file that isn't a readable EPUB, or one with a damaged file Readalez reads. Nothing half-imported reaches the library. Files Readalez never reads, such as images, styles and fonts, can be damaged or encrypted without stopping the import.
+Not added, with a message saying why: a copy-protected book (a file Readalez reads is encrypted with anything other than font obfuscation), a file that isn't a readable EPUB, or one with a damaged file Readalez reads. Nothing half-imported reaches the library. Files Readalez never reads, such as images, styles and fonts, can be damaged or encrypted without stopping the import. Whether store books (Apple Books, Adobe DRM) are recognised this way: not checked on real files.
 
 Rationale: Font obfuscation scrambles fonts for licensing, and Readalez never reads fonts.
 
@@ -213,7 +213,7 @@ The home screen. Lists every book, built-in or own: most recently opened first, 
 
 #### Library filters
 
-Three: all books, built-in only, own only. Built-in books are labelled **Public**. Exactly one is on; all books at first. Kept while you read a book and come back. A reload resets to all books.
+Three: all books, built-in only, own only. The built-in books' filter is labelled **Public**. Exactly one is on; all books at first. Kept while you read a book and come back. A reload resets to all books.
 
 Rationale: Three choices, one always on: plainly shows what the list holds. **Public**: free for anyone, as public-domain books are, without naming a genre, so a non-classic fits too. A reload resets until settings are stored (#18).
 
@@ -278,14 +278,14 @@ Rationale: Some readers find the colour distracting; colour-blind readers need a
 
 #### Long words
 
-A word over 13 letters shows in parts of at most 13 letters, each with its own focus letter:
+A word over 13 letters shows as chunks of at most 13 letters, each with its own focus letter:
 
 - Cut first at its own hyphens, or at a web address's slashes and dots.
 - Only as many cuts as needed: "twenty-seven-year-old" shows "twenty-seven-", then "year-old".
-- A part still over 13 letters: cut into the fewest even parts.
-- Every part but the last ends with a hyphen, unless it already ends with a hyphen, slash or dot.
+- A chunk still over 13 letters: cut into the fewest even chunks.
+- Every chunk but the last ends with a hyphen, unless it already ends with a hyphen, slash or dot.
 
-Rationale: 13 letters fit the word frame at the largest text size ([Text size](#text-size)). Cutting at a hyphen only while a part is too long gives fewer, fuller flashes, as SpritzerTextView does ([`Spritzer.java`](https://github.com/andrewgiang/SpritzerTextView/blob/8c5dd53843a6d6525d7faa7a4be9b69ee294142e/lib/src/main/java/com/andrewgiang/textspritzer/lib/Spritzer.java#L213-L268)).
+Rationale: 13 letters fit the word frame at the largest text size ([Text size](#text-size)). Cutting at a hyphen only while a chunk is too long gives fewer, fuller flashes, as SpritzerTextView does ([`Spritzer.java`](https://github.com/andrewgiang/SpritzerTextView/blob/8c5dd53843a6d6525d7faa7a4be9b69ee294142e/lib/src/main/java/com/andrewgiang/textspritzer/lib/Spritzer.java#L213-L268)).
 
 #### Words
 
@@ -303,7 +303,7 @@ Rationale: Spaces keep the text as written. An opening mark belongs to the word 
 
 #### Text size
 
-At the largest text size, a 13-letter word such as "comprehension" fits a 375-px-wide screen in portrait. A word that still doesn't fit shrinks while it shows; never clipped.
+The largest text size is the largest at which a 13-letter word such as "comprehension" fits a 375-px-wide screen in portrait. A word that still doesn't fit shrinks while it shows; never clipped.
 
 Rationale: No reason recorded for 375 px ([Open questions](#open-questions)).
 
@@ -331,14 +331,14 @@ Rationale: No reason recorded for the range. Base speed: the convention of other
 
 - Of the punctuation rows, only the largest applies.
 - The long-word factor multiplies it: a long word ending a sentence shows for 2.6×.
-- Each part of a split word: timed by its own length, with the punctuation pauses on the last part. The hyphen added at a split isn't a dash.
+- Each chunk of a long word: timed by its own length, with the punctuation pauses on the last chunk. The hyphen added at a split isn't a dash.
 
 Rationale: Where these values came from: [ADR 0017](docs/adr/0017-start-timing-at-these-values.md). Final values: [Open questions](#open-questions).
 
 #### Abbreviations
 
 - No sentence pause, unless it ends a paragraph: abbreviations that rarely end a sentence, such as titles, initials ("J. R. R."), "Mr.", "Dr.", "e.g.", French "M.", German "z. B.", Polish "np.".
-- Abbreviations that often end a sentence, such as "etc." and "U.S.": end one when the next word starts with a capital letter.
+- Abbreviations that often end a sentence, such as "etc." and "U.S.": end one when the next word starts with a capital letter. Pausing at every "etc." or never pausing at one both read wrong.
 - Known gaps: [docs/known-issues.md](docs/known-issues.md#timing-and-sentences).
 
 Rationale: The simplest form of what sentence splitters such as [pySBD](https://github.com/nipunsadvilkar/pySBD) and [NLTK's Punkt](https://www.nltk.org/api/nltk.tokenize.punkt.html) do with abbreviations.
@@ -347,7 +347,7 @@ Rationale: The simplest form of what sentence splitters such as [pySBD](https://
 
 Languages whose words can be shown one at a time with a highlighted letter: alphabets close to the Latin one. Their quote marks and punctuation count as punctuation; `;` after a Greek word is a question mark. Tuned on English first.
 
-Rationale: Such alphabets split words at spaces and read left to right, as features [5](#5-single-word-display) and [6](#6-timing) assume ([Out of scope](#out-of-scope-for-v1)). The built-in books are in English.
+Rationale: Features [5](#5-single-word-display) and [6](#6-timing) cut words at spaces and show them left to right; scripts that don't fit are [Out of scope](#out-of-scope-for-v1). The built-in books are in English.
 
 #### No drift, no skipped words
 
@@ -374,15 +374,13 @@ Rationale: One big tap target suits a phone. A second row costs screen space but
 
 #### Resume where you left off
 
-Play after a pause, or in a book just opened, starts at the word on screen.
+Play after a pause, or in a book just opened, starts at the word on screen. Where play resumes and where previous sentence goes are both planned as settings ([roadmap](docs/roadmap.md#reader-layout-options)).
 
 Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way.
 
-Both are planned as settings ([roadmap](docs/roadmap.md#reader-layout-options)).
-
 #### Paused view
 
-The current word stays in the word frame. Below it, the chapter's text, scrollable, with the current word marked. Tapping a word moves the word frame to it. A tap only moves: play stays with the word frame and Space, so a second tap on the word doesn't play.
+The current word stays in the word frame. Below it, the chapter's text, scrollable, with the current word marked. Tapping a word shows it in the word frame. A tap only moves: play stays with the word frame and Space, so a second tap on the word doesn't play.
 
 Rationale: Helps you recover a lost thread. No reason recorded for a second tap not playing.
 
@@ -421,7 +419,7 @@ After the reading flow's last word. The book is marked finished.
 - Shows: the reading flow's word count (no license or notes), your total reading time for it, your real average speed.
 - Offers: back to the library, or start over. Starting over goes to the flow's first word, paused, and unmarks the book as finished.
 - Keys do nothing while it shows.
-- Word count: runs of text between spaces, so "yes—no" is one word.
+- Word count: runs of text between spaces, so "yes—no" counts once.
 
 Rationale: The simplest count. It needn't match the words shown exactly.
 
@@ -453,13 +451,13 @@ One file carries own books' text, every book's progress, settings and reading se
 
 #### Import
 
-Merges a backup into this device. Books match by text, as on one device ([feature 1](#1-add-text-by-pasting)), so the same edition imported on two devices is one book. Books missing here are added. For a book on both, the position from whichever device read it last wins. Sessions are combined without duplicates.
+Merges a backup file into this device. Books match by text, as on one device ([feature 1](#1-add-text-by-pasting)), so the same edition imported on two devices is one book. Books missing here are added. For a book on both, the position from whichever device read it last wins. Sessions are combined without duplicates.
 
 Rationale: A manual sync between iPhone and desktop.
 
 #### Bad files
 
-Not a Readalez backup, or from a newer version: a message, and nothing changes. Backups carry a format version, so later versions can read older backups.
+Not a Readalez backup file, or from a newer version: a message, and nothing changes. Backups carry a format version, so later versions can read older backups.
 
 ### 10. Reading sessions
 
@@ -481,7 +479,7 @@ Rationale: A 5-minute break ends a sitting. Counting only playing time keeps the
 - A slider for every value in the timing table ([feature 6](#6-timing)), and one for the long-word threshold.
 - Plays a passage from a built-in book at the current speed with the current values.
 - Copies the values to the clipboard, as text to paste into an issue. Resets them to the defaults.
-- Values apply on this device only, until a PR makes them the defaults.
+- Values apply on this device only, until a PR makes them the defaults; that PR also updates [feature 6](#6-timing)'s table.
 - Reached through About, not the main settings.
 
 Rationale: Timing feels robotic until tuned by feel on a device; a PR records the result. No reason recorded for its place behind About.
@@ -600,7 +598,7 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 - **Unit:** unit tests run by `npm run check`, mostly in `src/core` (ADR 0003).
 - **E2E:** Playwright against the production build, in Chromium, WebKit with iPhone emulation, and Chromium with Android emulation (ADR 0005, [ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)).
 - **Build:** a check run as part of the build.
-- **Review:** by reading the diff. [docs/reviews.md](docs/reviews.md) collects each merged PR's review.
+- **Review:** by reading the diff. [docs/reviews.md](docs/reviews.md) collects each merged PR's review, to show what the reviews catch.
 - **Device:** by hand on the iPhone's installed app and in the desktop browsers ([Devices and browsers](#devices-and-browsers)). #74 lists built features' device checks not yet done; an unbuilt feature's issue lists its own.
 
 ## Open questions
@@ -622,6 +620,7 @@ One term per thing, in this file, the other docs and the code.
 | Built-in book        | a book shipped with the app ([feature 3](#3-built-in-books)).                                                                                                                                                |
 | Chapter              | from one chapter-list entry to the next ([What a chapter is](#what-a-chapter-is)).                                                                                                                           |
 | Chapter list         | the reader's list of a book's chapters and skipped parts (features [2](#2-import-epub-files) and [7](#7-reader)).                                                                                            |
+| Chunk                | one flash of a word over 13 letters ([feature 5](#5-single-word-display), Long words).                                                                                                                       |
 | Copy-protected       | an EPUB Readalez won't import because a file it reads is encrypted ([feature 2](#2-import-epub-files)).                                                                                                      |
 | Finished card        | shown after the reading flow's last word ([feature 7](#7-reader)).                                                                                                                                           |
 | Focus letter         | the letter of a word that lands on the focus point, in the highlight colour ([feature 5](#5-single-word-display)).                                                                                           |
@@ -641,5 +640,5 @@ One term per thing, in this file, the other docs and the code.
 | Section              | a stretch of a book's stored text: one per file in an EPUB's reading order, plus one for its notes if any; one for a whole pasted text (features [1](#1-add-text-by-pasting) and [2](#2-import-epub-files)). |
 | Time left            | how long the rest of a chapter or of the reading flow takes at the current speed ([feature 6](#6-timing)).                                                                                                   |
 | Tuning screen        | the screen with a slider for each timing value ([feature 11](#11-tuning-screen)).                                                                                                                            |
-| Word                 | what the word frame shows at one time; [feature 5](#5-single-word-display) says where text is cut into words.                                                                                                |
+| Word                 | text between spaces, with its punctuation, cut by [feature 5](#5-single-word-display)'s Words rules; a word over 13 letters shows as chunks.                                                                 |
 | Word frame           | where the word shows in the reader ([feature 5](#5-single-word-display)).                                                                                                                                    |

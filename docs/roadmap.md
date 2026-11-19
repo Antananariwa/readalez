@@ -30,9 +30,9 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Reader layout options
 
-- **What:** settings for how the reader behaves and what it shows: where play resumes after a pause (the word on screen, as in v1, or the sentence start, as before #68), what shows while playing (progress bar, time left) and while paused (time left, how much text: the whole chapter, as in v1, or only the current sentence), what a tap on a word does (move there, as in v1, or also play on a second tap), where previous sentence goes (the sentence's own start first, as in v1, or always the sentence before), and what's on screen at all. For example, a light mode with one sentence of context while paused and no times. Defaults for where play resumes and where previous sentence goes: to be determined (SPEC.md feature 7). The others default to v1's behaviour. From the owner, reviewing #68.
+- **What:** settings for how the reader behaves and what it shows: where play resumes after a pause (the word on screen, as in v1, or the sentence start, as before #68), what shows while playing (progress bar, time left) and while paused (time left, how much text: the whole chapter, as in v1, or only the current sentence), what a tap on a word does (move there, as in v1, or also play on a second tap), where previous sentence goes (the sentence's own start first, as in v1, or always the sentence before), and what's on screen at all. For example, a light mode with one sentence of context while paused and no times. Each setting defaults to v1's behaviour (SPEC.md feature 7), apart from where play resumes and where previous sentence goes. From the owner, reviewing #68.
 - **Others:** [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader#readme) resumes from the sentence start by default, with a setting to turn it off, and plays a tapped word on a second tap. [RSVP-Lite](https://github.com/6packs/RSVP-Lite#readme) shows the surrounding paragraphs behind a "Text" toggle. [chriscantu/speed-reader](https://github.com/chriscantu/speed-reader#readme) shows the sentence on pause. All three READMEs were read for #68.
-- **Open:** whether these are separate settings or a few presets, and whether the other defaults should change once the settings exist.
+- **Open:** whether these are separate settings or a few presets; the defaults for where play resumes and where previous sentence goes; and whether the other defaults should change once the settings exist.
 
 ### Warm-up when a book starts
 
@@ -61,7 +61,7 @@ Idea: most reading settings could become adjustable, as some are in other speed-
 
 ### Library filters and search
 
-- **What:** filtering the library by genre or author, and searching it, beyond v1's All, Public and My books chips ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds Standard Ebooks' genres (`genres` in `src/core/builtInBooks.ts`). Raised in #17, when the built-in books grew from three to 24: more books make finding one harder.
+- **What:** filtering the library by genre or author, and searching it, beyond v1's library filters ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds Standard Ebooks' genres (`genres` in `src/core/builtInBooks.ts`). Raised in #17, when the built-in books grew from three to 24: more books make finding one harder.
 - **Others:** Google's help says Play Books' genre, author, progress and other library filters need app version 5.3 or later ([Organize your books](https://support.google.com/googleplay/answer/9402600)). Kindle filters its library by type and by collections ([PCWorld](https://www.pcworld.com/article/3538389/how-to-organize-your-kindle-library.html)). Both read through web search results, not the pages, for #17.
 - **Open:** how many books make filters or search worth it, and whether your own books get genres.
 

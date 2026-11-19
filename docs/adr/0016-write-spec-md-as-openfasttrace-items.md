@@ -22,7 +22,7 @@ What the sources read say belongs in a spec (quoted in #106):
 
 SPEC.md follows OpenFastTrace's specification item, from [Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md):
 
-- An item is a title and a description. "Requirements should be accompanied by a rationale in all cases where the reason for the requirement is not immediately obvious."
+- An item is an ID and a description, with an optional title. Readalez drops the ID (rule 1) and always gives the title, since features are cited by heading. "Requirements should be accompanied by a rationale in all cases where the reason for the requirement is not immediately obvious."
 - Plain Markdown text around the items gives context.
 
 OpenFastTrace uses this shape in its own [system requirements](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/spec/system_requirements.md): 74 items, 28 of them with `Rationale:`, counted with `grep` on 2026-11-17.
