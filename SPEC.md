@@ -374,7 +374,7 @@ Rationale: One big tap target suits a phone. A second row costs screen space but
 
 Play after a pause, or in a book just opened, starts at the word on screen.
 
-Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way.
+Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way. Where play resumes and where Back goes become settings, default to be determined ([roadmap](docs/roadmap.md#reader-layout-options)).
 
 #### Paused view
 
@@ -452,12 +452,6 @@ One file carries own books' text, every book's progress, settings and reading se
 Merges a backup into this device. Books match by text, as on one device ([feature 1](#1-add-text-by-pasting)), so the same edition imported on two devices is one book. Books missing here are added. For a book on both, the position from whichever device read it last wins. Sessions are combined without duplicates.
 
 Rationale: A manual sync between iPhone and desktop.
-
-#### Settings in a backup
-
-A fresh device takes the backup's settings; a device already in use keeps its own. What counts as fresh: #21.
-
-Rationale: Text size and theme often differ between a phone and a desktop.
 
 #### Bad files
 
@@ -610,7 +604,6 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 - **Final timing values:** set after tuning on a device ([feature 11](#11-tuning-screen)); [feature 6](#6-timing) holds starting values.
 - **Speed and size targets:** which ones v1 sets, and at what values (#73).
 - **App icon and visual style:** not decided.
-- **Play from the sentence start:** play now resumes at the word on screen ([feature 7](#7-reader)); whether the sentence start becomes the default or a setting.
 - **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where "comprehension" fits with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
 
 ## Glossary
