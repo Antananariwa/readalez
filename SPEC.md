@@ -136,7 +136,7 @@ EPUB 2 and 3 without DRM.
 From where the author's text starts to the author's last words, then the Finished card ([feature 7](#7-reader)). A book first opens at the flow's first word. Publishing paperwork stays out:
 
 - cover, title and half-title pages
-- copyright and imprint pages
+- copyright and imprint pages, colophons
 - contents pages, lists of illustrations
 - pages left empty once images are dropped
 - Gutenberg's license pages
@@ -492,7 +492,7 @@ A full-screen app named Readalez, with its own icon, added through the browser: 
 
 #### Offline
 
-After the first visit, the app and every book work offline. The built-in books download with the app, in the background. A band at the top of the library shows how many are saved and asks you to stay online, then says the app is ready offline for the rest of the visit. If saving fails, it says so, with a reload to try again.
+After the first visit, the app and every book work offline. The built-in books download with the app, in the background. A band at the top of the library shows how many are saved and asks you to stay online, then says the app is ready offline for the rest of the visit. On later visits, no band. If saving fails, it says so, with a reload to try again.
 
 Rationale: Offline before the built-in books are saved, a book doesn't open, and only the band shows it.
 
@@ -509,7 +509,7 @@ On the first visit in iPhone Safari, outside the installed app, a card explains:
 
 It shows how to add the app to the Home Screen. Once dismissed, it doesn't return.
 
-Rationale: A reader who stays in Safari can lose their books. Web apps added to the Home Screen "are not part of Safari and thus have their own counter of days of use" ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)).
+Rationale: A reader who stays in Safari can lose their books. Web apps added to the Home Screen "are not part of Safari and thus have their own counter of days of use. Their days of use will match actual use of the web application which resets the timer. We do not expect the first-party in such a web application to have its website data deleted." ([WebKit, 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/)).
 
 #### Keep the data
 
@@ -564,7 +564,7 @@ Rationale: Everyone who opens the app, or the public repo, gets a copy.
 
 ### Built-in books' copyright
 
-Public domain in the US and the UK. Every author and translator died before 1956; the build checks each one's death year. Translators count as authors here, to be safe.
+Public domain in the US and the UK. Every author and translator died before 1956; `scripts/build-books.ts` checks each one's death year. Translators count as authors here, to be safe.
 
 Rationale: Standard Ebooks says each book is "believed to be in the United States public domain" but "may still be copyrighted in other countries" (each book's `dc:rights`). UK copyright "expires at the end of the period of 70 years from the end of the calendar year in which the author dies" ([Copyright, Designs and Patents Act 1988, section 12(2)](https://www.legislation.gov.uk/ukpga/1988/48/section/12)), so a death in 1955 or earlier means public domain from 2026. Not checked: whether the UK treats a translator as an author.
 
@@ -606,7 +606,7 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 - **Final timing values:** set after tuning on a device ([feature 11](#11-tuning-screen)); [feature 6](#6-timing) holds starting values.
 - **Speed and size targets:** which ones v1 sets, and at what values (#73).
 - **App icon and visual style:** not decided.
-- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where today's single word size fits "comprehension" with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
+- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where today's single word size fits "comprehension" with about 8 px to spare in the container's Chromium, on Playwright screenshots; Android's own fonts: not checked ([#87](https://github.com/Antananariwa/readalez/pull/87)).
 
 ## Glossary
 
