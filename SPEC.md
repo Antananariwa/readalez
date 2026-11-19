@@ -213,7 +213,7 @@ The home screen. Lists every book, built-in or own: most recently opened first, 
 
 Three: all books, built-in only, own only. Chips under the title: **All**, **Public**, **My books**. Exactly one is on; all books at first. Kept while you read a book and come back. A reload resets to all books.
 
-Rationale: Google Play Books and Kindle filter a library by where its books come from (not checked: their help pages read only through search results). Three choices, one always on: plainly shows what the list holds. **Public**: free for anyone, as public-domain books are, without naming a genre, so a non-classic fits too. A reload resets until settings are stored (#18).
+Rationale: Three choices, one always on: plainly shows what the list holds. **Public**: free for anyone, as public-domain books are, without naming a genre, so a non-classic fits too. A reload resets until settings are stored (#18).
 
 #### Saving progress
 
@@ -291,7 +291,7 @@ Text between spaces, with its punctuation attached.
 
 - Hyphenated words and numbers stay whole: "well-known", "1,000.50".
 - Words joined by an unspaced dash split after the dash, where both sides have a letter or digit: "yes—no" shows "yes—", then "no".
-- Also dashes: `--`, `―`, `⸺`, `⸻`. Not the en dash (`–`): "1914–1918" stays whole.
+- Also dashes: `--`, `―`, `⸺`, `⸻`. An en dash (`–`) doesn't split: "1914–1918" stays whole. A spaced en dash pauses as a dash ([feature 6](#6-timing)).
 - A piece with no letters or digits doesn't show on its own. A spaced dash or ellipsis joins the word before, with its space ("paused —").
 - A line of only symbols, such as `* * *`: a scene break, ending a paragraph.
 - Joined to the word after: opening quotes and brackets, `¿`, `¡`, and a symbol with no word before it, such as a dialogue dash opening a paragraph ("« Bonjour »", "— Привет,").
@@ -343,9 +343,9 @@ Rationale: The simplest form of what sentence splitters such as [pySBD](https://
 
 #### Languages
 
-English, and European languages in Latin, Greek or Cyrillic script. Their quote marks and punctuation count as punctuation; Greek `;` is a question mark. Tuned on English first.
+Languages whose words can be shown one at a time with a highlighted letter: alphabets close to the Latin one. Their quote marks and punctuation count as punctuation; `;` after a Greek word is a question mark. Tuned on English first.
 
-Rationale: These scripts split words at spaces and read left to right, as features [5](#5-single-word-display) and [6](#6-timing) assume ([Out of scope](#out-of-scope-for-v1)). The built-in books are in English.
+Rationale: Such alphabets split words at spaces and read left to right, as features [5](#5-single-word-display) and [6](#6-timing) assume ([Out of scope](#out-of-scope-for-v1)). The built-in books are in English.
 
 #### No drift, no skipped words
 
@@ -374,7 +374,9 @@ Rationale: One big tap target suits a phone. A second row costs screen space but
 
 Play after a pause, or in a book just opened, starts at the word on screen.
 
-Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way. Where play resumes and where Back goes become settings, default to be determined ([roadmap](docs/roadmap.md#reader-layout-options)).
+Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way.
+
+Planned: settings for where play resumes and where Back goes, defaults to be determined ([roadmap](docs/roadmap.md#reader-layout-options)).
 
 #### Paused view
 
@@ -604,7 +606,7 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 - **Final timing values:** set after tuning on a device ([feature 11](#11-tuning-screen)); [feature 6](#6-timing) holds starting values.
 - **Speed and size targets:** which ones v1 sets, and at what values (#73).
 - **App icon and visual style:** not decided.
-- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where "comprehension" fits with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
+- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where today's single word size fits "comprehension" with about 8 px to spare ([#87](https://github.com/Antananariwa/readalez/pull/87)).
 
 ## Glossary
 
@@ -627,7 +629,7 @@ One term per thing, in this file, the other docs and the code.
 | New mark             | the mark on a book just imported ([feature 2](#2-import-epub-files)).                                                                                                                                        |
 | Note marker          | a link in the text to a note ([feature 2](#2-import-epub-files)).                                                                                                                                            |
 | Own book             | a book the reader added by pasting or importing.                                                                                                                                                             |
-| Part                 | a stretch of an EPUB, cut at its chapter-list entries, its headings and changes in the markup's role. In the reading flow or skipped ([feature 2](#2-import-epub-files)).                                    |
+| Part                 | a stretch of a book wholly in the reading flow or wholly skipped ([feature 2](#2-import-epub-files)).                                                                                                        |
 | Paused view          | the chapter's text under the word frame while paused ([feature 7](#7-reader)).                                                                                                                               |
 | Position             | a place in a book, to the word, saved so reading resumes there ([feature 4](#4-library), ADR 0008).                                                                                                          |
 | Progress             | how far a position is through the reading flow, 0% to 100% ([feature 4](#4-library)).                                                                                                                        |
