@@ -27,7 +27,7 @@ SPEC.md follows OpenFastTrace's specification item, from [Writing a Specificatio
 
 OpenFastTrace uses this shape in its own [system requirements](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/spec/system_requirements.md): 74 items, 28 of them with `Rationale:`, counted with `grep` on 2026-11-17.
 
-It was chosen over OpenSpec and BCP 14 as the simplest of the three: a title, a description and a rationale. It is also the only one of the three with a field for the reason. OpenSpec has a reason only per spec, and its scenarios would restate the tests. BCP 14 puts the reason in the same paragraph as the rule.
+It was chosen over OpenSpec and BCP 14 as the simplest of the three: a title, a description and a rationale. It is also the only one of the three with a field for each rule's reason. OpenSpec has a reason only per spec, and its scenarios would restate the tests. BCP 14 gives reasons in notes, outside the format (#106's comparison).
 
 What Readalez changes:
 

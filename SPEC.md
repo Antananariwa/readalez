@@ -48,7 +48,7 @@ Rationale: A proven convention needs less tuning than a new design.
 
 iOS 18.4 and later, installed app and Safari.
 
-Rationale: From 18.4, an installed web app can keep the screen awake (Screen Wake Lock in Home Screen web apps, MDN's [`api/WakeLock.json`](https://github.com/mdn/browser-compat-data/blob/8d371e9fb68c0cdc1908fa370358f6659aaec513/api/WakeLock.json#L26-L36)). Earlier, the screen dims and locks mid-chapter.
+Rationale: From 18.4, an installed web app can keep the screen awake (Screen Wake Lock in Home Screen web apps, MDN's [`api/WakeLock.json`](https://github.com/mdn/browser-compat-data/blob/8d371e9fb68c0cdc1908fa370358f6659aaec513/api/WakeLock.json#L26-L36)). Earlier, the screen dims and locks mid-chapter. caniuse still lists the Home Screen bug, with no version ([`features-json/wake-lock.json`](https://github.com/Fyrd/caniuse/blob/dfffa8fdef1b8b5896b85717c7d86df11644187d/features-json/wake-lock.json#L24-L28)), so the screen-awake device check (#74) runs as early as possible.
 
 ### Android
 
@@ -109,7 +109,9 @@ Rationale: Reading starts at the first real word, as with EPUBs.
 
 #### Title and author
 
-Title: the first line of the kept text, cut at a word boundary to at most 60 characters. Editable before saving and later in the library; left blank, it saves as the first line. Author: **Unknown author**, as for an EPUB with none ([feature 2](#2-import-epub-files)): no extra field to fill in.
+Title: the first line of the kept text, cut at a word boundary to at most 60 characters. Editable before saving and later in the library. Left blank before saving, it saves as the first line; a blank rename keeps the title. Author: unknown, as for an EPUB with none ([feature 2](#2-import-epub-files)): no extra field to fill in.
+
+Rationale: The title names what you read; the library needs one for every text.
 
 #### Same text twice
 
@@ -174,7 +176,7 @@ Rationale: Less code than importing in the background, and nothing else on the p
 
 #### New mark
 
-A **New** mark on a book just imported, in the library. Stays until you open a book, go to the Add text screen or reload.
+A New mark on a book just imported, in the library. Stays until you open a book, go to the Add text screen or reload.
 
 Rationale: An import lands in the library, not the book; the mark shows which book arrived.
 
@@ -211,7 +213,7 @@ The home screen. Lists every book, built-in or own: most recently opened first, 
 
 #### Library filters
 
-Three: all books, built-in only, own only. Chips under the title: **All**, **Public**, **My books**. Exactly one is on; all books at first. Kept while you read a book and come back. A reload resets to all books.
+Three: all books, built-in only, own only. Built-in books are labelled **Public**. Exactly one is on; all books at first. Kept while you read a book and come back. A reload resets to all books.
 
 Rationale: Three choices, one always on: plainly shows what the list holds. **Public**: free for anyone, as public-domain books are, without naming a genre, so a non-classic fits too. A reload resets until settings are stored (#18).
 
@@ -362,13 +364,13 @@ The screen where a book plays, one word at a time, in the word frame.
 #### Controls
 
 - Tapping the word frame plays or pauses.
-- Below the frame, row 1: slower and faster, by 10 wpm, either side of the current speed. Row 2: Back and Forward.
+- Below the frame, row 1: slower and faster, by 10 wpm, either side of the current speed. Row 2: previous sentence and next sentence.
 - Holding slower or faster keeps changing the speed until you let go.
-- Back: to the start of the sentence on screen; already at its start, to the start of the sentence before.
-- Forward: to the start of the next sentence.
-- Desktop: Space plays or pauses; ← and → are Back and Forward; ↑ and ↓ change the speed.
+- Previous sentence: to the start of the sentence on screen; already at its start, to the start of the sentence before.
+- Next sentence: to the start of the next sentence.
+- Desktop: Space plays or pauses; ← and → move to the previous and next sentence; ↑ and ↓ change the speed.
 
-Rationale: One big tap target suits a phone. A second row costs screen space but keeps the controls apart for a first-time reader. Holding saves many taps, as on iPhone, where [`UIStepper`'s `autorepeat`](https://developer.apple.com/documentation/uikit/uistepper/autorepeat) is on by default. Back goes to the sentence start because play resumes at the word on screen, not the sentence start ([Resume where you left off](#resume-where-you-left-off)).
+Rationale: One big tap target suits a phone. A second row costs screen space but keeps the controls apart for a first-time reader. Holding saves many taps, as on iPhone, where [`UIStepper`'s `autorepeat`](https://developer.apple.com/documentation/uikit/uistepper/autorepeat) is on by default. Previous sentence goes to the sentence start because play resumes at the word on screen, not the sentence start ([Resume where you left off](#resume-where-you-left-off)).
 
 #### Resume where you left off
 
@@ -376,7 +378,7 @@ Play after a pause, or in a book just opened, starts at the word on screen.
 
 Rationale: The paused view already shows the sentence and lets you pick any word; a jump to the sentence start on play would get in the way.
 
-Planned: settings for where play resumes and where Back goes, defaults to be determined ([roadmap](docs/roadmap.md#reader-layout-options)).
+Both are planned as settings ([roadmap](docs/roadmap.md#reader-layout-options)).
 
 #### Paused view
 
