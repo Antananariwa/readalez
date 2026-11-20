@@ -315,7 +315,7 @@ Each word shows for a time set by the speed, plus pauses at punctuation, sentenc
 
 100 to 1,000 words per minute, in steps of 10, starting at 300. One speed for all books. A change takes effect from the next word. The speed is the base speed: an ordinary word shows for 60,000 ÷ wpm milliseconds, 200 ms at 300 wpm. Pauses add to it, so the real average runs below the setting.
 
-Rationale: No reason recorded for the range. Base speed: the convention of other Spritz-style readers, as in Speeedy's [`msPerWord`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L417).
+Rationale: No reason recorded for the range. Base speed: the convention of other Spritz-style readers, as in Speeedy's [`msPerWord`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L417), and close to speedread's [`$wordtime`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L51-L54).
 
 #### Starting values
 

@@ -22,16 +22,16 @@ What the sources say, read on 2026-11-19 (#121's [investigation](https://github.
 Alternatives:
 
 - **Append-only, as Microsoft and AWS.** Each correction then needs a new ADR, as ADR 0015 did.
-- **Keep ADRs 0014 to 0017, marked as outside the scope.** Their text would stay in `docs/adr/` for each session to read. Their rules are already written out in CLAUDE.md, SPEC.md's intro and the templates.
+- **Keep ADRs 0014 to 0017, marked as outside the scope.** Their text would stay in `docs/adr/` for each session to read. Most of their rules are already written out in CLAUDE.md, the templates and SPEC.md, whose intro and layout show its item shape.
 
 ## Decision
 
 This supersedes ADR 0001.
 
-1. **Scope.** An ADR records one decision that affects the app's structure, quality attributes, dependencies or interfaces, or that is hard to reverse (Microsoft, Nygard). Documentation layout, writing rules and how-to steps are not ADRs, after Microsoft's "Avoid making decision records design guides". Product behaviour and its reasons go in SPEC.md. A decision that is small, or covered elsewhere, gets no ADR (joelparkerhenderson).
+1. **Scope.** An ADR records one decision that affects the app's structure, quality attributes, dependencies or interfaces, or that is hard to reverse (Microsoft, Nygard). Documentation layout, writing rules and how-to steps fall outside that scope. Product behaviour and its reasons go in SPEC.md. A decision that is small, or covered elsewhere, gets no ADR (joelparkerhenderson).
 2. **Shape.** Nygard's, as ADR 0001 used it: Title, Date, Status, Context with the alternatives, Decision, Consequences. One or two pages. `docs/adr/0000-template.md` holds it, as Backstage's and Primer React's number-zero files do.
-3. **Changes.** The PR is the proposal, and an ADR on `main` is accepted (GDS Way). After merge, it changes only in its Status line, in corrections of fact or links, and in dated notes under Consequences. A changed decision gets a new ADR that supersedes the old one. Numbers are not reused (Nygard).
-4. **ADRs 0014 to 0017 are deleted.** Nygard keeps a reversed decision for its history. These four are not reversed decisions: they fall outside rule 1. Their history is in #109, #118, #106, PRs #115, #119 and #120, and git. ADR 0017's reason moves into SPEC.md feature 6.
+3. **Changes.** The PR is the proposal, and an ADR on `main` is accepted (GDS Way). After merge, it changes only in its Status line, in corrections of fact or links, and in dated notes under Consequences. A changed decision gets a new ADR that supersedes the old one, and the old one stays, marked superseded. Numbers are not reused (Nygard).
+4. **ADRs 0014 to 0017 are deleted.** Nygard keeps a reversed decision for its history. These four are not reversed decisions: they fall outside rule 1. Their history is in #109, #118, #106, PRs #115, #119 and #120, and git. ADR 0017's reason moves into SPEC.md feature 6. ADR 0016's rule 6 is dropped. Its first half, "Contrasts with other apps leave", went against SPEC.md's principle that a departure from a convention gives its reason (#121). Its second half sent product decisions to ADRs, which rule 1 excludes.
 
 ## Consequences
 

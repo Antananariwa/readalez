@@ -5,8 +5,8 @@ Status: Accepted
 
 <!--
 Copy this file to NNNN-the-decision.md, with the next unused number. Numbers are not reused.
-Which decisions get an ADR, and what may change after merge: CLAUDE.md, Writing docs. Why: ADR 0018.
-Status is "Accepted" in the PR, since the merge accepts it. Later it may read "Superseded by [ADR N](…)" or "Accepted; amended by ADR N, which …".
+Which decisions get an ADR, and what may change after merge: CLAUDE.md, Writing docs, and ADR 0018 with its reasons.
+Status is "Accepted" in the PR, since the merge accepts it. Later it may read "Superseded by [ADR N](…)".
 Keep the whole record to one or two pages.
 -->
 
