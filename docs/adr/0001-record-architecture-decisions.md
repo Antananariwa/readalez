@@ -1,7 +1,7 @@
 # 1. Record architecture decisions
 
 Date: 2026-10-27
-Status: Accepted
+Status: Superseded by [ADR 0018](0018-keep-adrs-for-architecture-decisions.md)
 
 ## Context
 

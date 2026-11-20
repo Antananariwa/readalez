@@ -2,7 +2,7 @@
 
 What Readalez does and why.
 
-Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([ADR 0016](docs/adr/0016-write-spec-md-as-openfasttrace-items.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Technical choices: [docs/adr](docs/adr/).
+Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Technical choices: [docs/adr](docs/adr/).
 
 ## What Readalez is
 
@@ -315,7 +315,7 @@ Each word shows for a time set by the speed, plus pauses at punctuation, sentenc
 
 100 to 1,000 words per minute, in steps of 10, starting at 300. One speed for all books. A change takes effect from the next word. The speed is the base speed: an ordinary word shows for 60,000 ÷ wpm milliseconds, 200 ms at 300 wpm. Pauses add to it, so the real average runs below the setting.
 
-Rationale: No reason recorded for the range. Base speed: the convention of other Spritz-style readers ([ADR 0017](docs/adr/0017-start-timing-at-these-values.md)).
+Rationale: No reason recorded for the range. Base speed: the convention of other Spritz-style readers, as in Speeedy's [`msPerWord`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L417).
 
 #### Starting values
 
@@ -333,7 +333,7 @@ Rationale: No reason recorded for the range. Base speed: the convention of other
 - The long-word factor multiplies it: a long word ending a sentence shows for 2.6×.
 - Each chunk of a long word: timed by its own length, with the punctuation pauses on the last chunk. The hyphen added at a split isn't a dash.
 
-Rationale: Where these values came from: [ADR 0017](docs/adr/0017-start-timing-at-these-values.md). Final values: [Open questions](#open-questions).
+Rationale: Close to Speeedy's pauses, 2× at a sentence end and 1.4× at a comma ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643)). At 3×, a sentence end felt like a stop at every sentence (#36). A paragraph end pauses longest, to leave a clear break to blink. The first word after play pauses less, since it is already on screen while paused. Final values: [Open questions](#open-questions).
 
 #### Abbreviations
 
