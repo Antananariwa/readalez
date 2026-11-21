@@ -2,7 +2,7 @@
 
 What Readalez does and why.
 
-Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Technical choices: [docs/adr](docs/adr/).
+Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Technical decisions: [docs/adr](docs/adr/).
 
 ## What Readalez is
 
@@ -333,7 +333,7 @@ Rationale: No reason recorded for the range. Base speed: the convention of other
 - The long-word factor multiplies it: a long word ending a sentence shows for 2.6×.
 - Each chunk of a long word: timed by its own length, with the punctuation pauses on the last chunk. The hyphen added at a split isn't a dash.
 
-Rationale: Sentence and clause pauses follow Speeedy's pause multipliers, 2× and 1.4× ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643)). Speeedy's default setting raises them to 3× and 1.8× ([`defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L23), [where it's applied](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L420-L422)), but at 3× a sentence end felt like a stop at every sentence (#36). A paragraph end pauses 5×, to leave a clear break to blink. The first word after play needs only 1.5×, since it is already on screen while paused. Final values: [Open questions](#open-questions).
+Rationale: Sentence and clause pauses are close to Speeedy's pause multipliers, 2× and 1.4× ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643)). Speeedy's default setting raises them to 3× and 1.8× ([`defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L23), [where it's applied](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L420-L422)), but at 3× a sentence end felt like a stop at every sentence (#36). A paragraph end pauses 5×, to leave a clear break to blink (#36). The first word after play needs only 1.5×, since it is already on screen while paused (#36). Final values: [Open questions](#open-questions).
 
 #### Abbreviations
 

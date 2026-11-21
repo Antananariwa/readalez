@@ -15,4 +15,4 @@ Record each significant technical decision as an Architecture Decision Record in
 
 - The reasons travel with the decisions, so later sessions can judge whether a decision still applies.
 - Changing a decision means writing down why, in the same PR as the change.
-- 2026-11-21: Which decisions get an ADR, its template, and what may change in it after merge are in CLAUDE.md's Writing docs (#121).
+- 2026-11-21: Which decisions get an ADR, and what may change in it after merge, are in CLAUDE.md's Writing docs. The shape is in `docs/adr/0000-template.md` (#121).
