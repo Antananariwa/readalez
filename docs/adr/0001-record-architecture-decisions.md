@@ -1,7 +1,7 @@
 # 1. Record architecture decisions
 
 Date: 2026-10-27
-Status: Accepted
+Status: Accepted; how ADRs are written and changed is superseded by CLAUDE.md's Writing docs and `docs/adr/0000-template.md` (#121)
 
 ## Context
 

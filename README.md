@@ -73,13 +73,13 @@ npm run e2e      # Playwright end-to-end tests against the production build
 
 `npm run e2e` needs Playwright's browsers: `npx playwright install --with-deps --only-shell chromium webkit`.
 
-Where things are in the code: [ARCHITECTURE.md](ARCHITECTURE.md). Why the technical choices were made: [docs/adr](docs/adr/).
+Where things are in the code: [ARCHITECTURE.md](ARCHITECTURE.md). Why the significant technical decisions were made: [docs/adr](docs/adr/).
 
 ## How it's built
 
 Coding agents write most of the code and help with planning. I decide what gets built, test on physical devices and merge every pull request.
 
-The agents work in an isolated environment with limited access ([ADR 0004](docs/adr/0004-run-claude-code-in-a-dev-container.md)), and they can't merge. Their working rules are in [CLAUDE.md](CLAUDE.md), and the reasons behind technical choices are in [docs/adr](docs/adr/).
+The agents work in an isolated environment with limited access ([ADR 0004](docs/adr/0004-run-claude-code-in-a-dev-container.md)), and they can't merge. Their working rules are in [CLAUDE.md](CLAUDE.md), and the reasons behind significant technical decisions are in [docs/adr](docs/adr/).
 
 ## License
 
