@@ -333,7 +333,7 @@ Rationale: No reason recorded for the range. Base speed: the convention of other
 - The long-word factor multiplies it: a long word ending a sentence shows for 2.6×.
 - Each chunk of a long word: timed by its own length, with the punctuation pauses on the last chunk. The hyphen added at a split isn't a dash.
 
-Rationale: Close to Speeedy's pauses, 2× at a sentence end and 1.4× at a comma ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643)). At 3×, a sentence end felt like a stop at every sentence (#36). A paragraph end pauses longest, to leave a clear break to blink. The first word after play pauses less, since it is already on screen while paused. Final values: [Open questions](#open-questions).
+Rationale: Close to Speeedy's base pauses, 2× at a sentence end and 1.4× at a comma ([`getPauseMultiplier`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L615-L643)). Speeedy's default sentence-pause setting of 2 ([`defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L23)) doubles the added part ([where it's applied](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L420-L422)), to 3× and 1.8×. At 3×, a sentence end felt like a stop at every sentence (#36). A paragraph end pauses longest, to leave a clear break to blink. The first word after play pauses less, since it is already on screen while paused. Final values: [Open questions](#open-questions).
 
 #### Abbreviations
 
