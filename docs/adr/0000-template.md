@@ -6,7 +6,7 @@ Status: Accepted
 <!--
 Copy this file to NNNN-the-decision.md, numbered after the highest number ever used. Numbers are not reused: 0014 to 0017 were deleted (#121), so the next is 0018 or later.
 Which decisions get an ADR, and what may change after merge: CLAUDE.md, Writing docs.
-Status is "Accepted" in the PR, since the merge accepts it. When a later ADR, or SPEC.md, changes the decision, the Status line names it and what it changes: "Superseded by [ADR N](…)", or for a part, "Accepted; its browser list is superseded by [ADR N](…)".
+Status is "Accepted" in the PR, since the merge accepts it. When a later ADR changes the decision, or part of it moves to its home, the Status line names where and what changed: "Superseded by [ADR N](…)", or for a part, "Accepted; its browser list is superseded by [ADR N](…)".
 -->
 
 ## Context

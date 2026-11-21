@@ -1,7 +1,7 @@
 # 1. Record architecture decisions
 
 Date: 2026-10-27
-Status: Accepted
+Status: Accepted; how ADRs are written and changed is superseded by CLAUDE.md's Writing docs (#121)
 
 ## Context
 
@@ -15,4 +15,3 @@ Record each significant technical decision as an Architecture Decision Record in
 
 - The reasons travel with the decisions, so later sessions can judge whether a decision still applies.
 - Changing a decision means writing down why, in the same PR as the change.
-- 2026-11-21: Which decisions get an ADR, and what may change in it after merge, are in CLAUDE.md's Writing docs. The shape is in `docs/adr/0000-template.md` (#121).
