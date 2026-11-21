@@ -7,7 +7,7 @@ Status: Accepted
 
 ADR 0001 records each significant technical decision in Nygard's format, and a changed decision in a new ADR. CLAUDE.md added that an accepted ADR changes only in its Status line. #121 records what followed:
 
-- ADRs 0014, 0015 and 0016 held documentation rules: a standard for each part of the docs, where the writing rules live, and SPEC.md's format. They were 27.9, 11.6 and 6.2 KB. ADRs 0002 to 0013 are 1.0 to 8.1 KB.
+- ADRs 0014, 0015 and 0016 held documentation rules: a standard for each part of the docs, where the writing rules live, and SPEC.md's format. They were 27.9, 11.6 and 6.2 KB. ADRs 0002 to 0013 are 1.1 to 8.1 KB.
 - A rule in an ADR couldn't be corrected in place. ADR 0015 superseded part of ADR 0014 a day after it, and ADR 0016 another part three days after (#118, #106).
 - ADR 0017 held SPEC.md feature 6's starting timing values, which the tuning screen (feature 11) is built to change.
 
@@ -31,7 +31,7 @@ This supersedes ADR 0001.
 1. **Scope.** An ADR records one decision that affects the app's structure, quality attributes, dependencies or interfaces, or that is hard to reverse (Microsoft, Nygard). Documentation layout, writing rules and how-to steps fall outside that scope. Product behaviour and its reasons go in SPEC.md. A decision that is small, or covered elsewhere, gets no ADR (joelparkerhenderson).
 2. **Shape.** Nygard's, as ADR 0001 used it: Title, Date, Status, Context with the alternatives, Decision, Consequences. One or two pages. `docs/adr/0000-template.md` holds it, as Backstage's and Primer React's number-zero files do.
 3. **Changes.** The PR is the proposal, and an ADR on `main` is accepted (GDS Way). After merge, it changes only in its Status line, in corrections of fact or links, and in dated notes under Consequences. A changed decision gets a new ADR that supersedes the old one, and the old one stays, marked superseded. Numbers are not reused (Nygard).
-4. **ADRs 0014 to 0017 are deleted.** Nygard keeps a reversed decision for its history. These four are not reversed decisions: they fall outside rule 1. Their history is in #109, #118, #106, PRs #115, #119 and #120, and git. ADR 0017's reason moves into SPEC.md feature 6. The last sentence of ADR 0016's rule 6 is dropped; the rest of that rule is in CLAUDE.md. Its first clause, "Contrasts with other apps leave", went against SPEC.md's principle that a departure from a convention gives its reason (#121). Its second clause sent product decisions to ADRs, which rule 1 excludes.
+4. **ADRs 0014 to 0017 are deleted.** Nygard keeps a superseded decision for its history. These four fall outside rule 1, so they are not kept as superseded records. Their history is in #109, #118, #106, PRs #115, #119 and #120, and git. ADR 0017's reason moves into SPEC.md feature 6.
 
 ## Consequences
 
