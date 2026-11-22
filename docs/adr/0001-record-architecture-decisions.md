@@ -9,7 +9,7 @@ This project is built mostly by AI agents across many separate sessions. A decis
 
 ## Decision
 
-Record each significant technical decision as an Architecture Decision Record in `docs/adr/`, in Michael Nygard's format, one decision per file, numbered in order. CLAUDE.md's Writing docs says which decisions get one and how an ADR changes. `docs/adr/0000-template.md` gives its shape.
+Record each significant technical decision as an Architecture Decision Record in `docs/adr/`, in Michael Nygard's format, one decision per file. CLAUDE.md's Writing docs says which decisions get one. `docs/adr/README.md` gives the format, the numbering and how a merged ADR may change.
 
 ## Consequences
 

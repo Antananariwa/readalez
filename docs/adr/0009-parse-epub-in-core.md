@@ -1,7 +1,7 @@
 # 9. Parse EPUB files in core with our own ZIP and XML readers
 
 Date: 2026-11-07
-Status: Accepted; its section rule is extended by ADR 0011, which adds a section of notes after the spine's
+Status: Accepted; its section rule is superseded by ADR 0011, which adds a section of notes after the spine's
 
 ## Context
 
@@ -19,7 +19,7 @@ Positions are stored by section, paragraph and word (ADR 0008), and texts are st
   - `zip.ts` reads the central directory and the stored and deflated entries, which is all EPUB uses. There is no ZIP64, since books are far under 4 GB. Checking CRCs and refusing encrypted entries are left to #16 (broken and copy-protected files).
   - `xml.ts` is a non-validating reader that builds a small tree of elements and text and checks that tags nest. It replaces XML's five entities and numeric references, and leaves other named entities as written, since they need a DTD, which it never loads (docs/known-issues.md). It doesn't resolve namespaces: elements match by local name, `epub:type` by that prefixed name, and an author's `role` under any prefix.
   - Rejected: `fflate` or JSZip for the archive, since each dependency adds download size on phones, updates and license notices (CLAUDE.md), and `DecompressionStream` covers the hard part. `DOMParser` is rejected because Node lacks it, so parsing would move into `src/ui/` and lose its unit tests.
-- **Where core's line sits.** This amends ADR 0003's "no browser APIs". Core may use a global only if two things hold:
+- **Where core's line sits.** This supersedes ADR 0003's "no browser APIs" in part. Core may use a global only if two things hold:
   - It is in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node. That list includes `DecompressionStream`, `TextDecoder`, `ReadableStream` and `Response`.
   - Every target browser has it (SPEC.md, Devices and browsers).
 
