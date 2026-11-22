@@ -37,7 +37,7 @@ In every text (docs, comments, test names, issues, PRs):
 - One term per thing. Name a feature by its term, not by the words on its button. Those words live in the code. SPEC.md holds them once where the wording is itself a product choice, with its reason. Elsewhere, quote them only where a reader must find the control on the screen, as in the README's steps, or where an issue or a PR changes them. Put quoted words in bold.
 - One idea per sentence, in the active voice.
 - One home per fact. Elsewhere, link to it.
-- Change a doc in the same PR as the code it describes. Delete a doc or a line that is stale or unused.
+- Change a doc in the same PR as the code it describes. Delete a doc or a line that is stale or unused. A merged ADR keeps its lines instead, and `docs/adr/README.md` says how it changes.
 
 Each kind of text has its own job. Apply the lines for the text you are writing:
 
@@ -46,7 +46,7 @@ Each kind of text has its own job. Apply the lines for the text you are writing:
 - **A comment** says what the code can't say for itself. A why that belongs to that code alone stays in the comment. A why that SPEC.md or an ADR holds is linked, not repeated.
 - **docs/known-issues.md and docs/roadmap.md:** each one's intro says what it holds and gives the shape of an entry. Follow the intro.
 - **An ADR** records one significant technical decision. Write one in the same PR as the decision, and a new one when a decision an ADR holds changes.
-  - Significant: it affects the app's structure, its quality attributes (such as speed, size, security or offline use), its dependencies or interfaces, or how it is built, tested or developed, or it is hard to reverse. For example: the framework (ADR 0002), the host (ADR 0006), the storage (ADR 0007), the dev container's firewall (ADR 0012).
+  - Significant: it affects the app's structure, its quality attributes (such as performance, size, security or offline use), its dependencies or interfaces, or how it is built, tested or developed, or it is hard to reverse. For example: the framework (ADR 0002), the host (ADR 0006), the storage (ADR 0007), the dev container's firewall (ADR 0012).
   - Any other decision is small and gets no ADR, such as how one function or component is written, a test helper or a single lint rule. Its reason goes in the PR, or in a comment when it belongs to that code.
   - Never in an ADR, even when they matter: product behaviour and its reasons (SPEC.md), rules for working and writing (this file or `.claude/agents/`), how-to steps (a comment or script next to the code they apply to) and a doc's layout (its intro). ADR 0001, the decision to keep ADRs, is the one exception.
   - `docs/adr/README.md` gives the format, the numbering and how a merged ADR may change. Follow it.

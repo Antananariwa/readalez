@@ -1,7 +1,7 @@
 # 3. Keep reading logic separate from the UI
 
 Date: 2026-10-27
-Status: Accepted; amended by ADR 0009, which allows the web APIs Node also has
+Status: Accepted; amended by ADR 0009, which lets `src/core` use the web APIs in WinterTC's Minimum Common Web API that every target browser has
 
 ## Context
 

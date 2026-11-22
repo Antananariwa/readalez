@@ -13,16 +13,16 @@ Each ADR follows Michael Nygard's format ([Documenting Architecture Decisions](h
 
 ## Numbers
 
-A new ADR takes the number after the highest one ever used. Numbers are not reused, so a link to an old number never leads to a different decision. ADRs 0014 to 0017 were deleted in #121, and their numbers are not used again.
+A new ADR takes the number after the highest one `main` has ever had. Numbers are not reused, so a link to an old number never leads to a different decision. ADRs 0014 to 0017 were deleted in #121, and their numbers are not used again. A number used only on a branch that was never merged is free.
 
 ## After merge
 
-A merged ADR changes only in:
+A merged ADR records a decision as it stood on its date. A line that went out of date stays as written. The ADR changes only in three ways:
 
-- its Status line, when a later ADR changes the decision, in the two forms [adr-tools](https://github.com/npryce/adr-tools/blob/b3279baf9be2207d1a4f4bbd608fd0b591c72aee/src/adr-new#L43-L49) writes:
-  - `Superseded by ADR NNNN`, when the later ADR replaces the whole decision;
-  - `Accepted; amended by ADR NNNN, which …`, when it changes or adds to part of the decision, with what it changes after "which";
-- corrections of a fact or link that was wrong when written;
-- dated notes under Consequences, for a fact that changed or was learned later, such as `2026-12-01: …`.
+- **Its Status line, when a later ADR changes its Decision section.** [adr-tools](https://github.com/npryce/adr-tools/blob/b3279baf9be2207d1a4f4bbd608fd0b591c72aee/src/adr-new#L43-L49) links ADRs as superseded or amended. Here the Status line says it in one of two forms:
+  - `Superseded by ADR NNNN`, when the later ADR replaces the whole decision.
+  - `Accepted; amended by ADR NNNN, which …`, when it changes or adds to part of the decision, with what it changes after "which". Each further amendment follows, in number order: `Accepted; amended by ADR 0009, which …; amended by ADR 0010, which …`.
+- **A dated note under Consequences, when anything else it states changed or was learned later**, such as a host's limit, or a consequence that a later ADR changed: `2026-12-01: …`.
+- **A fix of a fact that was wrong when written, or of a link that no longer leads to what it cited.**
 
-Nothing else changes, a line that went out of date included: a dated note says what changed. A changed decision gets a new ADR that says which ADR it supersedes or amends.
+A changed decision gets a new ADR, which says which ADR it supersedes or amends.
