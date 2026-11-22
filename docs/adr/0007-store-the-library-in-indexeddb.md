@@ -1,7 +1,7 @@
 # 7. Store the library in IndexedDB, with books known by a hash of their text
 
 Date: 2026-11-06
-Status: Accepted; its "Same text twice" rule is superseded by SPEC.md features 1 and 2 (#14)
+Status: Accepted
 
 ## Context
 
@@ -21,7 +21,6 @@ Issue #12 makes texts survive a reload. Everything stays in the browser's storag
 - **Book ID: the SHA-256 of the book's words**, as 64 hex digits (`bookId` in `src/core/bookId.ts`). The input is every paragraph's text, verse lines joined by line breaks, with a blank line between paragraphs, in UTF-8. Titles and paragraph kinds stay out, so a rename or a change in how a heading is recognised doesn't make a different book. The ID is computed once, when the book is added, and stored with it.
   - SHA-256, a standard hash with 256 bits, so two different texts getting the same ID is not a practical concern.
   - Written in `src/core/` in plain TypeScript, because core can't use the browser's `crypto.subtle` or `TextEncoder` (ADR 0003, ADR 0005), and so it's synchronous and unit-tested in Node. The tests compare it with Node's `crypto.createHash("sha256")`.
-- **Same text twice:** adding a book whose ID is already stored opens the stored copy, with its own title (the owner's choice for pasted texts, matching SPEC.md feature 2 for EPUBs).
 
 ## Consequences
 

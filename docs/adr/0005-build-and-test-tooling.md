@@ -17,7 +17,7 @@ The issue planned to start from Vite's official `react-ts` template and expected
   - `tsconfig.app.json` for `src/ui`;
   - `tsconfig.node.json` for configs and `tests/`;
   - `tsconfig.e2e.json` for `e2e/`, which also has the DOM library, because callbacks passed to `page.evaluate` run in the browser.
-- **Lint:** Oxlint, as the template ships it, with `--deny-warnings`. It reads TypeScript itself, so it works with TypeScript 7, and it's fast enough that the Stop hook doesn't notice it. The owner chose it over ESLint with TypeScript 6.0. The dev container's editor uses the Oxc extension (`oxc.oxc-vscode`) and fixes on save with `source.fixAll.oxc`.
+- **Lint:** Oxlint, as the template ships it, with `--deny-warnings`. It reads TypeScript itself, so it works with TypeScript 7, and it's fast enough that the Stop hook doesn't notice it. The dev container's editor uses the Oxc extension (`oxc.oxc-vscode`) and fixes on save with `source.fixAll.oxc`.
 - **Formatting:** Prettier with its defaults, the formatter VS Code runs on save in the dev container. `npm run check` runs `prettier --check`, so code written outside the editor stays formatted too.
 - **Unit tests:** Vitest in plain Node, without DOM emulation, so tests start fast. It runs tests only in `src/core`, `src/ui` and `tests/`, the folders a tsconfig project typechecks, so no test runs without a typecheck.
 - **`npm run check`** runs the typecheck, lint, format check and unit tests, with no build and no browser. `npm test` runs `npm run check`, so GitHub's Node.js workflow (`npm ci`, `npm run build`, `npm test`) covers all of it.
@@ -27,22 +27,16 @@ The issue planned to start from Vite's official `react-ts` template and expected
 - **Browser tests:** Playwright runs `e2e/` against the production build served by `vite preview`, in two projects. It builds and starts the server itself on every run and never reuses one already on the port, which might serve an old build:
   - headless Chromium (Desktop Chrome);
   - WebKit with Playwright's iPhone 16 emulation (viewport, touch, mobile user agent).
-- **Why WebKit:** the owner chose it. It's the closest automated stand-in for iPhone Safari, so it catches engine-level differences: CSS and layout, JavaScriptCore, missing or different web APIs. It doesn't catch iOS-only behaviour: the Home Screen app, the on-screen keyboard, safe areas, touch feel, storage limits, the Files picker or device speed. Playwright's Linux WebKit is also newer than Safari on iOS 18.4, so it can pass a feature the phone lacks. Device checks stay the final word.
+- **Why WebKit:** it's the closest automated stand-in for iPhone Safari, so it catches engine-level differences: CSS and layout, JavaScriptCore, missing or different web APIs. It doesn't catch iOS-only behaviour: the Home Screen app, the on-screen keyboard, safe areas, touch feel, storage limits, the Files picker or device speed. Playwright's Linux WebKit is also newer than Safari on iOS 18.4, so it can pass a feature the phone lacks. Device checks stay the final word.
 - **Browsers in the image:** the Dockerfile installs Chromium's headless shell and WebKit, with their system libraries, as root during the image build, into `/ms-playwright` (`PLAYWRIGHT_BROWSERS_PATH`), readable by the `node` user. The headless shell is enough, since the container has no display. The version comes from the `PLAYWRIGHT_VERSION` build arg in `devcontainer.json`.
 - **Pinned Playwright:** `package.json` pins `@playwright/test` exactly (no `^` or `~`). `tests/tooling/playwright-version.test.ts` fails `npm run check` if the pin isn't exact or differs from `PLAYWRIGHT_VERSION`.
-- **CI:** GitHub's official Node.js workflow, added by the owner, on Node 24 only, the container's version. Node runs only the build and test tools, never the app. It also installs Playwright's browsers and runs `npm run e2e`, so UI breakage blocks a merge even if a session skipped the browser tests.
+- **CI:** GitHub's official Node.js workflow, on Node 24 only, the container's version. Node runs only the build and test tools, never the app. It also installs Playwright's browsers and runs `npm run e2e`, so UI breakage blocks a merge even if a session skipped the browser tests.
 
 ## Consequences
 
 - A warm `npm run check` takes about a second today.
 - A file in `src/core` that touches the browser, React or `src/ui` fails `npm run check` with an error that points to ARCHITECTURE.md.
-- To bump Playwright:
-  1. Change `@playwright/test` in `package.json` and `PLAYWRIGHT_VERSION` in `.devcontainer/devcontainer.json` to the same exact version, in one commit.
-  2. Run `npm install` to update the lockfile.
-  3. Ask the owner to rebuild the dev container.
-
-  Until the rebuild, `npm run e2e` can't find the new browsers.
-
+- A Playwright bump needs the owner to rebuild the dev container. Until then, `npm run e2e` can't find the new browsers. The steps are in `tests/tooling/playwright-version.test.ts`.
 - The image grows by Chromium's headless shell, WebKit and their libraries, and e2e takes about twice as long with two browsers.
 - Revisit ESLint only if Oxlint lacks a rule the project needs and typescript-eslint supports TypeScript 7 by then.
 - `devcontainer.json` must stay plain JSON (no comments), because the version check parses it with `JSON.parse`.

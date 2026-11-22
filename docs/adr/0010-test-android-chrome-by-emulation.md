@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-The owner decided that Android Chrome is a supported v1 platform, in the installed app and in a tab, checked automatically on every PR, with no device checks, since there's no Android phone to check on reliably (#84, SPEC.md Devices and browsers). Real Android Chrome on emulators before v1 is #85.
+Android Chrome is a supported v1 platform, in the installed app and in a tab, checked automatically on every PR, with no device checks, since there's no Android phone to check on reliably (#84, SPEC.md Devices and browsers). Real Android Chrome on emulators before v1 is #85.
 
 ADR 0005 runs `npm run e2e` in two Playwright projects: headless Chromium (Desktop Chrome) and WebKit with iPhone 16 emulation (393 px wide). The dev container has no `/dev/kvm` (`ls /dev/kvm`: "No such file or directory", #84), so a real Android emulator isn't an option there (#85).
 

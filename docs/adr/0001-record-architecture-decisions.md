@@ -1,15 +1,15 @@
 # 1. Record architecture decisions
 
 Date: 2026-10-27
-Status: Accepted; how ADRs are written and changed is superseded by CLAUDE.md's Writing docs and `docs/adr/0000-template.md` (#121)
+Status: Accepted
 
 ## Context
 
-This project is built mostly by AI agents across many separate sessions. A decision written down without its reasons gets followed blindly, even after the situation behind it changes, and nobody can tell whether it still holds.
+This project is built mostly by AI agents across many separate sessions. A decision written down without its reasons gets followed blindly, even after the situation behind it changes, and nobody can tell whether it still holds. No other options were recorded when this was decided.
 
 ## Decision
 
-Record each significant technical decision as an Architecture Decision Record in `docs/adr/`, in Michael Nygard's format: Context, Decision, Consequences. One decision per file, numbered in order. When a decision changes, a new ADR supersedes the old one, which stays for history with its status updated.
+Record each significant technical decision as an Architecture Decision Record in `docs/adr/`, in Michael Nygard's format, one decision per file, numbered in order. CLAUDE.md's Writing docs says which decisions get one and how an ADR changes. `docs/adr/0000-template.md` gives its shape.
 
 ## Consequences
 

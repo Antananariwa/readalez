@@ -1,6 +1,6 @@
 # Architecture
 
-The stable shape of the code. Reasons for the significant technical decisions: docs/adr/.
+The stable shape of the code. Reasons for the big choices: docs/adr/.
 
 ## Bird's eye view
 

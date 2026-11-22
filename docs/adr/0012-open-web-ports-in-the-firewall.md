@@ -11,7 +11,7 @@ Hosted coding agents start with the internet limited to package registries and G
 
 The limited list already left ways in and out. Anyone can open issues or comment on this public repo, and the agent reads issues. SSH (port 22) was open to any host. GitHub's API accepts any account's token, so code in the container could post data to another account (not tried).
 
-The owner rejected two stronger options (#71):
+Two stronger options were rejected (#71):
 
 - A separate research container with no logins, passing checked text to this one. It needs its own paid API key, and the owner wants the workflow light.
 - A hook that asks the owner before posting to GitHub once a session has read a web page. The owner wouldn't spot a steered session at a prompt either.
@@ -48,5 +48,5 @@ The owner rejected two stronger options (#71):
 - If something looks wrong, revoke the GitHub token and log the Claude login out from the account.
 - Playwright's download host is now reachable, but the browsers stay in the image, because their system libraries need root (ADR 0004).
 - The agent can check Cloudflare preview deployments, which ADR 0006 says it can't.
-- ADR 0004's command for comparing with Anthropic's files no longer has to run from Ubuntu, since raw.githubusercontent.com is reachable on port 443.
+- raw.githubusercontent.com is reachable on port 443, so Anthropic's reference files can be compared with ADR 0004's changes from inside the container.
 - Revisit if the app starts keeping readers' data on a server, the container gets more secrets, or a session does something nobody can explain.
