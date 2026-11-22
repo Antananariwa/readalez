@@ -1,6 +1,6 @@
 # Readalez
 
-A free, open-source speed-reading web app. SPEC.md says what it does and why. ARCHITECTURE.md maps the code. docs/adr/ holds the technical decisions, docs/known-issues.md the problems accepted for now, docs/roadmap.md the ideas for after v1, and GitHub issues the work to do.
+A free, open-source speed-reading web app. SPEC.md says what it does and why. ARCHITECTURE.md maps the code. docs/adr/ holds the significant technical decisions, docs/known-issues.md the problems accepted for now, docs/roadmap.md the ideas for after v1, and GitHub issues the work to do.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Each kind of text has its own job. Apply the lines for the text you are writing:
 - **ARCHITECTURE.md and test names** say what the code is and does. For a why, link SPEC.md or the ADR.
 - **A comment** says what the code can't say for itself. A why that belongs to that code alone stays in the comment. A why that SPEC.md or an ADR holds is linked, not repeated.
 - **docs/known-issues.md and docs/roadmap.md:** each one's intro says what it holds and gives the shape of an entry. Follow the intro.
-- **An ADR** holds one significant technical decision, with what was known when it was made, alternatives included. Significant means it affects the structure, quality attributes, dependencies, interfaces or construction techniques, or is hard to reverse. A small decision, or one already covered elsewhere, gets none. Documentation layout, writing rules, how-to steps and product behaviour are not ADRs, except ADR 0001's decision to keep ADRs. An ADR follows `docs/adr/0000-template.md` and runs to one or two pages. After merge, it changes only in its Status line, in corrections of fact or links, and in dated notes under Consequences. A changed decision gets a new ADR, named in the old one's Status line.
+- **An ADR**: each significant technical decision gets one, which holds what was known when it was made, alternatives included. Significant means it affects the structure, quality attributes, dependencies, interfaces or construction techniques, or is hard to reverse. A small decision gets none. Documentation layout, writing rules, how-to steps and product behaviour are not ADRs, except ADR 0001's decision to keep ADRs. An ADR follows `docs/adr/0000-template.md` and runs to one or two pages. After merge, it changes only in its Status line, in corrections of fact or links, and in dated notes under Consequences. A changed decision gets a new ADR, named in the old one's Status line.
 - **An issue or a PR** holds the path: what was asked, tried and dropped, what changed along the way, and what the owner decided. History belongs here, not in the docs above. The title says what is done, written as an order ("Lock the progress bar", not "Locked" or "Locking"). The body follows its template.
 - **This file** stays under 200 lines and holds only what can't be found by reading the repo. Each instruction is concrete enough to check. It uses no emphasis words such as "IMPORTANT": what can have no exceptions is a hook.
 
