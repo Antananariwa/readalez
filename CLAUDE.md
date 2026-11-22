@@ -12,6 +12,7 @@ A free, open-source speed-reading web app. SPEC.md says what it does and why. AR
 - Reading logic is plain TypeScript in `src/core/`, with unit tests and no DOM, React or browser APIs. `src/ui/` renders it and holds no reading logic (ADR 0003).
 - Bugs: write a failing test that reproduces the bug, then fix the cause. Don't suppress errors, weaken tests or special-case around it.
 - Prefer the platform and the packages already in use. Propose a new dependency in the plan, with its reason: each one adds download size on phones, updates and license notices.
+- A significant technical decision gets an ADR in the same PR. Writing docs, **An ADR**, says which decisions are significant.
 
 ## Limits
 
@@ -41,7 +42,7 @@ In every text (docs, comments, test names, issues, PRs):
 Each kind of text has its own job. Apply the lines for the text you are writing:
 
 - **SPEC.md** says what the app does and why. It leaves out who decided, when or where a reason was given, and how a line came about.
-- **ARCHITECTURE.md and test names** say what the code is and does. For a why, link SPEC.md or the ADR.
+- **ARCHITECTURE.md and test names** say what the code is and does. For a why, link SPEC.md, the ADR or the PR.
 - **A comment** says what the code can't say for itself. A why that belongs to that code alone stays in the comment. A why that SPEC.md or an ADR holds is linked, not repeated.
 - **docs/known-issues.md and docs/roadmap.md:** each one's intro says what it holds and gives the shape of an entry. Follow the intro.
 - **An ADR** records one significant technical decision. Write one in the same PR as the decision, and a new one when a decision an ADR holds changes.
