@@ -48,5 +48,4 @@ Two stronger options were rejected (#71):
 - If something looks wrong, revoke the GitHub token and log the Claude login out from the account.
 - Playwright's download host is now reachable, but the browsers stay in the image, because their system libraries need root (ADR 0004).
 - The agent can check Cloudflare preview deployments, which ADR 0006 says it can't.
-- raw.githubusercontent.com is reachable on port 443, so Anthropic's reference files can be compared with ADR 0004's changes from inside the container.
 - Revisit if the app starts keeping readers' data on a server, the container gets more secrets, or a session does something nobody can explain.
