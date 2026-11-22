@@ -19,10 +19,10 @@ A new ADR takes the number after the highest one `main` has ever had. Numbers ar
 
 A merged ADR records a decision as it stood on its date. A line that went out of date stays as written. The ADR changes only in three ways:
 
-- **Its Status line, when a later ADR changes its Decision section.** [adr-tools](https://github.com/npryce/adr-tools/blob/b3279baf9be2207d1a4f4bbd608fd0b591c72aee/src/adr-new#L43-L49) links ADRs as superseded or amended. Here the Status line says it in one of two forms:
+- **Its Status line, when a later ADR changes what it decided.** [adr-tools](https://github.com/npryce/adr-tools/blob/b3279baf9be2207d1a4f4bbd608fd0b591c72aee/src/adr-new#L43-L49) links ADRs as superseded or amended. Here the Status line says it in one of two forms:
   - `Superseded by ADR NNNN`, when the later ADR replaces the whole decision.
   - `Accepted; amended by ADR NNNN, which …`, when it changes or adds to part of the decision, with what it changes after "which". Each further amendment follows, in number order: `Accepted; amended by ADR 0009, which …; amended by ADR 0010, which …`.
-- **A dated note under Consequences, when anything else it states changed or was learned later**, such as a host's limit, or a consequence that a later ADR changed: `2026-12-01: …`.
+- **A dated note under Consequences, when a line went out of date in any other way:** a fact outside the project changed or was learned later, a small change was made without an ADR, or a later ADR changed a fact this ADR rests on but not what it decided. It starts with the date, as in `2026-12-01: …`. No note is needed when the Status line already names the ADR that put the line out of date.
 - **A fix of a fact that was wrong when written, or of a link that no longer leads to what it cited.**
 
 A changed decision gets a new ADR, which says which ADR it supersedes or amends.
