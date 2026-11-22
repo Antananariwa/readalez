@@ -13,7 +13,7 @@ Each ADR follows Michael Nygard's format ([Documenting Architecture Decisions](h
 
 ## Numbers
 
-A new ADR takes the number after the highest one `main` has ever had. Numbers are not reused, so a link to an old number never leads to a different decision. ADRs 0014 to 0017 were deleted in #121, and their numbers are not used again. A number used only on a branch that was never merged is free.
+A new ADR takes the number after the highest one `main` has ever had. Numbers are not reused, so a link to an old number never leads to a different decision. ADRs 0014 to 0017 were deleted in #121, and their numbers are not used again. A number that a branch used and deleted before it merged is free.
 
 ## After merge
 
