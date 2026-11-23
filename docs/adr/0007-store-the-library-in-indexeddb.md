@@ -1,7 +1,7 @@
 # 7. Store the library in IndexedDB, with books known by a hash of their text
 
 Date: 2026-11-06
-Status: Accepted; its "Same text twice" rule is superseded by SPEC.md features 1 and 2 (#14)
+Status: Accepted
 
 ## Context
 
@@ -21,10 +21,11 @@ Issue #12 makes texts survive a reload. Everything stays in the browser's storag
 - **Book ID: the SHA-256 of the book's words**, as 64 hex digits (`bookId` in `src/core/bookId.ts`). The input is every paragraph's text, verse lines joined by line breaks, with a blank line between paragraphs, in UTF-8. Titles and paragraph kinds stay out, so a rename or a change in how a heading is recognised doesn't make a different book. The ID is computed once, when the book is added, and stored with it.
   - SHA-256, a standard hash with 256 bits, so two different texts getting the same ID is not a practical concern.
   - Written in `src/core/` in plain TypeScript, because core can't use the browser's `crypto.subtle` or `TextEncoder` (ADR 0003, ADR 0005), and so it's synchronous and unit-tested in Node. The tests compare it with Node's `crypto.createHash("sha256")`.
-- **Same text twice:** adding a book whose ID is already stored opens the stored copy, with its own title (the owner's choice for pasted texts, matching SPEC.md feature 2 for EPUBs).
 
 ## Consequences
 
 - The 1 MB save is dominated by word splitting, not storage: in Playwright on the dev container, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, both on `main` before this change and with it (issue #12's PR). `splitText` alone took 1.3 s of a Node run on the same text. iPhone times are unknown; performance targets are in #73.
 - The unit tests run in Node, which has no IndexedDB, so `src/ui/storage.ts` is covered by the browser tests in `e2e/library.spec.ts` only.
 - A book imported on two devices gets the same ID only if both parse it into the same words. A parser change between the two imports gives two books; the backup merge (#21) inherits that.
+- 2026-11-22: ADR 0009 lets core use `crypto.subtle` and `TextEncoder`, so `bookId`'s hand-written SHA-256 could now use the platform's. The code is unchanged.
+- 2026-11-23: since ADR 0012 opened web ports, the agent can read browser documentation. The points above about localStorage are still not checked against it.

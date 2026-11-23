@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-The owner decided that Android Chrome is a supported v1 platform, in the installed app and in a tab, checked automatically on every PR, with no device checks, since there's no Android phone to check on reliably (#84, SPEC.md Devices and browsers). Real Android Chrome on emulators before v1 is #85.
+Android Chrome is a supported v1 platform, in the installed app and in a tab, checked automatically on every PR, with no device checks, since there's no Android phone to check on reliably (#84, SPEC.md Devices and browsers). Real Android Chrome on emulators before v1 is #85.
 
 ADR 0005 runs `npm run e2e` in two Playwright projects: headless Chromium (Desktop Chrome) and WebKit with iPhone 16 emulation (393 px wide). The dev container has no `/dev/kvm` (`ls /dev/kvm`: "No such file or directory", #84), so a real Android emulator isn't an option there (#85).
 
@@ -24,7 +24,7 @@ ADR 0009 lets `src/core/` use a web API only if every target browser has it. MDN
 - **Why these two:** a narrow phone and a wide one. Among Playwright 1.64.1's Android 14 and 16 phone presets, 360 px is the narrowest width (Galaxy S24, Pixel 9, Pixel 10), and 412 px is the width of the Pixel 7, 8 and 8a presets. 360 px is narrower than both the iPhone 16 project and the 375-px iPhone SE that SPEC.md feature 5 sizes the text for.
 - **What emulation should catch** (expected from the preset values, not checked beyond the e2e tests passing): layout and text fitting at Android phone widths and pixel ratios, touch input, the mobile viewport, code that reads the user agent, and Chromium's rendering and JavaScript at the version above.
 - **What it doesn't catch:** anything of Android itself. That includes the installed app (Chrome's install flow and the app's own window), the system file picker and where a download lands, the wake lock actually keeping the screen on, Chrome freezing or closing a page in the background, storage eviction, the on-screen keyboard and real device speed. Whether Android Chrome differs from desktop Chromium in ways these tests would miss is unknown (not checked). The docs/known-issues.md entry "Android is checked only by emulation" tracks this, and #85 plans real Android Chrome.
-- **This supersedes ADR 0005's browser list** ("Browser tests"); the rest of ADR 0005 stands. #52 plans to change the same list for Firefox.
+- **This amends ADR 0005:** it replaces its browser list ("Browser tests") and changes nothing else in it. #52 plans to change the same list for Firefox.
 
 ## Consequences
 

@@ -1,5 +1,5 @@
 // Renders the PNG app icons in public/ from public/icon.svg with Playwright's
-// Chromium, so no image library is needed. Run `npm run icons` after editing the SVG.
+// Chromium, so no image library is needed. Run `npm run icons` after editing the SVG, and commit the PNGs.
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";

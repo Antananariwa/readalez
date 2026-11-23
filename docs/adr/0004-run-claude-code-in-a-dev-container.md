@@ -1,7 +1,7 @@
 # 4. Run Claude Code in Anthropic's reference dev container
 
 Date: 2026-10-30
-Status: Accepted; its outbound firewall rules are superseded by ADR 0012, which opens web ports and closes SSH
+Status: Accepted; amended by ADR 0012, which opens web ports and closes SSH
 
 ## Context
 
@@ -26,11 +26,9 @@ Claude Code's own setup:
 ## Consequences
 
 - Outbound traffic is limited to GitHub, npm, Anthropic's API, a few VS Code and telemetry hosts, DNS, SSH and the host network. Claude runs as a non-root user.
-- The firewall fails open: if `init-firewall.sh` fails, the container runs without it. Don't run Claude unless the start log shows both `Firewall verification passed` lines.
+- The firewall fails open: if `init-firewall.sh` fails, the container runs without it. The start log shows two `Firewall verification passed` lines when the firewall is up.
 - Allowed IPs are resolved once at start. A host whose IPs change during a long session can become unreachable until a restart.
-- The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume. Log in again after each rebuild.
+- The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume, and each rebuild needs a new login.
 - Changes to `.devcontainer/` take effect only when the owner rebuilds.
 - Playwright's Chromium and WebKit are baked into the image, pinned to the Playwright version (ADR 0005): the firewall blocks Playwright's download host and the browsers need root to install their libraries, but the image build runs outside the firewall.
-- The user settings above live outside the repo; this record is where they're written down.
-- Before adopting Anthropic's updates, compare them with these changes. Run this from Ubuntu, not the container, whose firewall blocks raw.githubusercontent.com:
-  `for f in Dockerfile devcontainer.json init-firewall.sh; do curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/.devcontainer/$f | diff - .devcontainer/$f; done`
+- Anthropic's updates to its files don't reach this copy by themselves.
