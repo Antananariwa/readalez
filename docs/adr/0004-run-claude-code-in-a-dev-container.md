@@ -26,9 +26,9 @@ Claude Code's own setup:
 ## Consequences
 
 - Outbound traffic is limited to GitHub, npm, Anthropic's API, a few VS Code and telemetry hosts, DNS, SSH and the host network. Claude runs as a non-root user.
-- The firewall fails open: if `init-firewall.sh` fails, the container runs without it. Don't run Claude unless the start log shows both `Firewall verification passed` lines.
+- The firewall fails open: if `init-firewall.sh` fails, the container runs without it. The start log shows two `Firewall verification passed` lines when the firewall is up.
 - Allowed IPs are resolved once at start. A host whose IPs change during a long session can become unreachable until a restart.
-- The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume. Log in again after each rebuild.
+- The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume, and each rebuild needs a new login.
 - Changes to `.devcontainer/` take effect only when the owner rebuilds.
 - Playwright's Chromium and WebKit are baked into the image, pinned to the Playwright version (ADR 0005): the firewall blocks Playwright's download host and the browsers need root to install their libraries, but the image build runs outside the firewall.
-- Before adopting Anthropic's updates, compare them with these changes.
+- Anthropic's updates to its files don't reach this copy by themselves.

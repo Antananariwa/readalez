@@ -31,20 +31,20 @@ The hosts compared, on their free plans as documented on 2026-11-01:
   - Its bandwidth is unlimited, and its terms don't restrict use to non-commercial projects.
   - Each PR's branch gets a preview URL that stays the same across pushes, so an app installed from a preview keeps working while the PR changes.
   - Build: `npm run build`, output `dist`, `NODE_VERSION=24`. Production is `https://readalez.pages.dev`. The setup steps are in the PR for issue #5.
-  - No host config file in the repo. Pages serves `index.html` for unknown paths when there's no `404.html`. Add `public/_headers` only if a preview shows that a file, such as `sw.js`, is cached too long.
+  - No host config file in the repo. Pages serves `index.html` for unknown paths when there's no `404.html`. A `public/_headers` file is needed only if a preview shows that a file, such as `sw.js`, is cached too long.
 - **Service worker and manifest: `vite-plugin-pwa`** (a devDependency), in `generateSW` mode.
   - It's the standard tool for PWAs built with Vite. It writes the precache list of hashed build files, which a hand-written worker would need its own build step for, and it writes the manifest.
   - The generated `sw.js` and its Workbox runtime chunk (MIT, a few KB) are served from the app's own origin. Nothing loads from another origin.
 - **Update model:** `registerType: "prompt"`, with `skipWaiting: false` and `clientsClaim: false` set explicitly, so a reviewer sees them. A new version installs in the background and takes over only once every open page is closed.
-  - In this mode, Workbox's generated worker includes a `message` listener that skips waiting only if a page posts `{ type: "SKIP_WAITING" }`. The app never posts it. Issue #22 decides whether to use it, and must still never apply an update while you read.
+  - In this mode, Workbox's generated worker includes a `message` listener that skips waiting only if a page posts `{ type: "SKIP_WAITING" }`. The app never posts it. Issue #22 decides whether to use it.
 - **Registration:** `injectRegister: false`. `src/ui/registerServiceWorker.ts` calls `navigator.serviceWorker.register("/sw.js")` in production builds only, so `workbox-window` isn't bundled.
 - **Manifest:** name and short name "Readalez", `display: "standalone"`, `start_url` and `scope` `/`, theme and background colours, and 192 and 512 px PNG icons. The 512 px icon is also listed as maskable, because its letter sits inside the maskable safe zone. `index.html` links a 180 px `apple-touch-icon` for iPhone.
 - **Placeholder icon:** `public/icon.svg`, a white "R" on a plain dark square, until SPEC.md's icon question is decided. `npm run icons` renders the PNGs from it with Playwright's Chromium (`scripts/render-icons.ts`), so no image library is added.
 
 ## Consequences
 
-- The owner creates the Cloudflare account and connects the repo. The dev container's firewall blocks Cloudflare, so the agent can't check a deployment itself. Device checks on the preview are the owner's.
+- The Cloudflare account, and its connection to the repo, are the owner's. The dev container's firewall blocks Cloudflare, so the agent can't check a deployment itself. Device checks on the preview are the owner's.
 - **Main risk:** Cloudflare puts new features into Workers rather than Pages. Since at least 2026-11-01, its dashboard sends new projects to Workers and calls Pages "the legacy Pages workflow". Pages still works and is still supported, and a static site needs none of the Workers-only features. If Pages is retired, Cloudflare documents a migration to Workers static assets: a `wrangler` config file in the repo and new preview and production addresses.
-- `e2e/pwa.spec.ts` checks the manifest and icons, the offline reload, that every request stays on the app's origin, and that `sw.js` never skips waiting or claims pages outside that `SKIP_WAITING` listener. `tests/tooling/service-worker.test.ts` fails `npm run check` if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`. Code that sends that message (#22) must update both tests on purpose.
+- `e2e/pwa.spec.ts` checks the manifest and icons, the offline reload, that every request stays on the app's origin, and that `sw.js` never skips waiting or claims pages outside that `SKIP_WAITING` listener. `tests/tooling/service-worker.test.ts` fails `npm run check` if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`. Both rest on the app never sending that message, so code that sends it (#22) fails the unit test.
 - `vite-plugin-pwa` pulls in `workbox-build`, which brings build-time packages with open npm advisories (in `ejs`, `jake`, `minimatch`, `glob` and `deepmerge`: 2 low and 8 moderate on 2026-11-01). They run only at build time, on the project's own config. None of them ship to users. Revisit when `workbox-build` updates them.
 - 2026-11-22: since ADR 0012 opened web ports, the agent can reach Cloudflare and check a deployment itself.

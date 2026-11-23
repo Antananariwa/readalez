@@ -40,12 +40,9 @@ Two stronger options were rejected (#71):
   It could send these to any web server without a trace on GitHub, put a harmful change in a PR, or probably merge one. It can't become root or read the PC's files outside the repo folder. Beyond web ports, it can reach only what ADR 0004 already allowed: DNS to any address, and every port on the listed hosts and on Docker's network.
 
 - Merging is probably not blocked for the token. It has Contents and Pull requests read/write (ADR 0004). `main`'s ruleset, read during review for #71, requires a PR and a passing `build (24.x)` check but no approval. The only block seen is Claude Code's deny rule for `gh pr merge` and `gh api *merge*` (`.claude/settings.json`), which a steered session could get around by calling GitHub's API another way. Not tried.
-- The start log shows four `Firewall verification passed` lines. Don't run Claude unless all four are there; this replaces the two lines ADR 0004 names.
+- The start log shows four `Firewall verification passed` lines when the firewall is up, instead of the two ADR 0004 names.
 - The reviewer runs in the same session as the work, so its list helps against mistakes more than against a steered session.
-- The container can change files that the PC runs later. Two owner habits cover this:
-  - Before a rebuild, read `git diff .devcontainer/` on the PC. `devcontainer.json`'s `initializeCommand` runs on the PC ([spec](https://containers.dev/implementors/json_schema/)).
-  - Don't run a branch outside the container.
-- If something looks wrong, revoke the GitHub token and log the Claude login out from the account.
+- The container can change files that the PC runs later, such as `devcontainer.json`, whose `initializeCommand` runs on the PC ([spec](https://containers.dev/implementors/json_schema/)).
 - Playwright's download host is now reachable, but the browsers stay in the image, because their system libraries need root (ADR 0004).
 - The agent can check Cloudflare preview deployments, which ADR 0006 says it can't.
 - Revisit if the app starts keeping readers' data on a server, the container gets more secrets, or a session does something nobody can explain.

@@ -7,7 +7,7 @@ Status: Accepted; amended by ADR 0009, which lets `src/core` use the web APIs de
 
 Every later issue builds on the scaffold (issue #4). The Stop hook runs `npm run check` at the end of nearly every turn, so it has to stay fast as the code grows. The reading logic has to stay separate from the UI (ADR 0003), and a violation should fail the turn it happens in, not wait for review. The app is iPhone first, but iPhone Safari can't run in the dev container. The firewall blocks Playwright's browser download host (ADR 0004).
 
-The issue planned to start from Vite's official `react-ts` template and expected it to bring ESLint. The template in create-vite 9.3.3 ships Oxlint and TypeScript 7 instead. ESLint reads TypeScript through typescript-eslint, which borrows TypeScript's own parser; typescript-eslint 8.72 supports only TypeScript below 6.1, because TypeScript 7 was rewritten in Go and its API for other tools isn't usable yet. Keeping ESLint would have meant pinning TypeScript to 6.0.
+Vite's official `react-ts` template, in create-vite 9.3.3, ships Oxlint and TypeScript 7. ESLint reads TypeScript through typescript-eslint, which borrows TypeScript's own parser; typescript-eslint 8.72 supports only TypeScript below 6.1, because TypeScript 7 was rewritten in Go and its API for other tools isn't usable yet. Using ESLint would have meant pinning TypeScript to 6.0.
 
 ## Decision
 
@@ -39,4 +39,4 @@ The issue planned to start from Vite's official `react-ts` template and expected
 - A Playwright bump needs the owner to rebuild the dev container. Until then, `npm run e2e` can't find the new browsers. The steps are in `tests/tooling/playwright-version.test.ts`.
 - The image grows by Chromium's headless shell, WebKit and their libraries, and e2e takes about twice as long with two browsers.
 - Revisit ESLint only if Oxlint lacks a rule the project needs and typescript-eslint supports TypeScript 7 by then.
-- `devcontainer.json` must stay plain JSON (no comments), because the version check parses it with `JSON.parse`.
+- A comment in `devcontainer.json` fails the version check, which parses it with `JSON.parse`.

@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-Issue #17 ships the built-in books (SPEC.md feature 3). It grew from three books to 24, so a new reader has a real choice without importing anything (SPEC.md feature 3), which changes the costs:
+Issue #17 ships 24 built-in books (SPEC.md feature 3), which brings these costs:
 
 - **Size.** The 24 EPUBs built by `npm run books`, without pictures, total 4,244,389 bytes, from 76,181 for _Jekyll and Hyde_ to 377,230 for _Dracula_. Before them, the built app in `dist/` was 332 KB (`du -sh dist`, while planning #17). They all download with the app, so every one works offline after the first visit (SPEC.md feature 12), rather than each downloading when first opened, which would keep the first visit small (#17).
 - **Import time.** Parsing all 24 in Node in the dev container took 501 ms. Parsing and splitting them into words took 12,909 ms (scripts run while planning #17, not in the repo). Import runs on the page's main thread ([known issue](../known-issues.md#a-long-book-keeps-the-page-busy-while-its-imported-and-opened)), so importing all of them on the first visit would keep the page busy for a long time, longer on a phone (not checked).
@@ -21,9 +21,9 @@ Issue #17 ships the built-in books (SPEC.md feature 3). It grew from three books
   - The files are committed, as the fixtures are: the build doesn't download anything.
 - **A generated catalog**, `src/core/builtInBooks.ts`, written by the same script.
   - For each book it holds the repository name as its slug, the `bookId` of its text, title, author, Standard Ebooks' summary and genres, and the `Reading` where its flow starts. `describeBook` in `scripts/builtInBook.ts` works these out with the same core code the app imports with.
-  - The library lists the built-in books from it (`libraryBooks` in `src/core/library.ts`) without reading their files, at 0% with their time left.
+  - The library lists the built-in books from it (`libraryBooks` in `src/core/library.ts`) without reading their files (SPEC.md feature 3).
   - It's a TypeScript module rather than JSON, so the typecheck checks it against `BuiltInBook`.
-- **Imported on first open.** Tapping a built-in book that isn't stored fetches its EPUB and imports it with `readEpub` (`src/ui/importEpub.ts`, shared with Import EPUB), with a progress bar on its row. It's stored with `builtIn` set to its slug, then opens where its flow starts.
+- **Imported on first open.** Tapping a built-in book that isn't stored fetches its EPUB and imports it with `readEpub` (`src/ui/importEpub.ts`, shared with Import EPUB). It's stored with `builtIn` set to its slug.
   - The library matches a stored built-in book to its catalog entry by slug, since the ID changes when the splitting rules do (ADR 0007).
   - It also matches by ID, so a copy of the same text imported by hand counts as the book.
 - **Precached by the service worker**: `books/*.epub` joins Workbox's default `globPatterns` in `vite.config.ts`. Each file is under Workbox's 2 MiB limit per file. A fetch for a book is then answered from the cache, online or not.
