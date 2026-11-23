@@ -2,7 +2,7 @@
 
 What Readalez does and why.
 
-Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Technical decisions: [docs/adr](docs/adr/).
+Tests and issues cite features by number. Each rule is an item in OpenFastTrace's shape ([Writing a Specification](https://github.com/itsallcode/openfasttrace/blob/b4d11edb34765c07efbb38895239dbd9d5213f75/doc/user_guide/use_cases/writing_a_specification.md)): a title, what the app does, then `Rationale:` where the reason isn't obvious. Terms: [Glossary](#glossary). Significant technical decisions: [docs/adr](docs/adr/).
 
 ## What Readalez is
 
