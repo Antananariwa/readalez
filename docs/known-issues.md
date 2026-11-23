@@ -130,13 +130,19 @@ Added in #26.
 
 ## Dev container
 
-Code: `.devcontainer/init-firewall.sh`. Added in #71.
+Code: `.devcontainer/init-firewall.sh`. Added in #71 and #121.
 
 ### A web page or an issue can carry instructions for the agent
 
 - **What happens:** the agent reads web pages, since ports 80 and 443 are open, and reads issues and comments that anyone can post on this public repo. Text in them can be written to steer an AI agent (prompt injection). A steered session could send the GitHub token or the Claude login to another server, put a harmful change in a PR, or probably merge one ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md) lists what it can reach). Not seen in this project so far.
 - **Why it's left:** the owner chose open web access over adding sites one by one, and rejected a separate research container because it needs its own paid API key (#71). Both logins can be revoked.
 - **Suggestions:** if a session does something unexplained, revoke the GitHub token and log the Claude login out. Before a rebuild, read `git diff .devcontainer/` on the PC, since `devcontainer.json`'s `initializeCommand` runs there (ADR 0012), and don't run a branch outside the container. For more isolation later: research in a separate container with no logins, passing checked text to this one.
+
+### The firewall fails open
+
+- **What happens:** if `init-firewall.sh` fails at start, the container runs without the firewall, and the agent can reach any host ([ADR 0004](adr/0004-run-claude-code-in-a-dev-container.md)). How often this has happened is unknown.
+- **Why it's left:** it comes with Anthropic's reference container, which ADR 0004 adopts.
+- **Suggestions:** before starting Claude, check that the start log shows four `Firewall verification passed` lines ([ADR 0012](adr/0012-open-web-ports-in-the-firewall.md)).
 
 ## Install and updates
 

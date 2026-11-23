@@ -40,3 +40,4 @@ Vite's official `react-ts` template, in create-vite 9.3.3, ships Oxlint and Type
 - The image grows by Chromium's headless shell, WebKit and their libraries, and e2e takes about twice as long with two browsers.
 - Revisit ESLint only if Oxlint lacks a rule the project needs and typescript-eslint supports TypeScript 7 by then.
 - A comment in `devcontainer.json` fails the version check, which parses it with `JSON.parse`.
+- 2026-11-23: since ADR 0012 opened web ports, Playwright's download host is reachable. The browsers stay in the image, because their system libraries need root.

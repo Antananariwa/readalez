@@ -35,6 +35,6 @@ Issue #17 ships 24 built-in books (SPEC.md feature 3), which brings these costs:
 
 - The first visit downloads about 4.2 MB more: the app shell first, then the books in the service worker's install. How long that takes on a phone is not checked; #73 holds the size targets.
 - The repository grows by 4.2 MB, and by each rebuilt book's size whenever a book changes.
-- A book's first open takes as long as importing it. On the owner's iPhone that is unknown; in Chromium with the CPU slowed 8 times, _Dracula_'s bar was seen moving.
+- A book's first open takes as long as importing it. On the owner's iPhone that is unknown; in Chromium with the CPU slowed 8 times, the import's progress bar on _Dracula_'s row was seen moving.
 - The catalog's `reading` (its time left) and `id` go stale when the splitting or timing rules change. `tests/builtInBooks.test.ts` reruns `describeBook` on the shortest book and fails until `npm run books` rebuilds the catalog. The other 23 are not rechecked, to keep the unit tests quick.
 - Books already stored keep the text they were imported with, as any imported book does (ADR 0007). A rebuilt book file reaches readers only for books they haven't opened yet.
