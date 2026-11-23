@@ -1,6 +1,6 @@
 # Architecture
 
-The code's stable shape, in the form of [matklad's ARCHITECTURE.md](https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html): a bird's eye view, a code map that names the important files and types, and the invariants. It leaves out how each part works. Significant technical decisions: [docs/adr](docs/adr/).
+The code's stable shape, in the form of [matklad's ARCHITECTURE.md](https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html): a bird's eye view, a code map that names the important files and types, the invariants and the cross-cutting concerns. It leaves out how each part works. Significant technical decisions: [docs/adr](docs/adr/).
 
 ## Bird's eye view
 
@@ -12,7 +12,7 @@ Each area names its main files and types. The files it leaves out are their help
 
 ### `src/core/`
 
-The reading logic, with its unit tests beside it (`*.test.ts`) and their texts in `fixtures/`. `epub/testZip.ts` builds ZIP files for the tests and for `scripts/build-books.ts`; the app doesn't use it.
+The reading logic.
 
 - **Adding books:** `paste.ts` reads pasted text (`parsePaste`). `epub.ts` reads an EPUB file into sections and a chapter list (`parseEpub`, `Chapter`, ADR 0009), with its parsers in `epub/`.
 - **Words:** `text.ts` splits a book's sections (`Section`) into the words the reader shows (`Word`, `splitText`).
@@ -35,9 +35,6 @@ React components, and the code that uses the page, the browser's storage and the
 
 - `public/`: files served as they are, including the icons' source `icon.svg` and the built-in books' EPUB files in `books/`.
 - `scripts/`: Node scripts. `build-books.ts` builds the built-in books and their catalog (`npm run books`, ADR 0013). `render-icons.ts` renders the app icons (`npm run icons`). `append-review.ts` adds a merged PR's review to `docs/reviews.md`, run by `.github/workflows/reviews.yml`.
-- `e2e/`: Playwright tests against the production build, one spec file per area, with shared helpers in `helpers.ts` (ADR 0005, ADR 0010).
-- `tests/`: unit tests that read files, which tests in `src/core/` can't (ADR 0009). They check the built-in books against their catalog, the test books in `fixtures/epub/`, and the repo's tooling and settings in `tooling/`.
-- `.devcontainer/`, `.claude/`, `.githooks/` and `.github/`: the dev container (ADR 0004, ADR 0012), Claude Code's agents, hooks and settings, the commit hook, and the CI workflows with the issue and PR templates.
 
 ## Invariants
 
@@ -46,3 +43,11 @@ React components, and the code that uses the page, the browser's storage and the
 - `src/ui/` holds no reading logic (ADR 0003).
 - A book is stored parsed and never parsed again, so a change to the paste or EPUB parsers reaches only books added after it. Its ID is computed once, when it is added. Its words are split again at every open, and a stored position is found again in the new split (ADR 0007, ADR 0008).
 - The app sends no requests to other sites (SPEC.md feature 13, ADR 0006). `e2e/pwa.spec.ts` checks it for loading the app.
+
+## Cross-cutting concerns
+
+### Testing
+
+Core's unit tests sit beside the code they test (`*.test.ts`), with their texts in `src/core/fixtures/`. `src/core/epub/testZip.ts` builds their ZIP files; `scripts/build-books.ts` uses it too, and the app doesn't. Unit tests that read files are in `tests/`, since tests in `src/core/` can't (ADR 0009). They check the built-in books against their catalog, the test books in `tests/fixtures/epub/`, and the repo's tooling and settings in `tests/tooling/`.
+
+`e2e/` holds Playwright tests against the production build, one spec file per area, with shared helpers in `helpers.ts` (ADR 0005, ADR 0010).
