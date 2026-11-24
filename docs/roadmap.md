@@ -53,7 +53,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 
 - **Summary:** an option that pauses reading at the end of each paragraph.
 - **Motivation:** a stop gives the eyes a break, and time to blink. The paragraph pause gives only part of that ([SPEC.md feature 6](../SPEC.md#6-timing)).
-- **Prior art:** [SplashReader](https://github.com/rattrayalex/splashreader/blob/9434066baac9c56b646c248bda7f1b81b18bdd90/README.md?plain=1#L15) "pauses every paragraph".
+- **Prior art:** [SplashReader](https://github.com/rattrayalex/splashreader/blob/9434066baac9c56b646c248bda7f1b81b18bdd90/src/index.js#L93-L104) pauses for 1 second at each new paragraph, then goes on by itself.
 - **Unresolved questions:** whether a tap or a timer restarts reading, and whether play then resumes at the paragraph's last word, the word on screen ([SPEC.md feature 7](../SPEC.md#7-reader)).
 
 ### Warm-up when a book starts
@@ -89,7 +89,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 
 ### Android store app
 
-- **Summary:** an Android app in an app store, built from the same code with Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). The PWA already installs in Android Chrome ([SPEC.md, Android](../SPEC.md#android)).
+- **Summary:** an Android app in an app store, built from the same code with Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). SPEC.md already supports the installed app in Android Chrome ([SPEC.md, Android](../SPEC.md#android)).
 - **Motivation:** No reason recorded.
 
 ## Where to find books
