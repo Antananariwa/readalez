@@ -1,94 +1,105 @@
 # Roadmap
 
-Ideas for after v1, grouped by area; none is committed. When one is built, its entry moves into [SPEC.md](../SPEC.md) and leaves this file. Each entry has a title naming the idea, then **What** and, when known, **Others** (what other apps do, with sources), **Open** (what is undecided) and **Suggestions**.
+Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../SPEC.md) and leaves this file. Entries take four of the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md)'s headings. Sections follow SPEC.md's v1 features. A title names the idea, then:
 
-## Settings
+- **Summary:** what the idea is.
+- **Motivation:** the problem it solves.
+- **Prior art:** what other apps do, with sources, when known.
+- **Unresolved questions:** what is undecided, when known.
 
-Idea: most reading settings could become adjustable, as some are in other speed-reading apps (each entry's **Others**).
+## Import
 
-### Sentence and paragraph pause sliders
+### TXT, PDF, Word and other formats
 
-- **What:** sliders in Settings for the sentence pause and the paragraph pause, applied on top of the defaults in [SPEC.md feature 6](../SPEC.md#6-timing). v1's [tuning screen](../SPEC.md#11-tuning-screen) already has a slider for every timing value, but it sets the defaults and isn't for readers. From the owner's first device trial (#36).
-- **Others:** [Speeedy](https://github.com/sami-29/speeedy) scales its pauses by a sentence-pause and a paragraph-pause setting (`src/services/rsvp-engine.ts`). [mthiel74's SpeedReading](https://github.com/mthiel74/SpeedReading) toggles the sentence pause between 1.5× and 2×.
+- **Summary:** importing more file formats, one per issue: TXT, PDF, Word, and Kindle's MOBI, AZW and KFX.
+- **Motivation:** a plain-text book can only be pasted, and pasted text has no chapters ([SPEC.md feature 1](../SPEC.md#1-add-text-by-pasting)). A TXT import would guess them. For the other formats, no reason recorded.
+- **Unresolved questions:**
+  - Which comes first: TXT or PDF.
+  - Whether Kindle formats are worth it, since Kindle's store books usually carry DRM (not checked).
 
-### Stop after a paragraph
+## Library
 
-- **What:** an option that pauses reading at the end of each paragraph (#36, #51).
-- **Others:** [SplashReader](https://github.com/rattrayalex/splashreader)'s README says it "pauses every paragraph"; whether it waits for a tap isn't confirmed.
-- **Open:** how reading goes on after the pause (a tap or a timer), and where play resumes ([feature 7](../SPEC.md#7-reader) resumes at the word on screen, which here is the paragraph's last word).
+### Library filters and search
+
+- **Summary:** filtering the library by genre or author, and searching it, beyond v1's library filters ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds genres (`src/core/builtInBooks.ts`).
+- **Motivation:** more books make finding one harder, and the built-in books alone number 24.
+- **Prior art:** Play Books filters its library by genre, author, progress and more ([Google Play Help](https://support.google.com/googleplay/answer/9402600)).
+- **Unresolved questions:** how many books make filters or search worth it, and whether own books get genres.
+
+## Single-word display
 
 ### Long-word settings
 
-- **What:** an adjustable letter limit instead of the fixed 13, and showing numbers, email addresses and web addresses whole (smaller, or on two lines) instead of splitting them. Worth revisiting once v1's split ([feature 5](../SPEC.md#5-single-word-display)) is in use.
+- **Summary:** an adjustable letter limit instead of the fixed 13 ([SPEC.md feature 5](../SPEC.md#5-single-word-display)), and numbers, email addresses and web addresses shown whole, smaller or on two lines. #30 discusses it.
+- **Motivation:** a split number is hard to read: `splitLongWord` (`src/core/longWords.ts`) shows `1,000,000,000,000,000,000` as `1,000,000,000-`, then `,000,000,000`. A reader takes in a long number as one shape (#30).
+- **Unresolved questions:** which options Settings offers; on two lines, where the focus letter sits and how the word is timed; and the smallest text size before a word is split after all.
 
-### Word chunks
+### Word groups
 
-- **What:** modes that show two or three words at a time, or that group short words such as "he was", chosen in Settings.
-- **Others:** [Speeedy](https://github.com/sami-29/speeedy) has a Words per flash setting from 1 to 5 words, 1 by default (`chunkSize` in [`src/components/settings-panel.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L156-L166) and [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L27)). With its `-m` switch, [speedread](https://github.com/pasky/speedread) joins two neighbouring words when each is 3 characters or fewer (`length($words[$i]) <= 3` in [`speedread`](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L199-L207)).
+- **Summary:** showing two or three words at a time, or joining short words such as "he was" into one flash, chosen in Settings. #31 discusses it.
+- **Motivation:** short words flashed one by one feel choppy (#31).
+- **Prior art:** [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L156-L166) has a setting for 1 to 5 words per flash. [speedread](https://github.com/pasky/speedread/blob/375214f3dcff0082770f26b3e503ac299a41c6d4/speedread#L199-L207)'s `-m` switch joins two neighbouring words of 3 characters or fewer.
+- **Unresolved questions:** where a group's focus letter sits, how it's timed, and whether it crosses a sentence end.
+
+## Timing
+
+### Sentence and paragraph pause sliders
+
+- **Summary:** sliders in Settings for the sentence pause and the paragraph pause ([SPEC.md feature 6](../SPEC.md#6-timing)). The [tuning screen](../SPEC.md#11-tuning-screen) sets the defaults; these would be for readers.
+- **Motivation:** pauses are judged by feel: at 3×, a sentence end felt like a stop at every sentence (#36). Timing can feel different to each reader, and speed is v1's only timing setting ([SPEC.md feature 8](../SPEC.md#8-settings)).
+- **Prior art:** [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/components/settings-panel.ts#L174-L194) has both sliders.
+
+### Stop after a paragraph
+
+- **Summary:** an option that pauses reading at the end of each paragraph.
+- **Motivation:** a stop gives the eyes a break, and time to blink. The paragraph pause gives only part of that ([SPEC.md feature 6](../SPEC.md#6-timing)).
+- **Prior art:** [SplashReader](https://github.com/rattrayalex/splashreader/blob/9434066baac9c56b646c248bda7f1b81b18bdd90/README.md?plain=1#L15) "pauses every paragraph".
+- **Unresolved questions:** whether a tap or a timer restarts reading, and whether play then resumes at the paragraph's last word, the word on screen ([SPEC.md feature 7](../SPEC.md#7-reader)).
+
+### Warm-up when a book starts
+
+- **Summary:** opening a book shows its whole title first. Play then shows the first word for at least a paragraph pause, and the speed rises from slower to the base speed.
+- **Motivation:** No reason recorded.
+- **Prior art:** [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746)'s optional speed ramp moves from the set speed to a target speed over the first 30 words.
+- **Unresolved questions:** whether the ramp runs only when a book opens or after every pause, its starting speed, and its length.
 
 ## Reader
 
 ### Reader layout options
 
-- **What:** settings for how the reader behaves and what it shows: where play resumes after a pause (the word on screen, as in v1, or the sentence start, as before #68), what shows while playing (progress bar, time left) and while paused (time left, how much text: the whole chapter, as in v1, or only the current sentence), what a tap on a word does (move there, as in v1, or also play on a second tap), where previous sentence goes (the sentence's own start first, as in v1, or always the sentence before), and what's on screen at all. For example, a light mode with one sentence of context while paused and no times. Each setting defaults to v1's behaviour (SPEC.md feature 7), apart from where play resumes and where previous sentence goes. From the owner, reviewing #68.
-- **Others:** [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader#readme) resumes from the sentence start by default, with a setting to turn it off, and plays a tapped word on a second tap. [RSVP-Lite](https://github.com/6packs/RSVP-Lite#readme) shows the surrounding paragraphs behind a "Text" toggle. [chriscantu/speed-reader](https://github.com/chriscantu/speed-reader#readme) shows the sentence on pause. All three READMEs were read for #68.
-- **Open:** whether these are separate settings or a few presets; the defaults for where play resumes and where previous sentence goes; and whether the other defaults should change once the settings exist.
-
-### Warm-up when a book starts
-
-- **What:** opening a book shows its whole title first. Tapping the frame then shows the first word for as long as a paragraph pause or longer, and the speed rises gradually from slower to the set speed. From the owner, reviewing #59.
-- **Others:** [Speeedy](https://github.com/sami-29/speeedy)'s speed ramp is off by default. Turned on, it moves the speed from the set speed to a target speed, 500 wpm by default, over the text's first 30 words (`rampWpm` and `RAMP_WORDS` in [`src/services/rsvp-engine.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746), defaults in [`src/services/defaults.ts`](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/defaults.ts#L30-L31)).
-- **Open:** whether the ramp runs only when a book opens or after every pause; the starting speed and over how many words it rises.
-- **Suggestions:** the first word's time is already a timing value (the start factor, [SPEC.md feature 6](../SPEC.md#6-timing)), so a longer first word can be tried on the [tuning screen](../SPEC.md#11-tuning-screen) without new code. Chapter titles already show as words with the paragraph pause around them.
-
-### Title above the frame while paused
-
-- **What:** while paused, the book's title shows above the word frame, outside the reading area. A visual design choice, for when the visual style is decided ([SPEC.md, Open questions](../SPEC.md#open-questions)). From the owner, reviewing #59.
-
-## Reading modes
+- **Summary:** settings for how the reader behaves and what it shows, each with a choice besides v1's ([SPEC.md feature 7](../SPEC.md#7-reader)): play resumes at the sentence start; previous sentence always goes to the sentence before; a second tap on a word in the paused view plays; the paused view shows only the current sentence; the reader shows no progress bar or time left.
+- **Motivation:** layout can feel different to each reader, and v1's reader has one layout.
+- **Prior art:** [rsvp-speed-reader](https://github.com/valentinbayard/rsvp-speed-reader/blob/3e27123cebbcdee7b3988ddbe05ea52858f44a2c/README.md?plain=1#L23-L24) plays a tapped word on a second tap, and can resume at the sentence start.
+- **Unresolved questions:** whether these are separate settings or a few presets, and the defaults for where play resumes and where previous sentence goes.
 
 ### Paragraph pacer
 
-- **What:** guided reading through full paragraphs, the second mode after single words. It builds on the paused view ([feature 7](../SPEC.md#7-reader)), and single-word timing comes first.
-- **Open:** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone (continuously or a screen at a time), and whether it shares the single-word speed.
+- **Summary:** a second reading mode: guided reading through full paragraphs, built on the paused view ([SPEC.md feature 7](../SPEC.md#7-reader)).
+- **Motivation:** No reason recorded.
+- **Unresolved questions:** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone, and whether it shares the single-word speed.
 
-## Books and formats
-
-### Public-domain catalog and proxy
-
-- **What:** finding and adding free books from inside the app. It needs a proxy, so v1 has readers import by hand and the 24 built-in books (Public in the library) cover a first use ([SPEC.md feature 3](../SPEC.md#3-built-in-books)). A catalog has to respect Project Gutenberg's rules, quoted from its website's source ([`gutenbergtools/gutenbergsite`](https://github.com/gutenbergtools/gutenbergsite)): the website "is intended for human users only", and "any perceived use of automated tools" to access it results in "a temporary or permanent block of your IP address" ([terms of use](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/policy/terms_of_use.md?plain=1#L38)); many books are to be downloaded from its mirrors, not the main site ([terms of use](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/policy/terms_of_use.md?plain=1#L39)), and a database fed from its catalog files instead of crawling the site ([offline catalogs](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/ebooks/offline_catalogs.md?plain=1#L137)); and it follows US copyright law only ([permissions, "US only"](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/policy/permission.md?plain=1#L100-L101)). Its license rule is in [SPEC.md's Legal and licensing](../SPEC.md#legal-and-licensing). Cached copies sit in countries whose rules differ, so a proxy cache stays short-lived.
-- **Open:** a starter shelf, a curated list or search through a proxy; which copyright rule (the UK's 70 years, translators included, or 100 years); how to handle Gutenberg's license for texts the app serves; and where a proxy runs and how long it caches.
-
-### Library filters and search
-
-- **What:** filtering the library by genre or author, and searching it, beyond v1's library filters ([SPEC.md feature 4](../SPEC.md#4-library)). The built-in books' catalog already holds Standard Ebooks' genres (`genres` in `src/core/builtInBooks.ts`). Raised in #17, when the built-in books grew from three to 24: more books make finding one harder.
-- **Others:** Google's help says Play Books' genre, author, progress and other library filters need app version 5.3 or later ([Organize your books](https://support.google.com/googleplay/answer/9402600)). Kindle filters its library by type and by collections ([PCWorld](https://www.pcworld.com/article/3538389/how-to-organize-your-kindle-library.html)). Both read through web search results, not the pages, for #17.
-- **Open:** how many books make filters or search worth it, and whether your own books get genres.
-
-### TXT, PDF, Word and other formats
-
-- **What:** more import formats, one format per issue. TXT needs guesswork about line breaks and chapters, and text from PDFs is messy.
-- **Open:** which comes after EPUB: TXT or PDF.
-
-### Kindle formats (MOBI, AZW, KFX)
-
-- **What:** importing Amazon Kindle's file formats. v1 imports EPUB only ([SPEC.md feature 2](../SPEC.md#2-import-epub-files)). The owner's idea for later (#97).
-- **Open:** whether it's worth it, since books bought in Kindle's store are usually copy-protected (not checked), which would leave only DRM-free Kindle files.
-
-## Progress and stats
+## Reading sessions
 
 ### Stats screens
 
-- **What:** screens for reading history, speed and time read. Sessions are recorded from v1 ([feature 10](../SPEC.md#10-reading-sessions)).
+- **Summary:** screens for reading history, speed and time read, from the reading sessions v1 records ([SPEC.md feature 10](../SPEC.md#10-reading-sessions)).
+- **Motivation:** No reason recorded.
 
-## Platforms
+## Install
 
 ### Android store app
 
-- **What:** an Android app through Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). [SPEC.md](../SPEC.md#devices-and-browsers) supports the PWA itself in Android Chrome; a store app stays an idea.
+- **Summary:** an Android app in an app store, built from the same code with Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). The PWA already installs in Android Chrome ([SPEC.md, Android](../SPEC.md#android)).
+- **Motivation:** No reason recorded.
 
-## Extras
+## Where to find books
 
-### Features other apps have
+### Public-domain catalog and proxy
 
-- **What:** per-book speed, training plans, comprehension quizzes, sounds and text-to-speech, "bionic" reading, dyslexia fonts and colour overlays. Each one is a separate idea. Speed ramps: [Warm-up when a book starts](#warm-up-when-a-book-starts).
+- **Summary:** finding and adding free books from inside the app.
+- **Motivation:** in v1, a reader leaves the app to find a free book, downloads it, then imports it ([SPEC.md feature 14](../SPEC.md#14-where-to-find-books)).
+- **Unresolved questions:**
+  - A starter shelf, a curated list or search through a proxy.
+  - Which copyright rule: the UK's 70 years, translators included, or 100 years. Project Gutenberg follows US copyright only ([permissions](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/policy/permission.md?plain=1#L100-L101)).
+  - How to meet Gutenberg's terms. Its site is "for human users only" ([terms of use](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/policy/terms_of_use.md?plain=1#L38)). It asks for a database fed from its catalog files, not crawling ([offline catalogs](https://github.com/gutenbergtools/gutenbergsite/blob/80670c5250cb1d96719a22c1da164f1d09f7ad78/site/ebooks/offline_catalogs.md?plain=1#L137)).
+  - Where a proxy runs, since v1 has no server of its own ([SPEC.md](../SPEC.md#everything-stays-on-the-device)), and how long it caches, since cached copies sit in countries whose copyright rules differ.
