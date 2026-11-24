@@ -1,6 +1,6 @@
 # Known issues
 
-Problems seen in the app or its tooling and accepted for now. A fix removes its entry. The file takes the form of [arc42's section 11, Risks and technical debt](https://docs.arc42.org/section-11/): "a list of identified technical risks or technical debts", with "suggested measures to minimize, mitigate or avoid risks or reduce technical debts". Sections follow SPEC.md's v1 features in order, then the tooling, and each names its code and tests. An entry has a title saying what happens, then:
+Problems and risks identified in the app or its tooling, whether seen yet or not, and accepted for now. A fix removes its entry. The file takes the form of [arc42's section 11, Risks and technical debt](https://docs.arc42.org/section-11/): "a list of identified technical risks or technical debts", with "suggested measures to minimize, mitigate or avoid risks or reduce technical debts". Sections follow SPEC.md's v1 features in order, then the tooling, and each names its code and tests, when there are any. An entry has a title saying what happens, then:
 
 - **What happens:** the symptoms; the cause, or "Possible cause: …"; and where and how often it was seen, with its issue or PR.
 - **Why it's left:** the reasoning.
@@ -40,7 +40,7 @@ Code: `src/core/epub.ts`, `src/core/epub/` and `src/ui/importEpub.ts`. Tests: `s
 
 ### Preformatted text loses its line breaks
 
-- **What happens:** `src/core/epub/content.ts` collapses all whitespace, inside `pre` too, so a `pre`'s lines join into one paragraph of prose, with no pause at each line's end. Seen in 2 of the 31 EPUBs in the repo (#111): Gutenberg's _Moby Dick_ sets verse in 17 `pre` elements, and Gutenberg's _Alice_ sets its mouse's tale in one ("Fury said to a mouse, That he met in the house").
+- **What happens:** `src/core/epub/content.ts` collapses all whitespace, inside `pre` too, so a `pre`'s lines join into one paragraph of prose, with no pause at each line's end. Seen in 2 of the 31 EPUBs in the repo (#111): Gutenberg's _Moby Dick_ has 17 `pre` elements and Gutenberg's _Alice_ 2.
 - **Why it's left:** `pre` is rare in the books checked. None of the 24 built-in books uses it.
 - **Measures:** read each line of a `pre` as a line break.
 
@@ -137,7 +137,7 @@ Code: `src/core/sentences.ts`, `src/core/schedule.ts`, `src/core/timeLeft.ts`. T
 ### Time left leaves out the pause after play
 
 - **What happens:** the first word after play or a jump shows for at least 1.5× (SPEC.md feature 6, Starting values), but time left counts it at its usual time (`timeLeft` in `src/core/timeLeft.ts`). So time left is up to half an ordinary word short each time you press play.
-- **Why it's left:** time left stays the same whether you're paused or playing.
+- **Why it's left:** No reason recorded.
 - **Measures:** add the start factor to time left while paused.
 
 ## Reader
@@ -213,7 +213,7 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 ### Firefox isn't in the automatic tests
 
 - **What happens:** SPEC.md supports desktop Firefox, but `npm run e2e` and CI run only Chromium and WebKit (`playwright.config.ts`). Firefox is checked only by hand (SPEC.md, How features are checked).
-- **Why it's left:** it takes time: adding it changes the dev container's image and the CI workflow, and needs a container rebuild (#51, #52).
+- **Why it's left:** #52's first steps need the owner's access: Firefox in the dev container's image and the CI workflow, then a container rebuild (#52).
 - **Measures:** #52 adds it.
 
 ### Android is checked only by emulation
