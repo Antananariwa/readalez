@@ -28,19 +28,19 @@ Code: `src/core/epub.ts`, `src/core/epub/` and `src/ui/importEpub.ts`. Tests: `s
 
 ### Named entities other than XML's five show as written
 
-- **What happens:** a named entity other than XML's five, such as `&nbsp;` or `&mdash;`, stays in the text as written, and the reader shows it as a word or part of one (`src/core/epub/xml.test.ts`). They need the document's DTD, which `src/core/epub/xml.ts` never loads (ADR 0009). Not seen in the 31 EPUBs in the repo, which use no named entity but `&amp;`, `&lt;` and `&gt;` (#111).
+- **What happens:** a named entity other than XML's five, such as `&nbsp;` or `&mdash;`, stays in the text as written, and the reader shows it as a word or part of one (`src/core/epub/xml.test.ts`). They need the document's DTD, which `src/core/epub/xml.ts` never loads (ADR 0009). Not seen in the 31 EPUBs in the repo, which use no named entity but `&amp;`, `&lt;` and `&gt;` (#130).
 - **Why it's left:** EPUB 3.3 lets an XHTML document name no external DTD ([section 3.9](https://www.w3.org/TR/epub-33/#sec-xml-constraints), [appendix B](https://www.w3.org/TR/epub-33/#app-identifiers-allowed)). So only EPUB 2 books can use XHTML 1.1's entities, by naming its DTD, as the _Pride and Prejudice_ EPUB 2 fixture does.
 - **Measures:** a table of XHTML 1.1's named entities, if a real book turns up with them.
 
 ### Unusual namespace prefixes lose verse and the nav
 
-- **What happens:** `xml.ts` doesn't resolve namespaces (ADR 0009), so verse and the nav's `toc` are found by an attribute written `epub:type` (`src/core/epub/content.ts`, `src/core/epub/toc.ts`). A book that binds the EPUB namespace to another prefix has its verse read as prose, and its chapter list comes from its NCX, or from its headings if it has none. Not seen: all 31 EPUBs in the repo use `epub:` (#111).
+- **What happens:** `xml.ts` doesn't resolve namespaces (ADR 0009), so verse and the nav's `toc` are found by an attribute written `epub:type` (`src/core/epub/content.ts`, `src/core/epub/toc.ts`). A book that binds the EPUB namespace to another prefix has its verse read as prose, and its chapter list comes from its NCX, or from its headings if it has none. Not seen: all 31 EPUBs in the repo use `epub:` (#130).
 - **Why it's left:** resolving namespaces would add code for a case not seen.
 - **Measures:** resolve `xmlns:` declarations in `xml.ts` and match attributes by namespace.
 
 ### Preformatted text loses its line breaks
 
-- **What happens:** `src/core/epub/content.ts` collapses all whitespace, inside `pre` too, so a `pre`'s lines join into one paragraph of prose, with no pause at each line's end. Seen in 2 of the 31 EPUBs in the repo (#111): Gutenberg's _Moby Dick_ has 17 `pre` elements and Gutenberg's _Alice_ 2.
+- **What happens:** `src/core/epub/content.ts` collapses all whitespace, inside `pre` too, so a `pre`'s lines join into one paragraph of prose, with no pause at each line's end. Seen in 2 of the 31 EPUBs in the repo (#130): Gutenberg's _Moby Dick_ has 17 `pre` elements and Gutenberg's _Alice_ 2.
 - **Why it's left:** `pre` is rare in the books checked. None of the 24 built-in books uses it.
 - **Measures:** read each line of a `pre` as a line break.
 
@@ -118,14 +118,14 @@ Code: `src/core/sentences.ts`, `src/core/schedule.ts`, `src/core/timeLeft.ts`. T
 
 ### A sentence ending in a single capital letter gets no sentence pause
 
-- **What happens:** a capital letter followed by a dot counts as an initial (`J. R. R.`), so "It was plan A. Then B came." has no pause after `A.` and no sentence start at `Then` (`abbreviation` in `src/core/sentences.ts`). `I.` is the one exception, as in "It was I." This also affects appendix letters, vitamins and Roman numerals. In the 31 English EPUBs in the repo, 11 of the 231 single capitals with a dot before a capitalised word end a sentence this way, as in "Look out for D. He has" (counted by reading each, #111).
+- **What happens:** a capital letter followed by a dot counts as an initial (`J. R. R.`), so "It was plan A. Then B came." has no pause after `A.` and no sentence start at `Then` (`abbreviation` in `src/core/sentences.ts`). `I.` is the one exception, as in "It was I." This also affects appendix letters, vitamins and Roman numerals. In the 31 English EPUBs in the repo, 11 of the 231 single capitals with a dot before a capitalised word end a sentence this way, as in "Look out for D. He has" (counted by reading each, #130).
 - **Why it's left:** initials are far more common: the other 220 are initials, Roman numerals and the like. The capital-letter test doesn't help here, since a name follows an initial too.
 - **Measures:** read a single capital as an initial only when another initial or a name follows, which needs a list of names or Punkt-style statistics.
 
 ### German ordinals get a sentence pause
 
 - **What happens:** `am 3. Oktober` pauses after `3.`, and previous sentence and next sentence treat `Oktober` as a sentence start.
-- **Why it's left:** in English, a number with a dot is rarely an ordinal. In the 31 English EPUBs in the repo, none of the 395 numbers with a dot comes before a lowercase English word; most are chapter numbers ("CHAPTER 45. The Affidavit.") or end a sentence ("died in 1814. He was") (#111).
+- **Why it's left:** in English, a number with a dot is rarely an ordinal. In the 31 English EPUBs in the repo, none of the 395 numbers with a dot comes before a lowercase English word; most are chapter numbers ("CHAPTER 45. The Affidavit.") or end a sentence ("died in 1814. He was") (#130).
 - **Measures:** read a number with a dot as an ordinal when the next word is a month or starts with a lowercase letter, in German text only. That needs the text's language.
 
 ### After a stall, one word can show for less than its time
