@@ -339,7 +339,7 @@ Rationale: Sentence and clause pauses are close to Speeedy's pause multipliers, 
 
 - No sentence pause, unless it ends a paragraph: abbreviations that rarely end a sentence, such as titles, initials ("J. R. R."), "Mr.", "Dr.", "e.g.", French "M.", German "z. B.", Polish "np.".
 - Abbreviations that often end a sentence, such as "etc." and "U.S.": end one when the next word starts with a capital letter. Pausing at every "etc." or never pausing at one both read wrong.
-- Known gaps: [docs/known-issues.md](docs/known-issues.md#timing-and-sentences).
+- Known gaps: [docs/known-issues.md](docs/known-issues.md#timing).
 
 Rationale: The simplest form of what sentence splitters such as [pySBD](https://github.com/nipunsadvilkar/pySBD) and [NLTK's Punkt](https://www.nltk.org/api/nltk.tokenize.punkt.html) do with abbreviations.
 
