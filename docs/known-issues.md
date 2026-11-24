@@ -54,12 +54,6 @@ Code: `src/core/epub.ts`, `src/core/epub/` and `src/ui/importEpub.ts`. Tests: `s
 
 Code: `src/core/epub/flow.ts`, `src/core/epub/content.ts`, `src/core/readingFlow.ts`. Tests: `src/core/epub/flow.test.ts`, `src/core/readingFlow.test.ts`, `tests/epub/fixtures.test.ts`, `e2e/readingFlow.spec.ts`.
 
-### Books imported before #15 read whole
-
-- **What happens:** a book imported before #15 has no stored reading flow (ADR 0011). So it opens, reads and counts progress from its first word to its last, Gutenberg's header and license included, and its chapter list marks nothing as skipped.
-- **Why it's left:** the flow needs the book's markup, which isn't stored (ADR 0011). Only books imported between #14 and #15 are affected.
-- **Measures:** delete the book and import it again. Its position is lost.
-
 ### Paperwork without markup or a known title stays in the flow
 
 - **What happens:** the reading flow's rules know publishing paperwork by its markup or a few section titles (SPEC.md feature 2, Reading flow). Two fixtures end their flow with paperwork that has neither. _Pride and Prejudice_ ends with its printer's imprint, "CHISWICK PRESS:—CHARLES WHITTINGHAM AND CO. …" (`tests/epub/fixtures.test.ts`, "reading flow"). _Romeo and Juliet_ ends with a "Transcriber's Notes" box in bold, not a heading, seen with a script (#89). No test covers it.
@@ -87,12 +81,6 @@ Code: `src/ui/Library.tsx`, `src/ui/storage.ts`, `src/ui/useSavePosition.ts`, `s
 - **What happens:** the library shows each book's time left at the default speed, 300 wpm (`DEFAULT_WPM` in `src/ui/Library.tsx`), where SPEC.md feature 6 asks for the current speed. The reader's speed starts at 300 wpm each time a book opens and isn't stored (`src/ui/usePlayback.ts`).
 - **Why it's left:** no speed is stored until #18 stores it with the settings (SPEC.md feature 8).
 - **Measures:** once #18 stores the speed, pass it to the library.
-
-### Books added before #13 show no progress until opened
-
-- **What happens:** a book stored before #13 has no saved reading (ADR 0008), so its library row shows no progress or time left until it's opened (`src/ui/Library.tsx`, `e2e/library.spec.ts`). Opening saves the position at once (`src/ui/useSavePosition.ts`).
-- **Why it's left:** working the figures out means splitting the book's text, which the library avoids (ADR 0008). Only books added between #12 and #13 are affected.
-- **Measures:** work them out once for such books in the background after the library shows.
 
 ### Progress in the library can be out of date after an update
 
