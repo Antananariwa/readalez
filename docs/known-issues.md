@@ -23,7 +23,7 @@ Code: `src/core/epub.ts`, `src/core/epub/`, `src/ui/importEpub.ts`. Tests: their
 ### Named entities other than XML's five show as written
 
 - **What happens:** a named entity such as `&nbsp;` shows in the text as written (`src/core/epub/xml.test.ts`), since `xml.ts` never loads the DTD that defines it (ADR 0009). Not seen in the repo's EPUBs (#130).
-- **Why it's left:** EPUB 3.3 doesn't let an XHTML document name an external DTD ([section 3.9](https://www.w3.org/TR/epub-33/#sec-xml-constraints), [appendix B](https://www.w3.org/TR/epub-33/#app-identifiers-allowed)), so only EPUB 2 books can use them.
+- **Why it's left:** EPUB 3.3 doesn't let an XHTML document name an external DTD ([section 3.9](https://www.w3.org/TR/epub-33/#sec-xml-constraints), [appendix B](https://www.w3.org/TR/epub-33/#app-identifiers-allowed)), so only EPUB 2 books can use XHTML 1.1's named entities, by naming its DTD.
 - **Measures:** a table of XHTML 1.1's named entities, if a real book uses them.
 
 ### Unusual namespace prefixes lose verse and the nav
