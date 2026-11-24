@@ -12,7 +12,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 ### TXT, PDF, Word and other formats
 
 - **Summary:** importing more file formats, one per issue: TXT, PDF, Word, and Kindle's MOBI, AZW and KFX.
-- **Motivation:** a plain-text book can only be pasted, and pasted text has no chapters ([SPEC.md feature 1](../SPEC.md#1-add-text-by-pasting)). A TXT import would guess them. For the other formats, no reason recorded.
+- **Motivation:** readers keep text in all these formats, so importing them lets a reader read their own documents, not only EPUBs and the built-in books. A plain-text book can now only be pasted, without chapters ([SPEC.md feature 1](../SPEC.md#1-add-text-by-pasting)), and a TXT import would guess them.
 - **Unresolved questions:**
   - Which comes first: TXT or PDF.
   - Whether Kindle formats are worth it, since Kindle's store books usually carry DRM (not checked).
@@ -59,7 +59,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 ### Warm-up when a book starts
 
 - **Summary:** opening a book shows its whole title first. Play then shows the first word for at least a paragraph pause, and the speed rises from slower to the base speed.
-- **Motivation:** No reason recorded.
+- **Motivation:** a very fast speed takes getting used to, so starting slower and rising eases a reader into it. In one speed-reading ad, a speed that rose step by step let the viewer follow a faster speed than expected (not checked beyond that).
 - **Prior art:** [Speeedy](https://github.com/sami-29/speeedy/blob/028caa2d41eebb8c54309e4eebfb06f253ccc9f9/src/services/rsvp-engine.ts#L735-L746)'s optional speed ramp moves from the set speed to a target speed over the first 30 words.
 - **Unresolved questions:** whether the ramp runs only when a book opens or after every pause, its starting speed, and its length.
 
@@ -75,7 +75,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 ### Paragraph pacer
 
 - **Summary:** a second reading mode: guided reading through full paragraphs, built on the paused view ([SPEC.md feature 7](../SPEC.md#7-reader)).
-- **Motivation:** No reason recorded.
+- **Motivation:** reading word by word in one spot doesn't by itself carry over to reading a page of a real book. A pacer keeps the same fast pace through whole paragraphs, as books are read.
 - **Unresolved questions:** what moves (a word highlight, a line highlight or a sliding underline), how it scrolls on a phone, and whether it shares the single-word speed.
 
 ## Reading sessions
@@ -83,14 +83,7 @@ Ideas for after v1. None is committed, and a built idea moves into [SPEC.md](../
 ### Stats screens
 
 - **Summary:** screens for reading history, speed and time read, from the reading sessions v1 records ([SPEC.md feature 10](../SPEC.md#10-reading-sessions)).
-- **Motivation:** No reason recorded.
-
-## Install
-
-### Android store app
-
-- **Summary:** an Android app in an app store, built from the same code with Capacitor ([ADR 0002](adr/0002-pwa-in-typescript-and-react.md)). SPEC.md already supports the installed app in Android Chrome ([SPEC.md, Android](../SPEC.md#android)).
-- **Motivation:** No reason recorded.
+- **Motivation:** stats show readers how their reading goes. Worked out on the device from the reading sessions, they could also suggest sessions suited to the reader, or point to what to practise.
 
 ## Where to find books
 
