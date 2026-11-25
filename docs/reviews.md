@@ -622,3 +622,186 @@ Left: "Safari and the installed app keep separate libraries" has no link, and `s
 - The pattern of the six review rounds: #122.
 
 Fixed in issue text only: #122's claim that every PR gets one review (the log records second reviews on nine PRs), #105's step order, and three lines of this body.
+
+## #123 Keep ADRs for significant technical decisions
+
+Merged 2026-11-23, branch `issue-121-adr-design`.
+
+Rounds 1 to 6 used the general brief, and each round's fixes added text that the next round faulted. After that, each review was written for the rework.
+
+| Round | On | Brief | Findings |
+| --- | --- | --- | --- |
+| 1 to 6 | 79b27c2 to 3da359a | General | 52, all fixed |
+| 7 | 42679e2 | Facts, lost content, links, contradictions | 4, 1 fixed |
+| 8 | af422dc | Outside judge of logic and meaning | 4, all fixed |
+| 9 | edd3371 | The owner's rework metrics | 9, below |
+| 10 | d720cd9 | Did round 9's fixes work, and are the Status lines true | 5, below |
+| Trials | d720cd9, then 5d60b78 | Five fresh agents, one task each, no mention of ADRs | Below |
+| 11 | 7064b1f | Merge readiness of the whole branch | 5, below |
+| Trial 6 | 8422b2f | A small change to a detail an ADR names | Below |
+| 12 | 4fb6881 | The sweep of ADRs 0001 to 0013, and merge readiness | 4, below |
+
+Round 9's verdict: "solid with fixes", no blockers. It checked each rule against its source, and found the CLAUDE.md and README split matches SPEC.md's. All ten agent cases it tried got one answer.
+
+1. **ADR 0009's Status said "superseded", but ADR 0011 keeps its rule for spine sections.** Fixed: the README gives adr-tools' "amended by" for a part, and ADRs 0003, 0004, 0005, 0008 and 0009 use it.
+2. **The rule to write an ADR sat only under "Apply the lines for the text you are writing".** Fixed: a Code bullet says it.
+3. **"So the next is 0018" goes stale.** Fixed: the README says 0014 to 0017 are not used again.
+4. **A fact that changed later had three possible answers.** Fixed: a correction is for what was wrong when written, and a dated note is for what changed later. Nothing else changes. ADR 0006 got such a note.
+5. **ADR 0004's comparison command has no home.** Not moved: the owner judged it not needed.
+6. **The README said "record" and "ADR" for the same thing.** Fixed: "ADR" throughout, and "ADR NNNN" in the forms.
+7. **This body was stale.** Fixed: rewritten.
+8. **The owner hadn't confirmed the README.** The owner approved the proposed text on 2026-11-22, recorded on #121.
+9. **A small decision's why had no link target in ARCHITECTURE.md and test names.** Fixed: line 45 adds the PR.
+
+Round 10 checked only d720cd9's diff, against round 9's findings and the ADRs the Status lines name.
+
+1. **CLAUDE.md line 40 says to delete a stale line, and the README says a merged ADR keeps it.** Fixed: line 40 makes the exception and points to the README. A dead link may now be fixed.
+2. **ADR 0004's Status said ADR 0012 "replaces" the firewall rules.** ADR 0012 keeps them ("Two older rules come first and are unchanged"). Fixed: "which opens web ports and closes SSH", the edd3371 wording.
+3. **ADR 0003's Status said ADR 0009 "allows the web APIs Node also has".** ADR 0009 allows only those on WinterTC's list that every target browser has. Fixed to say that.
+4. **ADR 0005's Status left out ADR 0009,** whose declared list changes 0005's "not a hand-kept list". Fixed: both Status lines and 0009's text.
+5. **The README called the forms "the two forms adr-tools writes".** adr-tools writes "Superceded by" and a label the user passes. Fixed: adr-tools is cited for the two relations, and the wording is ours.
+
+**Trials.** Each agent got an owner's request and the repo, and wrote its doc changes and PR text to a scratch folder. The prompts didn't mention ADRs. The expected answers were written down before each run.
+
+| Task | Expected | Result |
+| --- | --- | --- |
+| Move book texts from IndexedDB to the origin private file system | A new ADR, and "amended by" on ADR 0007 | Matched, through CLAUDE.md lines 15 and 49 |
+| Pull a repeated check in `src/core` into one helper | No ADR, reason in the PR | Matched, through line 50 |
+| Start the speed at 250 wpm | SPEC.md, no ADR | Matched, through line 51 |
+| Cloudflare's free plan drops to 300 builds | A dated note in ADR 0006, the table left as written | Matched |
+| Replace Vitest with `node:test` | ADR 0018, and "amended by" on ADR 0005 | Matched, with two guesses |
+
+What the agents found unclear, and what was done:
+
+- **Stale line, delete or keep.** Three runs hit it: round 10 and the OPFS and Cloudflare trials. Fixed: round 10's finding 1.
+- **The next number.** Two runs gave different answers, 0018 and 0019, because an ADR 0018 existed on this branch in 79b27c2. Fixed: numbers count from `main`.
+- **A second amendment.** No form existed. Fixed: amendments follow in number order.
+- **Note or Status line,** for a later ADR that changes a line in an earlier ADR's Decision. Fixed in 5d60b78 by the section the line sits in, then in 8422b2f by cause (round 11, finding 3): the Status line is for a later ADR that changes what was decided, and a dated note for anything else.
+- **"Speed" as a quality attribute** read as reading speed. Fixed: "performance".
+
+The Vitest trial was run again on 5d60b78 by a fresh agent. It took 0018, added the amendment in number order to ADR 0005, used a Status line for ADR 0009 and left ADR 0005's title as written. Its remaining ADR question was the numbering line under a merge commit. The last commit fixes that: a number that a branch used and deleted before it merged is free.
+
+The OPFS trial was also run again on 7064b1f. It took 0018 after checking `main`'s history, gave ADR 0007 "amended by" and left stale lines in other ADRs as written.
+
+Round 11 confirmed round 10's and the trials' fixes, the PR body's line numbers and counts, and `npm run check`. It raised 5 possible blockers:
+
+1. **A small change to a detail an ADR names had two answers.** For example, a Prettier option in ADR 0005: line 48 gave a new ADR, and line 50 gave none. Fixed: line 50 says a small decision gets no ADR even when an ADR names it, and the ADR gets a dated note.
+2. **ADR 0012 records working rules, against line 51's "ADR 0001 is the one exception".** Not changed. ADR 0012 holds a security decision, and the rules it relies on live in CLAUDE.md and `.claude/agents/reviewer.md`, which link it for their reason. That follows line 51.
+3. **Lines a later ADR put out of date were handled unevenly.** ADR 0006 had a dated note, and ADR 0007's "core can't use `crypto.subtle` or `TextEncoder`" had none. Fixed: the Status line is for a later ADR that changes what was decided. Any other stale line gets a dated note, unless the Status line already names the ADR that caused it. ADR 0007 got its note. Round 12 found two more lines of this kind, below.
+4. **ADR 0010 said "the rest of ADR 0005 stands",** but ADR 0009 had amended ADR 0005 first. Fixed: "changes nothing else in it".
+5. **One-line instructions to the owner remain in ADRs 0004 and 0012,** such as "Log in again after each rebuild". Changed after the owner's review of this point: 4fb6881 turned them into facts or removed them, and round 12 moved the habits that had no other home to known-issues.
+
+**Trial 6** asked a fresh agent to turn on Prettier's `singleQuote`. The expected answer was no ADR, a dated note in ADR 0005 and the reason in the PR. It matched, through CLAUDE.md line 50 and the README's dated-note line. It noted that it reached line 50 by analogy, since a formatter option is not one of the listed examples.
+
+Round 12 checked the sweep in 4fb6881 against the code, SPEC.md and the other ADRs. It found every Status line true, no broken link and `npm run check` passing. It found 4 blockers, all fixed in 1e5a5dc:
+
+1. **The sweep removed the only line telling the owner not to start Claude when the firewall failed.** The firewall fails open (ADR 0004). Fixed: a new known-issues entry, "The firewall fails open".
+2. **This body was stale after the sweep.** Fixed.
+3. **The two dated notes used different dates:** the day written in ADR 0006, the cause's date in ADR 0007. Fixed: the README says a note starts with the day it is written, and ADR 0007's note now does.
+4. **ADR 0012 put two more lines out of date without a note:** ADR 0005's "The firewall blocks Playwright's browser download host" and ADR 0007's "the firewall blocks web pages". Fixed: a dated note in each.
+
+Also fixed: ADR 0013's "_Dracula_'s bar" lost its referent in the sweep, and SPEC.md line 5 said "Technical choices" where CLAUDE.md says "technical decisions".
+
+Edge cases it raised, recorded for later rather than fixed:
+
+- #126 watches two unclear cases in the ADR rules: where Context ends and history begins, and a SPEC.md change that puts an ADR line out of date.
+- #111 (comment) gets the question of where owner habits and setup steps live, since known-issues defines a Suggestion as "a possible cause or fix".
+
+Points the trials raised that aren't about ADRs, now filed:
+
+- #125: nothing says who opens the issue when the owner asks for work in a session.
+- #124: `isHardWrapped` (`src/core/paste.ts:89`) counts a wrapped line ending in "Mr." as a sentence end.
+
+## #128 Rework ARCHITECTURE.md to matklad's form
+
+Merged 2026-11-24, branch `issue-111-architecture`.
+
+The `reviewer` subagent ran five times. Rounds 1 and 2 used its usual frame, and round 2's brief also asked for every dropped fact, so it counted cuts as losses (#129). Rounds 3 and 4 judged the file against the new format only.
+
+**Round 1, on 524b79f.** 7 findings, fixed in 2f0dd02: a wrong description of `tests/tooling/`, a second name for the Add text screen, a bird's eye view that restated SPEC.md, ADR 0003 cited for React (ADR 0002 chooses it), and `testZip.ts`, three central types and `render-icons.ts` missing.
+
+**Round 2, on 2f0dd02.** 6 findings, fixed in c31e5c4. cd8bd83 undid the four that put old content back: feature lists for `Reader.tsx` and `usePlayback.ts`, the widget names "library filters" and "band", and "no `SKIP_WAITING`" as an invariant, which #22 may reverse. Kept: `App.tsx` as where core meets storage, "no requests to other sites", the glossary fixes ("parsers", "import progress"), and the PR-body corrections (README line 82, also corrected on #112).
+
+**Round 3, on cd8bd83.** Fixed in 08c4dd6: the `tooling/` line listed each test; three facts were stated twice; each `epub/` file had a gloss restating its name; the stored-book invariant, the manifest, `readingFlow.ts`'s chapters and core's EPUB parsing were missing; the request check was overstated; `src/ui/`'s intro clashed with core's allowed web APIs. Its view on upkeep (the map named 43 of 45 source files, so each feature PR would edit it) led to naming main files only.
+
+c65285e then followed rust-analyzer: it dropped a line on `.devcontainer/`, `.claude/`, `.githooks/` and `.github/`, and moved `e2e/` and `tests/` to Testing.
+
+**Round 4, on c65285e.** Findings, fixed in 21a1588:
+
+1. "The files it leaves out are their helpers" was false: `chapterText.ts` and `timeLeft.ts` are used only by `src/ui/`. Fixed: both are named, and the sentence is now only the pointer to search.
+2. "Each element of the screen has its own component" was false (`Reader.tsx` draws time left and the speed itself) and would break with the next layout change. Fixed: only `WordFrame.tsx` and `PausedText.tsx` are named.
+3. `e2e/importEpub.spec.ts` also uses `testZip.ts`, and `tests/tooling/` checks app source too, not only tooling. Fixed.
+4. The list of three screens will grow (#18, SPEC.md features 11 and 13). Fixed: "the screens, one component each, such as `Library.tsx` and `Reader.tsx`".
+5. Facts stated twice: `webApis.d.ts`, the catalog's generator, the intro's "names the important files". Fixed: one home each.
+6. "Its ID is computed once" in the invariant could mislead for built-in books, which also have a catalog ID. Fixed: the sentence goes; ADR 0007 holds it.
+7. "plays" meant both `src/ui/` and `schedule.ts`. Fixed: `schedule.ts` "says which word shows at a given moment".
+8. Gaps: the stored types are a boundary, and generated committed files are a cross-cutting concern in rust-analyzer's doc. Fixed: the invariant names the stored types, and **Code generation** holds the generated files with their generators.
+
+Not changed: "`e2e/pwa.spec.ts` checks it for loading the app" is true; `e2e/builtInBooks.spec.ts` also checks it when a built-in book opens, and naming every test that checks it would go stale.
+
+**Round 5, on 21a1588, big mistakes only:** none. It checked every name in the map against its file's exports, ran `tsc -p tsconfig.core.json` on a probe using `node:fs`, `process`, `Buffer`, `setTimeout`, `fetch` and `document` (each failed), traced the storage invariant through `storage.ts` and `App.tsx`, and resolved every link and the `.oxlintrc.json` pointers. No change touches dependencies, `.devcontainer/`, `.github/`, `.claude/`, `.githooks/` or CLAUDE.md.
+
+## #130 Rework docs/known-issues.md to arc42's risks and technical debt
+
+Merged 2026-11-24, branch `issue-111-known-issues`.
+
+A subagent wrote the rework from the lead agent's plan. The lead agent checked its facts against the repo and GitHub, then ran the `reviewer` subagent. Each brief asked for big mistakes only and took cuts as intended. Each skipped the overcorrection line (#129).
+
+**Round 1, on 361c81a.** Findings, fixed in 8c5b028 unless noted:
+
+1. **Five "(#111)" citations** for the fixture counts pointed at an issue that holds none of them (reviewer and lead agent). Fixed in 6e49169, once this PR had a number: they cite this PR, whose "(not checked) settled" section holds the counts and scripts. The reviewer's own scan agreed on the entities, the prefixes and the `pre` counts. For numbers and single capitals with a dot, its totals varied with the method (379 to 514, and 223 to 257). The result was the same: one number came before a lowercase word, and that word was Greek.
+2. **`pre`:** _Alice_ has 2 `pre` elements, not one, and one of _Moby Dick_'s 17 is a footnote, not verse. Fixed: the entry no longer says what they hold.
+3. **Intro:** it said "problems seen", but five entries are not seen yet. It also said each section names its tests, but two have none. Fixed: the intro now speaks of technical risks and debts, and names tests "when there are any".
+4. **Firefox's reason**, "it takes time", was stale: #51's answer opens the work now (reviewer, unconfirmed). What holds it is #52's first steps, which need the owner's access. Fixed.
+5. **Time left's reason**, "stays the same whether you're paused or playing", was stale, since time left is hidden while playing (SPEC.md feature 7). Lead agent's finding. Fixed: "No reason recorded."
+
+The reviewer found nothing else wrong in these: links and anchors into the file (repo and open issues), the section order, and every named file, function and test. It confirmed that no entry is fixed in the code yet, running `parseEpub`, `splitText` and `readingFlow` on _Romeo and Juliet_. It also checked the ADR and SPEC.md claims, the issue and PR numbers, `npm audit`, EPUB 3.3 §3.9 and appendix B, and rsvp-speed-reader's link text.
+
+**Owner's review, then a clarity pass.** The owner made three calls:
+
+- They removed the two entries about books stored before #13 and #15.
+- They took the `.githooks/` comment out of this PR, since it isn't about known issues (e30c217).
+- They judged a 3% cut too small for a rework.
+
+A second subagent then tightened every entry (d83d9fb). The file went from 3,671 to 2,744 words, and two more entries went.
+
+**Round 2, on d83d9fb.** One finding:
+
+1. **Named entities, Why it's left:** the shortening made it say that only EPUB 2 books can use named entities. EPUB 3.3 §3.9 also allows a document type declaration with no external identifier, whose internal subset can declare entities. Fixed in 1d73297: only EPUB 2 books can use XHTML 1.1's named entities, by naming its DTD. The "(not checked) settled" section above now says the same.
+
+The reviewer also named the following:
+
+- **ADR 0011, lines 19 and 27,** still point to the removed entry about books stored before #15. It's a merged ADR, so it keeps its lines (Outside this PR).
+- **`.githooks/commit-msg`,** which this branch now leaves as on `main`.
+- **The parts of this body that had gone out of date,** now updated.
+
+It found no problem in the following:
+
+- the anchors, and the entries other files name by title;
+- the "(#130)" citations, checked against this body;
+- every shortened line, checked against the code, SPEC.md, ADRs 0008 and 0012, and the open issues it cites;
+- the intro, checked against the entries.
+
+## #132 Rework docs/roadmap.md to the Rust RFC template's headings
+
+Merged 2026-11-25, branch `issue-111-roadmap`.
+
+A subagent wrote the rework from the lead agent's plan. The lead agent read the result, then ran the `reviewer` subagent once on 3bdc9f8. The brief asked for big mistakes only, treated cuts as intended, and skipped the overcorrection line (#129).
+
+Findings, fixed in 228d5b9:
+
+1. **Android store app:** "The PWA already installs in Android Chrome" is unchecked. SPEC.md says Android is checked by emulation only, and PR #87's review had already corrected the same claim. Fixed: "SPEC.md already supports the installed app in Android Chrome".
+2. **Stop after a paragraph, Prior art:** SplashReader's README says it "pauses every paragraph". Its code at the pinned commit pauses 1 s and then goes on, and never waits for a tap. Fixed: the line now cites the code and says exactly that.
+
+The reviewer found no problem with these:
+
+- links and anchors: SPEC.md's three, and the entries that open issues #20, #22, #24 and #69 name;
+- `splitLongWord`'s example (it ran it);
+- the built-in books' genres;
+- each Motivation's source (#30, #31, #36 and PR #39), and each "No reason recorded" (PRs #59 and #97, ADR 0002);
+- the Prior art links (it fetched Speeedy, speedread, rsvp-speed-reader, Gutenberg's pages and Google Play Help);
+- the intro against the entries.
+
+No sensitive files changed.
+
+**Owner's review.** The owner dropped the Android store app, and gave the reasons for the warm-up, the paragraph pacer, the stats screens and the formats beyond TXT (13ecef0).
