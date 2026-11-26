@@ -193,8 +193,16 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 
 ### Android is checked only by emulation
 
-- **What happens:** SPEC.md supports Android Chrome, but `npm run e2e` only emulates Android phones in Chromium (ADR 0010). Nothing checks Android itself, such as the installed app or the file picker. ADR 0010 lists the rest.
-- **Why it's left:** there's no Android phone to check on reliably (#84), and the dev container can't run a real Android emulator (ADR 0010).
+- **What happens:** SPEC.md supports Android Chrome, but `npm run e2e` only emulates two Android phones in Chromium (ADR 0005). Nothing checks Android itself:
+  - the installed app: Chrome's install flow and the app's own window;
+  - the system file picker, and where a download lands;
+  - the wake lock keeping the screen on;
+  - Chrome freezing or closing a page in the background;
+  - storage eviction, the on-screen keyboard and real device speed.
+
+  Whether Android Chrome differs from desktop Chromium in ways the tests miss is unknown.
+
+- **Why it's left:** there's no Android phone to check on reliably (#84). The dev container has no `/dev/kvm` (#84), so it can't run a real Android emulator (#85).
 - **Measures:** #85 plans runs in real Android Chrome on emulators before v1.
 
 ## Dev container
