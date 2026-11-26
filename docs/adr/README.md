@@ -17,7 +17,7 @@ A new ADR takes the number after the highest one `main` has ever had. Numbers ar
 
 ## After merge
 
-A merged ADR records a decision as it stood on its date. ADRs 0001 to 0013 state theirs as they stood on 2026-11-26 instead (#131). The rules below apply to them from that day. A line that went out of date stays as written. The ADR changes only in three ways:
+A merged ADR records a decision as it stood on its date. ADRs 0001 to 0009, 0012 and 0013 state theirs as they stood on 2026-11-26 instead (#131). The rules below apply to them from that day. A line that went out of date stays as written. The ADR changes only in three ways:
 
 - **Its Status line, when a later ADR changes what it decided.** [adr-tools](https://github.com/npryce/adr-tools/blob/b3279baf9be2207d1a4f4bbd608fd0b591c72aee/src/adr-new#L43-L49) links ADRs as superseded or amended. Here the Status line says it in one of two forms:
   - `Superseded by ADR NNNN`, when the later ADR replaces the whole decision.

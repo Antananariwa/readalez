@@ -5,11 +5,11 @@ Status: Accepted
 
 ## Context
 
-Features are checked by hand on the iPhone's installed app and in the desktop browsers ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)), and the owner tests each pull request on devices before merging it ([README.md](../../README.md#how-its-built)). So the app needs a host, and a shell that installs. The host must:
+The owner checks features by hand on the iPhone's installed app and in the desktop browsers ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)), and the owner tests each pull request on devices before merging it ([README.md](../../README.md#how-its-built)). So the app needs a host, and a shell that installs. The host must:
 
 - serve static files over HTTPS, free for a public repo;
 - deploy `main` to production and give each PR a preview URL;
-- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes how data is stored must not touch the owner's real library;
+- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes the stored data must not touch the owner's real library;
 - deploy without a workflow file, since CI workflow files need the owner's access ([CLAUDE.md, Limits](../../CLAUDE.md#limits));
 - add no analytics, cookies or scripts, since the app sends no requests to other sites ([SPEC.md feature 13](../../SPEC.md#no-requests-to-other-sites)).
 
@@ -26,14 +26,14 @@ The hosts compared, on their free plans, as documented on 2026-11-01 and read ag
 
 ## Decision
 
-- **Host: Cloudflare Pages**, connected through Cloudflare's GitHub app.
+- **Host:** Cloudflare Pages hosts the app, connected through Cloudflare's GitHub app.
   - It meets every requirement without switching anything off. Vercel and Netlify each add their own tool to previews. Netlify also pauses every site once a month's credits are spent. GitHub Pages fails the origin requirement.
   - Each branch's alias stays the same across pushes, so an app installed from a PR's preview keeps working while the PR changes.
   - Its build settings live in the owner's Cloudflare dashboard: `npm run build`, output `dist`, `NODE_VERSION=24`. Production is `https://readalez.pages.dev`.
-- **Service worker and manifest: `vite-plugin-pwa`** (MIT, a devDependency), in `generateSW` mode.
+- **Service worker and manifest:** `vite-plugin-pwa` (MIT, a devDependency) writes both, in `generateSW` mode.
   - It writes the manifest and the precache list of hashed build files, which a hand-written worker would need a build step of its own for.
-  - The generated `sw.js` and its Workbox runtime (MIT) are served from the app's own origin.
-- **Update model:** `registerType: "prompt"`, with `skipWaiting: false` and `clientsClaim: false` set explicitly, so a reviewer sees them.
+  - The app's own origin serves the generated `sw.js` and its Workbox runtime (MIT).
+- **Update model:** `vite.config.ts` sets `registerType: "prompt"`, and sets `skipWaiting: false` and `clientsClaim: false` explicitly, so a reviewer sees them.
   - A new version installs in the background and waits while a page is open, as seen in #46. So it never applies while you read.
   - The generated worker skips waiting only if a page posts `{ type: "SKIP_WAITING" }`, and the app never posts it. #22 decides whether to.
 

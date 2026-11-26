@@ -31,9 +31,9 @@ Options considered (#71):
 - It rejects `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16` and `100.64.0.0/10`, so web ports don't reach devices on the home network. Two rules from the reference come first:
   - DNS (UDP port 53) to any address. The container's resolver, `192.168.65.7` (`/etc/resolv.conf`), is inside `192.168.0.0/16`, so a narrower rule would cut off name lookups.
   - Every port on Docker's own network, the default route's /24.
-- No outbound SSH: the git remote and `gh` use HTTPS.
-- At start, the script checks that example.com and GitHub's API load, and that its REJECT rules refuse example.com port 22 and 192.168.0.1 port 443. Each check that passes prints a `Firewall verification passed` line. The REJECT checks read the rules' packet counters, because a refusal from the far end looks the same to the connecting program.
-- The risk is accepted with two light checks instead of more isolation:
+- The firewall allows no outbound SSH, since the git remote and `gh` use HTTPS.
+- At start, the script runs four checks: example.com loads, GitHub's API loads, and its REJECT rules refuse example.com port 22 and 192.168.0.1 port 443. Each check that passes prints a `Firewall verification passed` line. The REJECT checks read the rules' packet counters, because a refusal from the far end looks the same to the connecting program.
+- The project accepts the risk, with two light checks instead of more isolation:
   - the reviewer's list of changes to name (`.claude/agents/reviewer.md`);
   - CLAUDE.md's line on web research ([Limits](../../CLAUDE.md#limits)).
 - The other options lose: one by one is too much work, a second container costs a key and its upkeep, and a prompt doesn't stop a steered session.
@@ -46,7 +46,7 @@ Options considered (#71):
   - the container's Claude Code history;
   - the repo folder.
 
-  It could send these to any web server without a trace on GitHub, or put a harmful change in a PR. It can't become root, or read the PC's files outside the repo folder.
+  It could send these to any web server without a trace on GitHub, or put a harmful change in a PR. It can't become root, or read the PC's files outside the repo folder. Beyond web ports, it reaches only what the reference allows: DNS to any address, and every port on the listed hosts and on Docker's network.
 
 - Merging is probably not blocked for the token (#96).
 - The container can change files that the PC runs later. One is `devcontainer.json`, whose `initializeCommand` runs "on the host machine" ([Dev Container spec, Lifecycle scripts](https://containers.dev/implementors/json_reference/#lifecycle-scripts)).

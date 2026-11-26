@@ -13,24 +13,25 @@ Status: Accepted
 
 ## Decision
 
-- **Build:** Vite with the React plugin, from that template. `npm run build` typechecks, then writes a static site to `dist/`.
-- **Typecheck:** TypeScript 7, with `src/core/` as a project of its own (`tsconfig.core.json`).
-- **Lint:** Oxlint, with `--deny-warnings`. It reads TypeScript itself, so it works with TypeScript 7. ESLint loses, because it would hold TypeScript back.
-- **Unit tests:** Vitest in plain Node, with no DOM emulation, so they start fast.
+- **Build:** Vite builds the app with the React plugin, from that template. `npm run build` typechecks, then writes a static site to `dist/`.
+- **Typecheck:** `tsc -b` runs TypeScript 7, with `src/core/` as a project of its own (`tsconfig.core.json`).
+- **Lint:** Oxlint lints with `--deny-warnings`. It reads TypeScript itself, so it works with TypeScript 7. ESLint loses, because it would hold TypeScript back.
+- **Format:** Prettier formats with its defaults, as the dev container's editor does on save. `npm run check` runs `prettier --check`, so code written outside the editor stays formatted too.
+- **Unit tests:** Vitest runs them in plain Node, with no DOM emulation, so they start fast.
 - **Core's boundary, enforced in two layers, since each catches what the other can't:**
   - `tsconfig.core.json` has `lib: ["ES2023"]` with no DOM library, and `types: []`. So a browser or Node global that `src/core/webApis.d.ts` doesn't declare fails the typecheck.
   - `.oxlintrc.json` bans imports of React and of `ui/` in `src/core/**`. TypeScript alone would resolve those imports without complaint.
 - **Browser tests:** Playwright runs `e2e/` against the production build that `vite preview` serves, in four projects:
-  - **Chromium,** with Playwright's Desktop Chrome preset.
-  - **WebKit, with Playwright's iPhone 16 preset,** for iPhone Safari. Playwright's WebKit "is derived from the latest WebKit main branch sources, often before these updates are incorporated into Apple Safari" ([Playwright, Browsers](https://playwright.dev/docs/browsers#webkit)). So it catches differences in the engine, such as CSS and layout, JavaScriptCore, and missing or different web APIs. It can also pass a feature that the phone's older Safari lacks.
-  - **Chromium, with the `Galaxy S24` and `Pixel 7` presets,** for Android Chrome: a 360 px phone and a 412 px one. 360 px is narrower than the 375 px that [SPEC.md feature 5](../../SPEC.md#text-size) uses. No real Android browser runs in these checks ([known issue](../known-issues.md#android-is-checked-only-by-emulation)).
+  - **Chromium** runs with Playwright's Desktop Chrome preset.
+  - **WebKit** runs with Playwright's iPhone 16 preset, for iPhone Safari. Playwright's WebKit "is derived from the latest WebKit main branch sources, often before these updates are incorporated into Apple Safari" ([Playwright, Browsers](https://playwright.dev/docs/browsers#webkit)). So it catches differences in the engine, such as CSS and layout, JavaScriptCore, and missing or different web APIs. It can also pass a feature that the phone's older Safari lacks.
+  - **Chromium** also runs with the `Galaxy S24` and `Pixel 7` presets, for Android Chrome: a 360 px phone and a 412 px one. 360 px is narrower than the 375 px that [SPEC.md feature 5](../../SPEC.md#text-size) uses. No real Android browser runs in these checks ([known issue](../known-issues.md#android-is-checked-only-by-emulation)).
 - **Browsers in the image:** the Dockerfile installs Chromium's headless shell and WebKit, with their system libraries, as root while it builds the image. The libraries need root, which the `node` user doesn't have at run time. `package.json` pins `@playwright/test` to the image's version.
 - **CI:** GitHub's [starter Node.js workflow](https://github.com/actions/starter-workflows/blob/main/ci/node.js.yml), where `npm test` runs `npm run check`. It runs on Node 24 only, the container's version, since Node runs only the build and test tools, never the app. It also runs `npm run e2e`, so a broken UI blocks a merge even when a session skipped the browser tests.
 
 ## Consequences
 
 - A file in `src/core/` that imports React or `src/ui/` fails the lint. One that uses an undeclared global fails the typecheck. Either fails `npm run check`.
-- Each Playwright project runs the whole suite, so each one adds to the time `npm run e2e` takes. The browsers and their libraries add to the image's size.
+- Each Playwright project runs the suite again, so each one adds to the time `npm run e2e` takes. The browsers and their libraries add to the image's size.
 - A Playwright bump needs the owner to rebuild the dev container. Until then, `npm run e2e` can't find the new browsers (`tests/tooling/playwright-version.test.ts`).
-- WebKit and the phone presets miss what only a phone shows. Examples are the installed app, the on-screen keyboard, safe areas, touch feel, storage limits, the file picker and device speed. Device checks stay the final word ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)).
+- WebKit misses what only an iPhone shows, such as the installed app, the on-screen keyboard, safe areas, touch feel, storage limits, the file picker and device speed. Device checks on the iPhone cover those ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)). Nothing checks Android itself ([known issue](../known-issues.md#android-is-checked-only-by-emulation)).
 - Revisit ESLint only if Oxlint lacks a rule the project needs and typescript-eslint supports TypeScript 7 by then.

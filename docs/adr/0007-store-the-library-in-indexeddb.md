@@ -18,17 +18,17 @@ Options considered:
 
 ## Decision
 
-- **Storage: IndexedDB, without a wrapper library.** `src/ui/storage.ts` wraps the few calls the app needs in promises. `idb` loses: it would add a dependency to download, update and credit ([CLAUDE.md, Code](../../CLAUDE.md#code)) for little code saved. localStorage loses on its strings, its blocking calls and its quota.
-- **Schema version: the database's version.** Each change to the stores raises the version of the `readalez` database and adds a step to `upgrade` in `src/ui/storage.ts`.
-- **Two stores**, so the library lists books without reading their texts. Both are keyed by the book's ID:
+- **Storage:** the library lives in IndexedDB, with no wrapper library. `src/ui/storage.ts` wraps the few calls the app needs in promises. `idb` loses: it would add a dependency, with the costs that [CLAUDE.md's Code section](../../CLAUDE.md#code) lists, for little code saved. localStorage loses on its strings, its blocking calls and its quota.
+- **Schema version:** the database's version is the schema version. Each change to the stores raises the version of the `readalez` database and adds a step to `upgrade` in `src/ui/storage.ts`.
+- **Two stores** hold the library, so it lists books without reading their texts. The book's ID keys both:
   - `books`: each book's `BookInfo` (`src/core/library.ts`);
   - `texts`: its parsed text.
 
   Adding a book writes both in one transaction, and deleting removes both in one, so nothing half-saved is left.
 
-- **The parsed text is stored, never the input.** A book's paragraphs stay as they were when it was added, whatever later versions change in the parsers. So positions stored by section, paragraph and word (ADR 0008) keep pointing into the same paragraph. Words are split again at each open, so changes to word splitting reach books already stored.
-- **Book ID: the SHA-256 of the book's words** (`bookId` and `bookText` in `src/core/bookId.ts`), worked out once, when the book is added, and stored with it.
-  - Titles and paragraph kinds stay out, so a rename, or a change in how a heading is recognised, doesn't make a different book.
+- **The app stores the parsed text, never the input.** A book's paragraphs stay as they were when the reader added it, whatever later versions change in the parsers. So positions stored by section, paragraph and word (ADR 0008) keep pointing into the same paragraph. Words are split again at each open, so changes to word splitting reach books already stored.
+- **Book ID:** a book's ID is the SHA-256 of its words (`bookId` and `bookText` in `src/core/bookId.ts`). The app works it out once, when it adds the book, and stores it with the book.
+  - Titles and paragraph kinds stay out, so a rename, or a change in how the parser recognises a heading, doesn't make a different book.
   - SHA-256 has 128 bits of collision resistance ([NIST, Hash functions](https://csrc.nist.gov/projects/hash-functions#security-strengths)).
 
 ## Consequences

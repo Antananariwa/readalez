@@ -19,14 +19,14 @@ Options considered:
   - The API is in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node.
   - Every target browser has it ([SPEC.md, Devices and browsers](../../SPEC.md#devices-and-browsers)).
 
-  So core runs the same in the unit tests in Node and in every target browser. Each such API is declared by hand in `src/core/webApis.d.ts`, with only the parts core uses and a link showing browser support.
+  So core runs the same in the unit tests in Node and in every target browser. `src/core/webApis.d.ts` declares each such API by hand, with only the parts core uses and a link showing browser support.
 
 - Logic inside the components loses: its tests would need a browser, too slow for the Stop hook, and a UI rework would break the logic.
 
 ## Consequences
 
-- Reading rules are tested exactly and quickly: a sentence and a speed go in, durations come out, with no clocks or rendering.
-- The UI can be reworked without breaking the logic.
-- The UI is tested in the browser instead, by Playwright (ADR 0005).
+- Unit tests check the reading rules exactly and quickly: a sentence and a speed go in, durations come out, with no clocks or rendering.
+- A rework of the UI can't break the logic.
+- Playwright tests the UI in the browser instead (ADR 0005).
 - A later port to another language starts from `src/core/` and its tests.
-- A browser-only API, such as `DOMParser`, can't be used for reading logic (ADR 0009).
+- Reading logic can't use a browser-only API, such as `DOMParser` (ADR 0009).

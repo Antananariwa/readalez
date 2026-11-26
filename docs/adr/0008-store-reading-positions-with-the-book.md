@@ -5,9 +5,9 @@ Status: Accepted
 
 ## Context
 
-- A book's position is saved often ([SPEC.md feature 4, Saving progress](../../SPEC.md#saving-progress)).
+- The app saves a book's position often ([SPEC.md feature 4, Saving progress](../../SPEC.md#saving-progress)).
 - The library shows each book's progress and time left, both over the reading flow ([SPEC.md feature 4, Progress and time left](../../SPEC.md#progress-and-time-left)). Time left comes from each word's duration. That needs the text split into words and timed, and splitting a 1 MB text took 1.3 s in Node (ADR 0007).
-- Splitting rules will change as timing gets tuned, and a saved position must still land in the same paragraph ([SPEC.md feature 4, Positions survive updates](../../SPEC.md#positions-survive-updates)).
+- A saved position must survive changes to the splitting rules ([SPEC.md feature 4, Positions survive updates](../../SPEC.md#positions-survive-updates)).
 - The backup file merges positions per book ([SPEC.md feature 9, Import](../../SPEC.md#import)).
 
 Options considered:
@@ -17,9 +17,9 @@ Options considered:
 
 ## Decision
 
-- **Where:** a `reading` field on the book's `BookInfo` (`Reading` in `src/core/position.ts`), written by `saveReading` in `src/ui/storage.ts`. A book has one position, read whenever the book is listed, and the backup merge compares it per book. A store of its own loses: it would add a read per book for no gain. The field is optional, so the stores don't change.
+- **Where:** a `reading` field on the book's `BookInfo` holds it (`Reading` in `src/core/position.ts`), and `saveReading` in `src/ui/storage.ts` writes it. A book has one position, read whenever the book is listed, and the backup merge compares it per book. A store of its own loses: it would add a read per book for no gain. The field is optional, so the stores don't change.
 - **The position** is the section, paragraph and word indices that `Word` carries (`Position`). `findPosition` finds it again in a fresh split, in the same paragraph. The text is stored parsed (ADR 0007), so paragraphs keep their indices across versions.
-- **Progress is stored with the position,** worked out when the position is saved, so the library splits no text. The fields are `progress`, `finished` and `left`.
+- **The app stores progress with the position,** and works it out at each save, so the library splits no text. The fields are `progress`, `finished` and `left`.
   - `left` counts the reading flow's remaining words by timing factor, as `[factor, count]` pairs.
   - Time left at any speed is then the sum of count × the factor's rounded duration (`bookTimeLeft`). This equals `timeLeft` from that word exactly, since `wordDuration` rounds each word the same way (`src/core/position.test.ts`).
   - A single number loses: it would follow a change of speed only approximately.
@@ -27,5 +27,6 @@ Options considered:
 
 ## Consequences
 
-- After an update that changes the splitting or timing rules, the library shows the progress and time left from the last save until the book is opened again ([known issue](../known-issues.md#progress-in-the-library-can-be-out-of-date-after-an-update)).
+- Each save rewrites the book's whole `BookInfo` record, which is small: a title, an author, a few dates and the `left` pairs.
+- After an update that changes the splitting or timing rules, the library shows the progress and time left from the last save until the reader opens the book again ([known issue](../known-issues.md#progress-in-the-library-can-be-out-of-date-after-an-update)).
 - In a merge, "the position from whichever device read it last wins" ([SPEC.md feature 9, Import](../../SPEC.md#import)). That needs the time of the last save, which `openedAt` only approximates. #21 decides whether to add one.

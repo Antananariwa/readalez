@@ -16,7 +16,7 @@ Options considered:
 - **C# (Blazor WebAssembly) or Python (Pyodide) in the browser.** The browser downloads the runtime before the app starts:
   - Blazor downloads "the .NET runtime", so its "Download size is larger, and components take longer to load" ([ASP.NET Core Blazor hosting models](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models)).
   - Pyodide's loader "manages downloading the runtime" ([Pyodide, Downloading and deploying](https://pyodide.org/en/stable/usage/downloading-and-deploying.html)).
-- **A PWA in TypeScript.** It runs in every target browser and installs from it. On iPhone, Safari installs it through Add to Home Screen ([MDN, Installing PWAs](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing)).
+- **A PWA in TypeScript.** It runs in every target browser, and installs where SPEC.md lists an installed app. On iPhone, Safari installs it through Add to Home Screen ([MDN, Installing PWAs](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing)).
 
 ## Decision
 
