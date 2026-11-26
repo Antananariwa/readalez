@@ -44,6 +44,6 @@ Options considered:
   - a book's ID changes with the EPUB parser's output (`src/core/bookId.ts`);
   - its `reading` changes with the splitting, timing or reading-flow rules.
 
-  `tests/builtInBooks.test.ts` reruns `describeBook` on the shortest book, and fails until `npm run books` rebuilds the catalog. The other books aren't rechecked, to keep the unit tests quick.
+  `tests/builtInBooks.test.ts` reruns `describeBook` on the shortest book, and fails until `npm run books` rebuilds the catalog. The test doesn't recheck the other books, to keep the unit tests quick.
 
 - A stored book keeps the text from its import (ADR 0007). So a rebuilt book file reaches a reader only if they haven't opened that book yet.

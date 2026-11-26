@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-AI agents build most of this project, across many separate sessions. A session that meets a past decision without its reasons "has only two choices": "Blindly accept the decision" or "Blindly change it" ([Nygard, Documenting Architecture Decisions](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions)). No other options were recorded.
+AI agents build most of this project, across many separate sessions. A session that meets a past decision without its reasons "has only two choices": "Blindly accept the decision" or "Blindly change it" ([Nygard, Documenting Architecture Decisions](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions)). No record names other options.
 
 ## Decision
 

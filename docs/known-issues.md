@@ -202,7 +202,7 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 
   Whether Android Chrome differs from desktop Chromium in ways the tests miss is unknown.
 
-- **Why it's left:** there's no Android phone to check on reliably (#84). The dev container has no `/dev/kvm` (#84). Without KVM, the Android Emulator's virtual machine "is slower" ([Android Developers, Configure hardware acceleration](https://developer.android.com/studio/run/emulator-acceleration#vm-linux)). Whether a real Android emulator would be usable there is unknown (#85).
+- **Why it's left:** there's no Android phone to check on reliably (#84). The dev container has no `/dev/kvm` (#84). Without VM acceleration, the Android Emulator "must translate the machine code from the VM block by block", which "can be quite slow" ([Android Developers, Configure hardware acceleration](https://developer.android.com/studio/run/emulator-acceleration#hypervisors)). Whether a real Android emulator would be usable there is unknown (#85).
 - **Measures:** #85 plans runs in real Android Chrome on emulators before v1.
 
 ## Dev container

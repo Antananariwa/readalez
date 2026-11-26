@@ -18,7 +18,7 @@ Options considered:
 ## Decision
 
 - **Where:** a `reading` field on the book's `BookInfo` holds it (`Reading` in `src/core/position.ts`), and `saveReading` in `src/ui/storage.ts` writes it. A book has one position, read whenever the book is listed, and the backup merge compares it per book. A store of its own loses: it would add a read per book for no gain. The field is optional, so the stores don't change.
-- **The position** is the section, paragraph and word indices that `Word` carries (`Position`). `findPosition` finds it again in a fresh split, in the same paragraph. The text is stored parsed (ADR 0007), so paragraphs keep their indices across versions.
+- **The position** is the section, paragraph and word indices that `Word` carries (`Position`). `findPosition` finds it again in a fresh split, in the same paragraph. The app stores the text parsed (ADR 0007), so paragraphs keep their indices across versions.
 - **The app stores progress with the position,** and works it out at each save, so the library splits no text. The fields are `progress`, `finished` and `left`.
   - `left` counts the reading flow's remaining words by timing factor, as `[factor, count]` pairs.
   - Time left at any speed is then the sum of count × the factor's rounded duration (`bookTimeLeft`). This equals `timeLeft` from that word exactly, since `wordDuration` rounds each word the same way (`src/core/position.test.ts`).
@@ -27,6 +27,6 @@ Options considered:
 
 ## Consequences
 
-- Each save rewrites the book's whole `BookInfo` record, which is small: a title, an author, a few dates and the `left` pairs.
+- Each save rewrites the book's whole `BookInfo` record. The record is small: besides a few strings and dates, `left` holds one pair per timing factor in the rest of the reading flow.
 - After an update that changes the splitting or timing rules, the library shows the progress and time left from the last save until the reader opens the book again ([known issue](../known-issues.md#progress-in-the-library-can-be-out-of-date-after-an-update)).
 - In a merge, "the position from whichever device read it last wins" ([SPEC.md feature 9, Import](../../SPEC.md#import)). That needs the time of the last save, which `openedAt` only approximates. #21 decides whether to add one.

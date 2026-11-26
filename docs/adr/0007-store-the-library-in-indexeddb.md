@@ -24,9 +24,9 @@ Options considered:
   - `books`: each book's `BookInfo` (`src/core/library.ts`);
   - `texts`: its parsed text.
 
-  Adding a book writes both in one transaction, and deleting removes both in one, so nothing half-saved is left.
+  Adding a book writes both in one transaction, and deleting removes both in one, so a failure leaves nothing half-saved.
 
-- **The app stores the parsed text, never the input.** A book's paragraphs stay as they were when the reader added it, whatever later versions change in the parsers. So positions stored by section, paragraph and word (ADR 0008) keep pointing into the same paragraph. Words are split again at each open, so changes to word splitting reach books already stored.
+- **The app stores the parsed text, never the input.** A book's paragraphs stay as they were when the app stored it, whatever later versions change in the parsers. So positions stored by section, paragraph and word (ADR 0008) keep pointing into the same paragraph. The app splits words again at each open, so changes to word splitting reach books already stored.
 - **Book ID:** a book's ID is the SHA-256 of its words (`bookId` and `bookText` in `src/core/bookId.ts`). The app works it out once, when it adds the book, and stores it with the book.
   - Titles and paragraph kinds stay out, so a rename, or a change in how the parser recognises a heading, doesn't make a different book.
   - SHA-256 has 128 bits of collision resistance ([NIST, Hash functions](https://csrc.nist.gov/projects/hash-functions#security-strengths)).

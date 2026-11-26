@@ -9,7 +9,7 @@ The owner checks features by hand on the iPhone's installed app and in the deskt
 
 - serve static files over HTTPS, free for a public repo;
 - deploy `main` to production and give each PR a preview URL;
-- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes the stored data must not touch the owner's real library;
+- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes the storage format must not touch the owner's real library;
 - deploy without a workflow file, since CI workflow files need the owner's access ([CLAUDE.md, Limits](../../CLAUDE.md#limits));
 - add no analytics, cookies or scripts, since the app sends no requests to other sites ([SPEC.md feature 13](../../SPEC.md#no-requests-to-other-sites)).
 
@@ -40,7 +40,7 @@ The hosts compared, on their free plans, as documented on 2026-11-01 and read ag
 ## Consequences
 
 - The Cloudflare account, and its connection to the repo, are the owner's. Device checks on a preview are the owner's too. The agent can open deployments, since ADR 0012 opened web ports.
-- **Main risk:** Cloudflare's Pages docs say "Start new projects with Workers" ([Cloudflare Pages](https://developers.cloudflare.com/pages/)). A static site needs none of the features that only Workers have. If Pages is retired, Cloudflare documents a move to Workers: a Wrangler config file in the repo, and new addresses ([migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)).
+- **Main risk:** Cloudflare's Pages docs say "Start new projects with Workers" ([Cloudflare Pages](https://developers.cloudflare.com/pages/)). A static site needs none of the features that only Workers have. If Cloudflare retires Pages, it documents a move to Workers: a Wrangler config file in the repo, and new addresses ([migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)).
 - Two tests hold the update model, and code that posts `SKIP_WAITING` (#22) has to change both:
   - `e2e/pwa.spec.ts` checks that `sw.js` never skips waiting or claims pages outside that listener;
   - `tests/tooling/service-worker.test.ts` fails if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`.
