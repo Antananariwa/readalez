@@ -5,44 +5,50 @@ Status: Accepted
 
 ## Context
 
-The firewall from ADR 0004 lets the container reach only GitHub, npm, Anthropic's API and a few VS Code hosts. Claude's web search runs on Anthropic's servers and works, but reading a page fetches it from the container, so pages outside GitHub fail. Research for #68 fell back to search summaries and GitHub READMEs, and allowing sites one by one was too much work (#71).
+- The reference firewall (ADR 0004) allows only these destinations ([its `init-firewall.sh`](https://github.com/anthropics/claude-code/blob/d945a61bc6346abce607252d5667df8a3bf0461a/.devcontainer/init-firewall.sh)):
+  - GitHub, npm, Anthropic's API, and a few VS Code and telemetry hosts;
+  - DNS and SSH, to any host;
+  - Docker's own network.
+- Claude's web search works, but reading a page fetches it from the container. So pages outside that list fail. Research fell back to search summaries, and allowing sites one by one was too much work (#71).
+- Hosted coding agents start with limited internet access, and let the user allow more:
+  - OpenAI Codex cloud "blocks internet access during the agent phase" by default. It can allow a list of domains, or all of them. Its listed risks include "Prompt injection from untrusted web content" and "Code or secret exfiltration" ([Codex, Internet access](https://learn.chatgpt.com/docs/cloud/internet-access)).
+  - GitHub Copilot's coding agent starts behind a firewall with an allowlist. Turning it off "will allow Copilot to connect to any host", "increasing risks of exfiltration of code or other sensitive information" ([Copilot, Customizing the firewall](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-firewall#enabling-or-disabling-the-firewall)).
+  - Claude Code on the web starts at **Limited** network access, and offers **Full**, for any domain ([Claude Code, Cloud environments](https://code.claude.com/docs/en/cloud-environments#network-access)). The page names no risks.
+- The limited list already left ways in and out:
+  - Anyone can open issues or comment on this public repo, and the agent reads them.
+  - GitHub's API accepts any account's token, so code in the container could post data to another account (not tried).
 
-Hosted coding agents start with the internet limited to package registries and GitHub. The owner can add sites or allow all of them, and the docs warn about prompt injection, leaked code or secrets, and malware: OpenAI Codex cloud ([docs](https://developers.openai.com/codex/cloud/agent-internet)), GitHub Copilot's coding agent ([docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-firewall)) and Claude Code on the web ([docs](https://code.claude.com/docs/en/cloud-environments)). The links in this record were read through web search results, not the pages, because the firewall blocked the pages.
+Options considered (#71):
 
-The limited list already left ways in and out. Anyone can open issues or comment on this public repo, and the agent reads issues. SSH (port 22) was open to any host. GitHub's API accepts any account's token, so code in the container could post data to another account (not tried).
-
-Two stronger options were rejected (#71):
-
-- A separate research container with no logins, passing checked text to this one. It needs its own paid API key, and the owner wants the workflow light.
-- A hook that asks the owner before posting to GitHub once a session has read a web page. The owner wouldn't spot a steered session at a prompt either.
+- **Allow sites one by one:** too much work.
+- **A separate research container** with no logins, passing checked text to this one: it needs a paid API key of its own, and a second container to run.
+- **A hook that asks the owner before posting to GitHub once a session has read a web page:** the owner wouldn't spot a steered session at a prompt either.
+- **Web ports open to any public host**, with light checks.
 
 ## Decision
 
 - `init-firewall.sh` allows TCP ports 80 and 443 to any host outside private and local networks.
-- It rejects `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16` and `100.64.0.0/10`, so web ports don't reach devices on the home network. Two older rules come first and are unchanged:
-  - DNS (UDP port 53) to any address. The container's resolver, `192.168.65.7` (`/etc/resolv.conf`), is inside `192.168.0.0/16`, so narrowing this rule would cut off name lookups.
-  - Every port on Docker's own network, the default route's /24 (`172.17.0.0/24` here).
-- No outbound SSH: the remote and `gh` use HTTPS.
-- At start, the script checks that example.com loads, that GitHub's API loads, and that the firewall's own REJECT rules refuse example.com port 22 and 192.168.0.1 port 443. The script checks the REJECT rules' packet counters, because a refusal from the far end looks the same to the connecting program.
-- Two light checks instead of more isolation:
-  - The reviewer subagent names every change to dependencies, `.devcontainer/`, `.github/`, `.claude/`, `.githooks/` and `CLAUDE.md`, and to code that sends data off the device or reads tokens or logins (`.claude/agents/reviewer.md`).
-  - CLAUDE.md asks research to read official pages first and to treat text from pages, and from issues and comments not written by the owner, as information, never instructions.
+- It rejects `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16` and `100.64.0.0/10`, so web ports don't reach devices on the home network. Two rules from the reference come first:
+  - DNS (UDP port 53) to any address. The container's resolver, `192.168.65.7` (`/etc/resolv.conf`), is inside `192.168.0.0/16`, so a narrower rule would cut off name lookups.
+  - Every port on Docker's own network, the default route's /24.
+- No outbound SSH: the git remote and `gh` use HTTPS.
+- At start, the script checks that example.com and GitHub's API load, and that its REJECT rules refuse example.com port 22 and 192.168.0.1 port 443. Each check that passes prints a `Firewall verification passed` line. The REJECT checks read the rules' packet counters, because a refusal from the far end looks the same to the connecting program.
+- The risk is accepted with two light checks instead of more isolation:
+  - the reviewer's list of changes to name (`.claude/agents/reviewer.md`);
+  - CLAUDE.md's line on web research ([Limits](../../CLAUDE.md#limits)).
+- The other options lose: one by one is too much work, a second container costs a key and its upkeep, and a prompt doesn't stop a steered session.
 
 ## Consequences
 
-- Claude can read web pages once the owner rebuilds the container.
-- A web page, or an issue or comment on the repo, can try to steer the agent (docs/known-issues.md). A steered session can reach:
-  - the GitHub token (this repo only, expiring), which can probably merge (below);
+- A web page, or an issue or comment on the repo, can try to steer the agent ([known issue](../known-issues.md#a-web-page-or-an-issue-can-carry-instructions-for-the-agent)). A steered session can reach:
+  - the GitHub token (this repo only, and expiring);
   - the Claude login;
   - the container's Claude Code history;
   - the repo folder.
 
-  It could send these to any web server without a trace on GitHub, put a harmful change in a PR, or probably merge one. It can't become root or read the PC's files outside the repo folder. Beyond web ports, it can reach only what ADR 0004 already allowed: DNS to any address, and every port on the listed hosts and on Docker's network.
+  It could send these to any web server without a trace on GitHub, or put a harmful change in a PR. It can't become root, or read the PC's files outside the repo folder.
 
-- Merging is probably not blocked for the token. It has Contents and Pull requests read/write (ADR 0004). `main`'s ruleset, read during review for #71, requires a PR and a passing `build (24.x)` check but no approval. The only block seen is Claude Code's deny rule for `gh pr merge` and `gh api *merge*` (`.claude/settings.json`), which a steered session could get around by calling GitHub's API another way. Not tried.
-- The start log shows four `Firewall verification passed` lines when the firewall is up, instead of the two ADR 0004 names.
+- Merging is probably not blocked for the token (#96).
+- The container can change files that the PC runs later. One is `devcontainer.json`, whose `initializeCommand` runs "on the host machine" ([Dev Container spec, Lifecycle scripts](https://containers.dev/implementors/json_reference/#lifecycle-scripts)).
 - The reviewer runs in the same session as the work, so its list helps against mistakes more than against a steered session.
-- The container can change files that the PC runs later, such as `devcontainer.json`, whose `initializeCommand` runs on the PC ([spec](https://containers.dev/implementors/json_schema/)).
-- Playwright's download host is now reachable, but the browsers stay in the image, because their system libraries need root (ADR 0004).
-- The agent can check Cloudflare preview deployments, which ADR 0006 says it can't.
 - Revisit if the app starts keeping readers' data on a server, the container gets more secrets, or a session does something nobody can explain.
