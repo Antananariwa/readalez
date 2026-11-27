@@ -19,7 +19,7 @@ Options considered:
 ## Decision
 
 - **Claude Code runs only inside a copy of Anthropic's reference `.devcontainer`**, on Docker Desktop with WSL 2. Fixes to the copy are this project's to own.
-  - Its firewall also opens web ports (ADR 0012).
+  - Its firewall also opens web ports (ADR 0010).
   - Its image also holds Playwright's browsers (ADR 0005).
 - **The owner's logins stay out.**
   - `devcontainer.json` turns off `git.terminalAuthentication` and `github.gitAuthentication`. VS Code's user settings on Windows set `dev.containers.gitCredentialHelperConfigLocation: "none"` and `dev.containers.copyGitConfig: false`. So the owner's Git login doesn't reach the container.
@@ -37,7 +37,7 @@ Options considered:
 
 ## Consequences
 
-- Claude Code runs as a non-root user and reaches only what the firewall allows (ADR 0012).
+- Claude Code runs as a non-root user and reaches only what the firewall allows (ADR 0010).
 - The firewall fails open: if `init-firewall.sh` fails, the container runs without it ([known issue](../known-issues.md#the-firewall-fails-open)).
 - No volume holds `gh`'s login, so the token never sits on a volume, and each rebuild needs a new login.
 - A change to `.devcontainer/` takes effect only when the owner rebuilds.

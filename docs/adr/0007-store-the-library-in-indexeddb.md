@@ -19,9 +19,9 @@ Options considered:
 
 - **Storage:** the library lives in IndexedDB, with no wrapper library. `src/ui/storage.ts` wraps the few calls the app needs in promises.
 - **Schema version:** the database's version is the schema version. Each change to the stores raises the version of the `readalez` database and adds a step to `upgrade` in `src/ui/storage.ts`.
-- **Two stores** hold the library, so it lists books without reading their texts. The book's ID (ADR 0018) keys both:
+- **Two stores** hold the library, so it lists books without reading their texts. The book's ID (ADR 0012) keys both:
   - `books`: each book's `BookInfo` (`src/core/library.ts`);
-  - `texts`: its parsed text (ADR 0019).
+  - `texts`: its parsed text (ADR 0013).
 
   Adding a book writes both in one transaction, and deleting removes both in one, so a failure leaves nothing half-saved.
 

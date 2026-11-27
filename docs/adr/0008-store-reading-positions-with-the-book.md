@@ -18,7 +18,7 @@ Options considered:
 ## Decision
 
 - **Where:** a `reading` field on the book's `BookInfo` holds it (`Reading` in `src/core/position.ts`), and `saveReading` in `src/ui/storage.ts` writes it. A book has one position, which the library reads with the book, and the backup file's merge compares it per book. The field is optional, so the stores don't change.
-- **The position** is the section, paragraph and word indices that `Word` carries (`Position`). `findPosition` finds it again in a fresh split, in the same paragraph. The library stores the text parsed (ADR 0019), so paragraphs keep their indices across versions.
+- **The position** is the section, paragraph and word indices that `Word` carries (`Position`). `findPosition` finds it again in a fresh split, in the same paragraph. The library stores the text parsed (ADR 0013), so paragraphs keep their indices across versions.
 - **The app stores progress with the position,** and works it out at each save, so the library splits no text. The fields are `progress`, `finished` and `left`.
   - `left` counts the reading flow's remaining words by timing factor, as `[factor, count]` pairs.
   - Time left at any speed is then the sum of count × the factor's rounded duration (`bookTimeLeft`). This equals `timeLeft` from that word exactly, since `wordDuration` rounds each word the same way (`src/core/position.test.ts`).

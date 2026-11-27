@@ -1,4 +1,4 @@
-# 18. Know each book by the SHA-256 of its words
+# 12. Know each book by the SHA-256 of its words
 
 Date: 2026-11-06
 Status: Accepted

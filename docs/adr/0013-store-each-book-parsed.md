@@ -1,4 +1,4 @@
-# 19. Store each book parsed, with an EPUB's sections, chapter list and reading flow fixed at import
+# 13. Store each book parsed, with an EPUB's sections, chapter list and reading flow fixed at import
 
 Date: 2026-11-09
 Status: Accepted

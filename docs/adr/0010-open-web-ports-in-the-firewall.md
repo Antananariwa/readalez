@@ -1,4 +1,4 @@
-# 12. Open web ports in the dev container firewall
+# 10. Open web ports in the dev container firewall
 
 Date: 2026-11-10
 Status: Accepted

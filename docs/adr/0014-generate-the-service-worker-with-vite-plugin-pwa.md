@@ -1,4 +1,4 @@
-# 20. Generate the service worker with vite-plugin-pwa, and let updates wait until no page is open
+# 14. Generate the service worker with vite-plugin-pwa, and let updates wait until no page is open
 
 Date: 2026-11-01
 Status: Accepted
