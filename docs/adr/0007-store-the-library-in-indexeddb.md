@@ -1,31 +1,35 @@
-# 7. Store the library in IndexedDB, with books known by a hash of their text
+# 7. Store the library in IndexedDB
 
 Date: 2026-11-06
 Status: Accepted
 
 ## Context
 
-Issue #12 makes texts survive a reload. Everything stays in the browser's storage, with no server (SPEC.md, Principles). Later issues add positions (#13), settings (#18), reading sessions (#20) and backups that merge across devices (#21), so the stored data needs a schema version from the start, and books need an identity that is the same on every device. A pasted novel is about 1 MB of text, and the library should list every book without loading their texts.
+- Books, progress, settings and reading sessions stay in the browser's storage, with no server ([SPEC.md, Everything stays on the device](../../SPEC.md#everything-stays-on-the-device)).
+- The stored data will change shape as features arrive, so it needs a schema version from the start.
+- A pasted novel is about 1 MB of text, and the library lists every book without loading their texts.
+
+Options considered:
+
+- **localStorage.** It holds "string-only key/value pairs", "5 MiB of local storage" per origin ([MDN, Storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria#web_storage)). It is "synchronous in nature", "blocking the execution of other JavaScript code" ([MDN, Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API#concepts_and_usage)).
+- **IndexedDB.** It stores "any objects supported by the structured clone algorithm", in transactions. It works asynchronously, "so as not to block applications" ([MDN, IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API#key_concepts_and_usage)). Each browser sets its own quota ([MDN, Storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria#other_web_technologies)).
+- **IndexedDB through `idb`** (ISC, allowed by [SPEC.md feature 13](../../SPEC.md#licenses)): promises over the same API.
 
 ## Decision
 
-- **Storage: IndexedDB, without a wrapper library.** It stores the parsed sections as objects and works asynchronously; localStorage would mean turning each book into one string, read and written in one blocking call, within a per-site quota a few novels might fill (none of this checked against browser documentation, since the firewall blocks web pages, #71). `src/ui/storage.ts` wraps the few calls the app needs in promises, in about 150 lines, instead of adding `idb` (ISC, which the allowlist permits): no new dependency to download, update and credit.
-- **Schema version: the database's version.** The database is `readalez`, version 1. `upgrade` in `src/ui/storage.ts` adds one step per version, so a later issue that adds a store raises the version and adds a step. Backups get their own format version in #21, since a backup outlives the schema it came from.
-- **Two stores**, so the library lists books without reading their texts:
-  - `books`, keyed by `id`: `BookInfo` from `src/core/library.ts` (title, author, when it was added and last opened).
-  - `texts`, keyed by `id`: the book's sections.
+- **Storage:** the library lives in IndexedDB, with no wrapper library. `src/ui/storage.ts` wraps the few calls the app needs in promises.
+- **Schema version:** the database's version is the schema version. Each change to the stores raises the version of the `readalez` database and adds a step to `upgrade` in `src/ui/storage.ts`.
+- **Two stores** hold the library, so it lists books without reading their texts. The book's ID (ADR 0012) keys both:
+  - `books`: each book's `BookInfo` (`src/core/library.ts`);
+  - `texts`: its parsed text (ADR 0013).
 
-  Adding a book writes both in one transaction, and deleting removes both in one, so nothing half-saved is left.
+  Adding a book writes both in one transaction, and deleting removes both in one, so a failure leaves nothing half-saved.
 
-- **Parsed sections are stored, not the pasted text.** A book's paragraphs then stay as they were when it was added, whatever later versions change in the paste parser, so positions stored by section, paragraph and word (SPEC.md feature 4, #13) keep pointing into the same paragraph. Words are split again on each open, so changes to word splitting reach books already stored.
-- **Book ID: the SHA-256 of the book's words**, as 64 hex digits (`bookId` in `src/core/bookId.ts`). The input is every paragraph's text, verse lines joined by line breaks, with a blank line between paragraphs, in UTF-8. Titles and paragraph kinds stay out, so a rename or a change in how a heading is recognised doesn't make a different book. The ID is computed once, when the book is added, and stored with it.
-  - SHA-256, a standard hash with 256 bits, so two different texts getting the same ID is not a practical concern.
-  - Written in `src/core/` in plain TypeScript, because core can't use the browser's `crypto.subtle` or `TextEncoder` (ADR 0003, ADR 0005), and so it's synchronous and unit-tested in Node. The tests compare it with Node's `crypto.createHash("sha256")`.
+- The other options lose:
+  - `idb` would add a dependency, with the costs that [CLAUDE.md, Code](../../CLAUDE.md#code) lists, for little code saved.
+  - localStorage would hold each book as one string, read and written in one blocking call, under a quota a few novels could fill.
 
 ## Consequences
 
-- The 1 MB save is dominated by word splitting, not storage: in Playwright on the dev container, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, both on `main` before this change and with it (issue #12's PR). `splitText` alone took 1.3 s of a Node run on the same text. iPhone times are unknown; performance targets are in #73.
-- The unit tests run in Node, which has no IndexedDB, so `src/ui/storage.ts` is covered by the browser tests in `e2e/library.spec.ts` only.
-- A book imported on two devices gets the same ID only if both parse it into the same words. A parser change between the two imports gives two books; the backup merge (#21) inherits that.
-- 2026-11-22: ADR 0009 lets core use `crypto.subtle` and `TextEncoder`, so `bookId`'s hand-written SHA-256 could now use the platform's. The code is unchanged.
-- 2026-11-23: since ADR 0012 opened web ports, the agent can read browser documentation. The points above about localStorage are still not checked against it.
+- On 2026-11-06, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, in Playwright on the dev container. `splitText` alone took 1.3 s of a Node run on the same text (PR #72). So word splitting, not storage, sets the time of a save. iPhone times are unknown, and #73 holds the performance targets.
+- Node has no IndexedDB, so the unit tests don't cover `src/ui/storage.ts`. The browser tests in `e2e/` do.

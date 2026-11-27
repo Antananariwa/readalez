@@ -38,6 +38,18 @@ Code: `src/core/epub.ts`, `src/core/epub/`, `src/ui/importEpub.ts`. Tests: their
 - **Why it's left:** none of the built-in books uses `pre` (#130).
 - **Measures:** read each line of a `pre` as a line break.
 
+### An EPUB written with ZIP64 can fail to import
+
+- **What happens:** `zip.ts` reads the central directory's 2- and 4-byte fields, and no ZIP64 records (ADR 0009). A field too small for its value "SHOULD be set to -1 (0xFFFF or 0xFFFFFFFF)", with a ZIP64 record holding the value ([APPNOTE.TXT, 4.4.1.4](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L663-L666)). And "ZIP64 format MAY be used regardless of the size of a file" ([4.3.9.2](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L431-L434)). Archives built by hand in PR #134 gave:
+  - an end of the central directory with a count of `0xFFFF`, or an offset of `0xFFFFFFFF`: `openZip` throws `Bad central directory`;
+  - an entry whose sizes in the central directory are `0xFFFFFFFF`, with a ZIP64 extra field: reading it throws `Truncated entry`;
+  - a ZIP64 extra field only in the local header, as Python's `zipfile` writes with `force_zip64=True`: the entry reads.
+
+  Not seen in the repo's EPUBs (PR #134), and no test covers it.
+
+- **Why it's left:** ADR 0009 gives the reason. EPUB 3.3 also says EPUB's ZIP containers "MAY use the ZIP64 extensions defined as "Version 1" in section V, subsection G of the application note [zip] and SHOULD use only those extensions when the content requires them" ([§ 4.3.2](https://www.w3.org/TR/epub-33/#sec-zip-container-zipreqs)). Which tools write ZIP64 for a small EPUB is unknown.
+- **Measures:** read the ZIP64 end of central directory record and its locator ([4.3.14 and 4.3.15](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L560-L631)), and the ZIP64 extra field ([4.5.3](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L1148)).
+
 ### A long book keeps the page busy while it's imported and opened
 
 - **What happens:** importing an EPUB, as on a built-in book's first open, runs on the page's main thread, so the page can respond only between steps of splitting the text into words (`readEpub` in `src/ui/importEpub.ts`). Opening a book splits its whole text again in one go, with no progress shown (`read` in `src/ui/App.tsx`). In Node in the dev container, splitting _Moby Dick_'s fixture took 1.7 s, and parsing, timing and naming it 0.2 s (#97). iPhone times are unknown.
@@ -157,8 +169,8 @@ Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Tests: `e2e/pwa.spec.
 ### A restart can still show the old version
 
 - **What happens:** the first launch after a deploy shows the old version and downloads the new one, which shows from the next launch. Seen in desktop Chrome (#40), and in Chromium and WebKit with a relaunched Playwright profile (#46).
-- **Why it's left:** a new service worker waits while a page is open (ADR 0006), so an update never interrupts reading (SPEC.md feature 12, Updates).
-- **Measures:** #22 decides whether to add a notice that reloads into the new version, through the `SKIP_WAITING` message (ADR 0006).
+- **Why it's left:** a new service worker waits while a page is open (ADR 0014), so an update never interrupts reading (SPEC.md feature 12, Updates).
+- **Measures:** #22 decides whether to add a notice that reloads into the new version, through the `SKIP_WAITING` message (ADR 0014).
 
 ## Where to find books
 
@@ -177,7 +189,7 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 ### Build-time packages have open npm advisories
 
 - **What happens:** on 2026-11-24, `npm audit` reports 4 moderate vulnerabilities: in `glob` and `minimatch`, and in `workbox-build` and `vite-plugin-pwa`, which bring them in.
-- **Why it's left:** they run only during `vite build`, on the project's own config, and none of them ships to readers (ADR 0006). `npm audit fix --force` would move `vite-plugin-pwa` back to 1.1.0, a breaking change.
+- **Why it's left:** they run only during `vite build`, on the project's own config, and none of them ships to readers (ADR 0014). `npm audit fix --force` would move `vite-plugin-pwa` back to 1.1.0, a breaking change.
 - **Measures:** update `vite-plugin-pwa` once `workbox-build` updates them.
 
 ### WebKit tests don't see the service worker's own requests
@@ -193,8 +205,16 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 
 ### Android is checked only by emulation
 
-- **What happens:** SPEC.md supports Android Chrome, but `npm run e2e` only emulates Android phones in Chromium (ADR 0010). Nothing checks Android itself, such as the installed app or the file picker. ADR 0010 lists the rest.
-- **Why it's left:** there's no Android phone to check on reliably (#84), and the dev container can't run a real Android emulator (ADR 0010).
+- **What happens:** SPEC.md supports Android Chrome, but `npm run e2e` only emulates two Android phones in Chromium (ADR 0005). Nothing checks Android itself:
+  - the installed app: Chrome's install flow and the app's own window;
+  - the system file picker, and where a download lands;
+  - the wake lock keeping the screen on;
+  - Chrome freezing or closing a page in the background;
+  - storage eviction, the on-screen keyboard and real device speed.
+
+  Whether Android Chrome differs from desktop Chromium in ways the tests miss is unknown.
+
+- **Why it's left:** there's no Android phone to check on reliably (#84). The dev container has no `/dev/kvm` (#84). Without VM acceleration, the Android Emulator "must translate the machine code from the VM block by block", which "can be quite slow" ([Android Developers, Configure hardware acceleration](https://developer.android.com/studio/run/emulator-acceleration#hypervisors)). Whether a real Android emulator would be usable there is unknown (#85).
 - **Measures:** #85 plans runs in real Android Chrome on emulators before v1.
 
 ## Dev container
@@ -203,15 +223,15 @@ Code: `.devcontainer/init-firewall.sh`, `.devcontainer/devcontainer.json`.
 
 ### A web page or an issue can carry instructions for the agent
 
-- **What happens:** the agent reads web pages, and issues and comments that anyone can post on this public repo. Their text can be written to steer it (prompt injection). A steered session could send the GitHub token or the Claude login elsewhere, put a harmful change in a PR, or probably merge one (ADR 0012 lists what it can reach). Not seen in this project so far.
-- **Why it's left:** adding sites one by one was too much work (#71). ADR 0012 rejects two stronger options and gives its reasons.
+- **What happens:** the agent reads web pages, and issues and comments that anyone can post on this public repo. Their text can be written to steer it (prompt injection). A steered session could send the GitHub token or the Claude login elsewhere, put a harmful change in a PR, or probably merge one (ADR 0010 lists what it can reach). Not seen in this project so far.
+- **Why it's left:** adding sites one by one was too much work (#71). ADR 0010 rejects two stronger options and gives its reasons.
 - **Measures:**
-  - ADR 0012's two light checks.
+  - ADR 0010's two light checks.
   - If a session does something unexplained, revoke the GitHub token and log the Claude login out.
-  - Before a rebuild, read `git diff .devcontainer/` on the PC, since `devcontainer.json`'s `initializeCommand` runs there (ADR 0012). Don't run a branch outside the container.
+  - Before a rebuild, read `git diff .devcontainer/` on the PC, since `devcontainer.json`'s `initializeCommand` runs there (ADR 0010). Don't run a branch outside the container.
 
 ### The firewall fails open
 
 - **What happens:** if `init-firewall.sh` fails at start, the container runs without the firewall, and the agent can reach any host (ADR 0004). How often this has happened is unknown.
 - **Why it's left:** it comes with Anthropic's reference container, which ADR 0004 adopts.
-- **Measures:** before starting Claude, check that the start log shows four `Firewall verification passed` lines (ADR 0012).
+- **Measures:** before starting Claude, check that the start log shows four `Firewall verification passed` lines (ADR 0010).

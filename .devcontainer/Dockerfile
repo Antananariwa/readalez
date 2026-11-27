@@ -91,7 +91,7 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 # Playwright's Chromium and WebKit, with their system libraries (ADR 0004, ADR 0005).
 # Installed here because the system libraries need root, which the node user
-# doesn't have at run time (ADR 0012). PLAYWRIGHT_VERSION must equal the exact
+# doesn't have at run time (ADR 0010). PLAYWRIGHT_VERSION must equal the exact
 # @playwright/test version in package.json; `npm run check` fails if they differ.
 # --only-shell: headless Chromium only, since the container has no display.
 ARG PLAYWRIGHT_VERSION

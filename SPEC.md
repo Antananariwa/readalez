@@ -52,7 +52,7 @@ Rationale: From 18.4, an installed web app can keep the screen awake (Screen Wak
 
 ### Android
 
-Current Chrome, installed app and tab. Checked by emulation only ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md), [known issue](docs/known-issues.md#android-is-checked-only-by-emulation)).
+Current Chrome, installed app and tab. Checked by emulation only ([ADR 0005](docs/adr/0005-build-and-test-tooling.md), [known issue](docs/known-issues.md#android-is-checked-only-by-emulation)).
 
 Rationale: 72% of mobile web use worldwide, October 2026 ([StatCounter](https://gs.statcounter.com/os-market-share/mobile/worldwide)), so a public app gets opened on them.
 
@@ -115,7 +115,7 @@ Rationale: The title names what you read; the library needs one for every text.
 
 #### Same text twice
 
-Adds nothing, and says so, with the copy's title and how far you've read. Offers to open that copy where you left off, or to cancel. Texts match by their words (ADR 0007).
+Adds nothing, and says so, with the copy's title and how far you've read. Offers to open that copy where you left off, or to cancel. Texts match by their words (ADR 0012).
 
 Rationale: One book, one entry, and your progress stays. You are told, not dropped into a book without warning.
 
@@ -151,7 +151,7 @@ Rationale: Some books put paperwork between the author's parts, such as a list o
 
 Note markers (¹, [12], \*) never show as words. The notes are gathered, in book order, into one notes section after the book, outside the reading flow, with its own chapter-list entry. Links into a note lead there.
 
-Rationale: A marker flashing as a word breaks the flow. One entry reaches every note. A new last section leaves the book's other sections, and saved positions, where they were (ADR 0011).
+Rationale: A marker flashing as a word breaks the flow. One entry reaches every note. A new last section leaves the book's other sections, and saved positions, where they were (ADR 0013).
 
 #### Kept and dropped
 
@@ -200,7 +200,7 @@ Rationale: Proofread, cleanly marked-up EPUB 3. Contributors dedicate their own 
 
 Goes through the same import as the reader's own EPUBs, on first open, with a progress bar on its library row. Until then, listed at 0% with its time left.
 
-Rationale: Importing all of them on the first visit would keep the page busy for a long time ([known issue](docs/known-issues.md#a-long-book-keeps-the-page-busy-while-its-imported-and-opened), [ADR 0013](docs/adr/0013-ship-built-in-books-as-precached-epubs.md)).
+Rationale: Importing all of them on the first visit would keep the page busy for a long time ([known issue](docs/known-issues.md#a-long-book-keeps-the-page-busy-while-its-imported-and-opened), [ADR 0011](docs/adr/0011-ship-built-in-books-as-precached-epubs.md)).
 
 ### 4. Library
 
@@ -596,7 +596,7 @@ Rationale: PECR, the UK's rules on device storage, exempts storage "strictly nec
 A feature's checks live in its tests, which cite it by number, and in its issue until it's built. Kinds:
 
 - **Unit:** unit tests run by `npm run check`, mostly in `src/core` (ADR 0003).
-- **E2E:** Playwright against the production build, in Chromium, WebKit with iPhone emulation, and Chromium with Android emulation (ADR 0005, [ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)).
+- **E2E:** Playwright against the production build, in Chromium, WebKit with iPhone emulation, and Chromium with Android emulation (ADR 0005).
 - **Build:** a check run as part of the build.
 - **Review:** by reading the diff. [docs/reviews.md](docs/reviews.md) collects each merged PR's review, to show what the reviews catch.
 - **Device:** by hand on the iPhone's installed app and in the desktop browsers ([Devices and browsers](#devices-and-browsers)). #74 lists built features' device checks not yet done; an unbuilt feature's issue lists its own.
@@ -606,7 +606,7 @@ A feature's checks live in its tests, which cite it by number, and in its issue 
 - **Final timing values:** set after tuning on a device ([feature 11](#11-tuning-screen)); [feature 6](#6-timing) holds starting values.
 - **Speed and size targets:** which ones v1 sets, and at what values (#73).
 - **App icon and visual style:** not decided.
-- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px ([ADR 0010](docs/adr/0010-test-android-chrome-by-emulation.md)), where today's single word size fits "comprehension" with about 8 px to spare in the container's Chromium, on Playwright screenshots; Android's own fonts: not checked ([#87](https://github.com/Antananariwa/readalez/pull/87)).
+- **Narrowest screen for the largest text size:** [feature 5](#5-single-word-display) uses 375 px, with no recorded reason. Android emulation runs at 360 px (the `Galaxy S24` project in `playwright.config.ts`), where today's single word size fits "comprehension" with about 8 px to spare in the container's Chromium, on Playwright screenshots; Android's own fonts: not checked ([#87](https://github.com/Antananariwa/readalez/pull/87)).
 
 ## Glossary
 
@@ -635,7 +635,7 @@ One term per thing, in this file, the other docs and the code.
 | Position             | a place in a book, to the word, saved so reading resumes there ([feature 4](#4-library), ADR 0008).                                                                                                          |
 | Progress             | how far a position is through the reading flow, 0% to 100% ([feature 4](#4-library)).                                                                                                                        |
 | Publishing paperwork | the parts of a book that aren't the author's text, such as cover, copyright and license pages ([feature 2](#2-import-epub-files)). Front matter comes before the reading flow, back matter after.            |
-| Reading flow         | what plays from start to finish: the author's text, without paperwork or notes ([feature 2](#2-import-epub-files), ADR 0011).                                                                                |
+| Reading flow         | what plays from start to finish: the author's text, without paperwork or notes ([feature 2](#2-import-epub-files)).                                                                                          |
 | Reading session      | one sitting of reading a book, recorded on the device ([feature 10](#10-reading-sessions)).                                                                                                                  |
 | Section              | a stretch of a book's stored text: one per file in an EPUB's reading order, plus one for its notes if any; one for a whole pasted text (features [1](#1-add-text-by-pasting) and [2](#2-import-epub-files)). |
 | Time left            | how long the rest of a chapter or of the reading flow takes at the current speed ([feature 6](#6-timing)).                                                                                                   |

@@ -1,6 +1,6 @@
 // The built-in books (SPEC.md feature 3, issue #17): the files in
 // public/books and their catalog, src/core/builtInBooks.ts, both built by
-// `npm run books` (scripts/build-books.ts, ADR 0013). These tests read
+// `npm run books` (scripts/build-books.ts, ADR 0011). These tests read
 // files, which tests in src/core can't (ADR 0009), so they live here.
 
 import { readdirSync, readFileSync } from "node:fs";

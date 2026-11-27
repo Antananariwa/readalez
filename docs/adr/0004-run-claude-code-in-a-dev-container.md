@@ -1,34 +1,44 @@
 # 4. Run Claude Code in Anthropic's reference dev container
 
 Date: 2026-10-30
-Status: Accepted; amended by ADR 0012, which opens web ports and closes SSH
+Status: Accepted
 
 ## Context
 
-Claude Code builds this app with little supervision, so it must not run loose on the owner's PC. It needs an environment that limits what it can reach and rebuilds in minutes.
+Claude Code builds this app with little supervision, so it must not run loose on the owner's PC. It needs an environment that limits what it can reach and rebuilds in minutes. Anthropic's docs warn that, with all permissions granted, a dev container doesn't "prevent a malicious project from exfiltrating anything accessible inside the container, including the Claude Code credentials" ([Claude Code, Development containers](https://code.claude.com/docs/en/devcontainer)). So what goes inside matters as much as the walls.
 
-Anthropic publishes a reference dev container for this: a firewall that allows only listed hosts, a non-root user, and VS Code's Dev Containers extension. Its docs give copying the `.devcontainer` folder as the way to use it, and call it a working example rather than a maintained base image, so owning small fixes is expected. Anthropic's separate dev container feature was not used, because its bundled firewall script was reported as outdated.
+Options considered:
+
+- **Claude Code directly on the PC:** it would reach the owner's files, logins and home network.
+- **Anthropic's Claude Code Dev Container Feature:** it installs the CLI into any dev container ([Claude Code, Development containers](https://code.claude.com/docs/en/devcontainer#add-claude-code-to-your-dev-container)), and brings no firewall ([its `install.sh`](https://github.com/anthropics/devcontainer-features/blob/5f27209dc5d554f05d20af15bf86ae2b674a3154/src/claude-code/install.sh)).
+- **Anthropic's reference dev container:**
+  - Its `init-firewall.sh` "limits outbound traffic to the destinations the script allows" ([Claude Code, Development containers](https://code.claude.com/docs/en/devcontainer#restrict-network-egress)).
+  - It runs Claude Code "as a non-root user" ([Claude Code, Development containers](https://code.claude.com/docs/en/devcontainer#run-without-permission-prompts)).
+  - It is "a working example rather than a maintained base image", and the docs say to "copy the `.devcontainer/` directory into your repository" ([Claude Code, Development containers](https://code.claude.com/docs/en/devcontainer#try-the-reference-container)).
 
 ## Decision
 
-Claude Code runs only inside a copy of Anthropic's reference `.devcontainer`, on Docker Desktop with WSL 2. Changes from Anthropic's files:
-
-- `node:24-bookworm` instead of `node:20`. Node 20 reached end of life in April 2026; naming bookworm keeps the Debian release the package list was written for.
-- Time zone `Europe/London` instead of `America/Los_Angeles`, so commits carry the owner's time.
-- `git.terminalAuthentication` and `github.gitAuthentication` off. Together with `dev.containers.gitCredentialHelperConfigLocation: "none"` and `dev.containers.copyGitConfig: false` in VS Code's user settings on Windows, this keeps the owner's Git login out. The only GitHub key inside is a fine-grained token for this repo: Contents, Issues and Pull requests read/write, Actions read, nothing else, 90 days. No SSH keys or agent.
-- `ipset add -exist` for DNS results in `init-firewall.sh`. DNS can return the same IP twice; plain `ipset add` then fails, and `set -e` aborts the script before the firewall is on. Same fix as proposed in anthropics/claude-code#91327.
-
-Claude Code's own setup:
-
-- Project settings (`.claude/settings.json`): no attribution, since the README discloses AI use once, backed by `.githooks/commit-msg` (active after `git config core.hooksPath .githooks`); auto memory off, so corrections become proposed CLAUDE.md lines instead of unreviewed rules outside the repo; merging denied, because merging is the owner's review step; claude.ai connectors off (`ENABLE_CLAUDEAI_MCP_SERVERS=false`, from Claude Code's changelog, 2.1.63), because they reach the owner's accounts outside this repo.
-- User settings, in the container's Claude volume, outside the repo: `permissions.defaultMode: "auto"`, so routine actions don't wait for prompts while a classifier still checks each one (Claude Code ignores auto mode in project settings, so a repo can't grant it to itself); `outputStyle: "caveman"`, from `~/.claude/output-styles/caveman.md`, which is `skills/caveman/SKILL.md` from JuliusBrussee/caveman at `9b68f7e` plus `keep-coding-instructions: true`, for terse chat replies. Its rules keep commits, PRs and docs in plain prose. The caveman plugin was rejected: it also adds hooks, about 20 skills, subagents and a command that writes rule files into the repo.
+- **Claude Code runs only inside a copy of Anthropic's reference `.devcontainer`**, on Docker Desktop with WSL 2. Fixes to the copy are this project's to own.
+  - Its firewall also opens web ports (ADR 0010).
+  - Its image also holds Playwright's browsers (ADR 0005).
+- **The owner's logins stay out.**
+  - `devcontainer.json` turns off `git.terminalAuthentication` and `github.gitAuthentication`. VS Code's user settings on Windows set `dev.containers.gitCredentialHelperConfigLocation: "none"` and `dev.containers.copyGitConfig: false`. So the owner's Git login doesn't reach the container.
+  - No SSH keys or agent go in.
+- **The only GitHub credential inside is a fine-grained token for this repo:** Contents, Issues and Pull requests read/write, Actions read, nothing else, for 90 days.
+- **Claude Code's project settings** (`.claude/settings.json`):
+  - They deny `gh pr merge` and `gh api *merge*`, because merging is the owner's review step.
+  - They turn claude.ai connectors off with `ENABLE_CLAUDEAI_MCP_SERVERS=false` ([Claude Code, Changelog, 2.1.63](https://github.com/anthropics/claude-code/blob/eb8e6d253d0dbee6e52fb0d5fdcb72c9396fe3e8/CHANGELOG.md#L10007)), because connectors reach the owner's accounts outside this repo.
+- **Claude Code's user settings,** in the container's Claude volume, set `permissions.defaultMode: "auto"`.
+  - In auto mode, a classifier "reviews actions before they run and blocks the ones it judges risky" ([Claude Code, Permission modes](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode)). So routine actions don't wait for a prompt.
+  - Project settings can't set it ([Claude Code, Settings](https://code.claude.com/docs/en/settings#a-value-you-set-is-ignored)), so the repo can't grant it to itself.
+- The other options lose:
+  - Claude Code on the PC would have no limit.
+  - The Feature would bring no firewall.
 
 ## Consequences
 
-- Outbound traffic is limited to GitHub, npm, Anthropic's API, a few VS Code and telemetry hosts, DNS, SSH and the host network. Claude runs as a non-root user.
-- The firewall fails open: if `init-firewall.sh` fails, the container runs without it. The start log shows two `Firewall verification passed` lines when the firewall is up.
-- Allowed IPs are resolved once at start. A host whose IPs change during a long session can become unreachable until a restart.
-- The GitHub CLI login isn't kept across rebuilds, so the token never sits on a volume, and each rebuild needs a new login.
-- Changes to `.devcontainer/` take effect only when the owner rebuilds.
-- Playwright's Chromium and WebKit are baked into the image, pinned to the Playwright version (ADR 0005): the firewall blocks Playwright's download host and the browsers need root to install their libraries, but the image build runs outside the firewall.
-- Anthropic's updates to its files don't reach this copy by themselves.
+- Claude Code runs as a non-root user and reaches only what the firewall allows (ADR 0010).
+- The firewall fails open: if `init-firewall.sh` fails, the container runs without it ([known issue](../known-issues.md#the-firewall-fails-open)).
+- No volume holds `gh`'s login, so the token never sits on a volume, and each rebuild needs a new login.
+- A change to `.devcontainer/` takes effect only when the owner rebuilds.
+- Anthropic's later changes to its files don't reach this copy by themselves.

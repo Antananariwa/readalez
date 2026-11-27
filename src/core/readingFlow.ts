@@ -1,7 +1,7 @@
 // The reading flow (SPEC.md features 2, 4 and 7, issue #15): which parts of
 // a text reading goes through, which it skips, and where its chapters start.
 // A text is a list of parts in reading order, each in the flow or skipped
-// (ADR 0011). Reading starts at the flow's first word, jumps over skipped
+// (ADR 0013). Reading starts at the flow's first word, jumps over skipped
 // parts between, and finishes after its last word. Playing a skipped part
 // reads it to its end and stops there.
 
@@ -15,7 +15,7 @@ export interface Place {
 
 /**
  * A part of a text, from its place to the next part's. Stored with the text
- * (ADR 0011), so positions keep their meaning when the splitting rules
+ * (ADR 0013), so positions keep their meaning when the splitting rules
  * change.
  */
 export interface Part extends Place {

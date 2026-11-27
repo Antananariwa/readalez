@@ -11,7 +11,7 @@ const backgroundColor = "#ffffff";
 export default defineConfig({
   plugins: [
     react(),
-    // Service worker and web app manifest (ADR 0006).
+    // Service worker and web app manifest (ADR 0014).
     VitePWA({
       // skipWaiting and clientsClaim stay off, so an update never applies while you
       // read (SPEC.md feature 12); #46 saw a new version wait while the page was open.
@@ -22,7 +22,7 @@ export default defineConfig({
       includeAssets: ["icon.svg", "apple-touch-icon.png"],
       workbox: {
         // Workbox's default, plus the built-in books, so they open offline
-        // after the first visit (SPEC.md feature 12, ADR 0013). Each is under
+        // after the first visit (SPEC.md feature 12, ADR 0011). Each is under
         // Workbox's default limit of 2 MiB per file
         // (`maximumFileSizeToCacheInBytes`, in workbox-build's schema).
         globPatterns: ["**/*.{js,wasm,css,html}", "books/*.epub"],
@@ -41,7 +41,7 @@ export default defineConfig({
         icons: [
           { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
-          // Also listed as maskable (ADR 0006).
+          // Also listed as maskable (ADR 0014).
           {
             src: "/icon-512.png",
             sizes: "512x512",

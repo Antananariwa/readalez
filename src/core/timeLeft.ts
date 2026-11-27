@@ -6,7 +6,7 @@ import { inFlow, readingFlow, type Flow } from "./readingFlow.ts";
 export interface TimeLeft {
   /** Milliseconds to the end of the word's chapter. */
   chapter: number;
-  /** Milliseconds of the reading flow's words from the word on (ADR 0011). */
+  /** Milliseconds of the reading flow's words from the word on (ADR 0008). */
   book: number;
 }
 

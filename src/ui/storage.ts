@@ -19,12 +19,12 @@ interface StoredText {
   id: string;
   sections: Section[];
   /**
-   * An EPUB's chapter list (ADR 0009); empty for pasted text, and absent for
+   * An EPUB's chapter list (ADR 0013); empty for pasted text, and absent for
    * texts stored before #14.
    */
   chapters?: Chapter[];
   /**
-   * An EPUB's reading flow (ADR 0011); empty for pasted text and absent for
+   * An EPUB's reading flow (ADR 0013); empty for pasted text and absent for
    * texts stored before #15, which read whole.
    */
   parts?: Part[];

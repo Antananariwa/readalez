@@ -144,7 +144,7 @@ export function wordAtCharacter(
 
 /**
  * The text's word count, for the Finished card: runs of text between spaces
- * in the reading flow's paragraphs (`parts`, ADR 0011; all of them with
+ * in the reading flow's paragraphs (`parts`, ADR 0013; all of them with
  * none), so a book's license and notes don't count.
  */
 export function wordCount(

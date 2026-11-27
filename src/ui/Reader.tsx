@@ -35,7 +35,7 @@ interface Props {
   timing: Timing;
   /** The chapter list; empty for pasted text. */
   chapters: readonly Chapter[];
-  /** The reading flow's parts (ADR 0011); empty when it's the whole text. */
+  /** The reading flow's parts (ADR 0013); empty when it's the whole text. */
   parts: readonly Part[];
   /** `readingFlow(timing.words, parts)`. */
   flow: Flow;

@@ -29,7 +29,7 @@ fi
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 # Allow inbound DNS responses
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
-# No outbound SSH: git and gh use HTTPS (ADR 0012).
+# No outbound SSH: git and gh use HTTPS (ADR 0010).
 # Allow localhost
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
@@ -114,13 +114,13 @@ iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
 
 # Block private and local networks (the home network, link-local, carrier-grade
 # NAT). The host network rule above comes first, so Docker's own network still
-# works (ADR 0012).
+# works (ADR 0010).
 for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 169.254.0.0/16 100.64.0.0/10; do
     iptables -A OUTPUT -d "$net" -j REJECT --reject-with icmp-admin-prohibited
 done
 
 # Allow web ports (HTTP and HTTPS) to any other host, so Claude can read web
-# pages (ADR 0012)
+# pages (ADR 0010)
 iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
 
 # Explicitly REJECT all other outbound traffic for immediate feedback
