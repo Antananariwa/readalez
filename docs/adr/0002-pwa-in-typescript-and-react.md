@@ -22,8 +22,9 @@ Options considered:
 
 Build a PWA in TypeScript, with React for the UI.
 
-- Native iOS loses: it needs a Mac and a yearly fee, or a reinstall every 7 days, and it doesn't reach Android or desktop.
-- C# and Python lose: the runtime download slows every start on a phone.
+- The other options lose:
+  - Native iOS needs a Mac and a yearly fee, or a reinstall every 7 days, and it doesn't reach Android or desktop.
+  - With C# or Python, a phone downloads the runtime before the app can start.
 
 ## Consequences
 

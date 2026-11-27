@@ -9,19 +9,25 @@ The reading logic is the heart of the app: splitting text into words, the focus 
 
 Options considered:
 
-- Reading logic inside the React components, tested in the browser.
-- Reading logic in plain TypeScript, unit-tested in Node, with the components only rendering it.
+- **Where the logic lives:**
+  - inside the React components;
+  - in plain TypeScript, unit-tested in Node, with the components only rendering it.
+- **Which web APIs the logic may use:**
+  - none, so core brings its own code for what the platform has, such as inflating DEFLATE;
+  - those in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node, that every target browser also has.
 
 ## Decision
 
 - Reading logic lives in `src/core/` as plain TypeScript, with unit tests. `src/ui/` renders it with React and holds no reading logic.
 - `src/core/` uses no DOM, React or Node APIs. It may use a web API only if both of these hold:
-  - The API is in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node.
+  - The API is in WinterTC's list.
   - Every target browser has it ([SPEC.md, Devices and browsers](../../SPEC.md#devices-and-browsers)).
 
   So core runs the same in the unit tests in Node and in every target browser. `src/core/webApis.d.ts` declares each such API by hand, with only the parts core uses and a link showing browser support.
 
-- Logic inside the components loses: its tests would need a browser, too slow for the Stop hook, and a UI rework would break the logic.
+- The other options lose:
+  - Logic inside the components would break with a UI rework, and every test of it would have to render a component.
+  - No web APIs at all would make core carry its own code for what `DecompressionStream` does natively (ADR 0009).
 
 ## Consequences
 
@@ -30,3 +36,4 @@ Options considered:
 - Playwright tests the UI in the browser instead (ADR 0005).
 - A later port to another language starts from `src/core/` and its tests.
 - Reading logic can't use a browser-only API, such as `DOMParser` (ADR 0009).
+- Revisit the rule for web APIs if core needs one that WinterTC's list lacks.
