@@ -20,7 +20,7 @@ Options considered:
 - Our own ZIP and XML readers parse EPUBs, in `src/core/epub/`, with no new dependency.
 - `zip.ts` reads the central directory, and stored and deflated entries, which it inflates with `DecompressionStream`.
   - It reads no ZIP64. A ZIP needs ZIP64 for a file over 4 GiB ([APPNOTE.TXT, 4.3.9.2](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L431-L433)). It also needs it when a field at the end of the central directory is too small, such as its 2-byte count of entries ([4.4.1.4](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L663-L666)).
-  - A book's EPUB is far below those sizes: the largest in the repo is 699,614 bytes (`tests/fixtures/epub/README.md`).
+  - A book's EPUB is far below those limits. On 2026-11-27, the largest EPUB in the repo was a fixture of 699,614 bytes (`tests/fixtures/epub/README.md`, PR #134).
 - `xml.ts` builds a tree of elements and text, and checks that tags nest.
   - It replaces XML's five predefined entities ([XML 1.0, § 4.6](https://www.w3.org/TR/xml/#sec-predefined-ent)) and numeric references.
   - It doesn't validate. It skips the DTD, its internal subset included. XML 1.0 asks even a non-validating processor to read that subset ([§ 5.1](https://www.w3.org/TR/xml/#proc-types)), so `xml.ts` isn't a conforming XML processor.
@@ -38,4 +38,4 @@ Options considered:
   - one written with ZIP64 can fail to import ([known issue](../known-issues.md#an-epub-written-with-zip64-can-fail-to-import));
   - one that binds the EPUB namespace to another prefix loses its verse marks and nav ([known issue](../known-issues.md#unusual-namespace-prefixes-lose-verse-and-the-nav));
   - one with named entities beyond XML's five shows them as written, since `xml.ts` never reads the DTD that defines them ([known issue](../known-issues.md#named-entities-other-than-xmls-five-show-as-written)).
-- Revisit the readers if the EPUBs readers import need ZIP64, a DTD's entities or namespaces.
+- Revisit `zip.ts` and `xml.ts` if the EPUBs people import need ZIP64, a DTD's entities or namespaces.

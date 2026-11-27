@@ -5,13 +5,13 @@ Status: Accepted
 
 ## Context
 
-- The installed app must reload without a network after the first visit ([SPEC.md feature 12, Offline](../../SPEC.md#offline)). So a service worker has to precache every build file, under names that change with each build.
+- The installed app must reload without a network after the first visit ([SPEC.md feature 12, Offline](../../SPEC.md#offline)). So a service worker has to precache every build file, some under names that change with each build.
 - A new version must never apply while you read ([SPEC.md feature 12](../../SPEC.md#12-install-offline-and-updates)).
 - vite-plugin-pwa generates the worker with Workbox, in one of two strategies ([vite-plugin-pwa, Service Worker Strategies And Behaviors](https://vite-pwa-org.netlify.app/guide/service-worker-strategies-and-behaviors)):
   - with `generateSW`, "you don't need to write the code for the service worker";
   - with `injectManifest`, it "will compile your custom service worker and inject its precache manifest".
-- Workbox lists "You want to precache files" under "When to use generateSW" ([Workbox, workbox-build](https://developer.chrome.com/docs/workbox/modules/workbox-build)).
-- vite-plugin-pwa's `autoUpdate` "will reload any browser windows/tabs with the application opened automatically" ([Automatic reload](https://vite-pwa-org.netlify.app/guide/auto-update)). Its `prompt` lets "the user decide when to update" (same Strategies And Behaviors page).
+- Workbox lists "You want the easiest path to adding a service worker to your site" under "When NOT to use injectManifest" ([Workbox, workbox-build](https://developer.chrome.com/docs/workbox/modules/workbox-build)).
+- With vite-plugin-pwa's `autoUpdate`, "the plugin will force `workbox.clientsClaim` and `workbox.skipWaiting` to `true`" ([Automatic reload](https://vite-pwa-org.netlify.app/guide/auto-update)). With `prompt`, the app can "let the user decide when to update it" (same Strategies And Behaviors page).
 
 Options considered:
 
@@ -27,7 +27,7 @@ Options considered:
 - The other options lose:
   - A hand-written worker would need a build step of its own for the precache list.
   - `injectManifest` would add a worker to maintain, and the app needs nothing beyond precaching.
-  - `autoUpdate` reloads open pages, so an update would apply while you read.
+  - `autoUpdate` would turn `skipWaiting` and `clientsClaim` on, so a new version would take over an open page while you read.
 
 ## Consequences
 
@@ -35,7 +35,7 @@ Options considered:
   - `tests/tooling/service-worker.test.ts` fails if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`;
   - `e2e/pwa.spec.ts` checks that `sw.js` never skips waiting or claims pages outside the `SKIP_WAITING` listener.
 
-  So code that posts `SKIP_WAITING` fails the unit test.
+  So code in `src/` that names `SKIP_WAITING` or `skipWaiting` fails the unit test. Neither test sees a library call that posts the message, such as vite-plugin-pwa's `updateSW(true)`.
 
 - The first launch after a deploy can still show the old version ([known issue](../known-issues.md#a-restart-can-still-show-the-old-version)).
 - `vite-plugin-pwa` brings in `workbox-build`, whose build-time packages have open npm advisories ([known issue](../known-issues.md#build-time-packages-have-open-npm-advisories)).

@@ -14,7 +14,7 @@ Options considered:
   - in plain TypeScript, unit-tested in Node, with the components only rendering it.
 - **Which web APIs the logic may use:**
   - none, so core brings its own code for what the platform has, such as inflating DEFLATE;
-  - those in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs), a list of web APIs for runtimes outside browsers, such as Node, that every target browser also has.
+  - those in WinterTC's [Minimum Common Web API](https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs) (a list of web APIs for runtimes outside browsers, such as Node) that every target browser also has.
 
 ## Decision
 
@@ -26,7 +26,7 @@ Options considered:
   So core runs the same in the unit tests in Node and in every target browser. `src/core/webApis.d.ts` declares each such API by hand, with only the parts core uses and a link showing browser support.
 
 - The other options lose:
-  - Logic inside the components would break with a UI rework, and every test of it would have to render a component.
+  - Logic inside the components would break with a UI rework, and its tests would need a DOM, which the unit tests leave out so they start fast (ADR 0005).
   - No web APIs at all would make core carry its own code for what `DecompressionStream` does natively (ADR 0009).
 
 ## Consequences

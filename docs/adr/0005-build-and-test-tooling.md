@@ -9,7 +9,7 @@ Status: Accepted
 - Core's boundary (ADR 0003) should fail the turn that breaks it, not wait for review.
 - The app runs on iPhone, Android and desktop browsers ([SPEC.md, Devices and browsers](../../SPEC.md#devices-and-browsers)).
   - Playwright doesn't drive Safari itself, "since it relies on patches" ([Playwright, Browsers](https://playwright.dev/docs/browsers#webkit)).
-  - No Android phone is at hand. The dev container has no `/dev/kvm` for Android's emulator, and whether the emulator is usable without it is unknown ([known issue](../known-issues.md#android-is-checked-only-by-emulation)).
+  - There's no Android phone to check on reliably (#84). The dev container has no `/dev/kvm` for Android's emulator, and whether the emulator is usable without it is unknown ([known issue](../known-issues.md#android-is-checked-only-by-emulation)).
 - Vite's `react-ts` template in create-vite 9.3.3 ships Oxlint and TypeScript 7 ([its `package.json`](https://github.com/vitejs/vite/blob/create-vite%409.3.3/packages/create-vite/template-react-ts/package.json)).
 - ESLint reads TypeScript through typescript-eslint. Its 8.74.0 release supports only TypeScript `>=4.8.4 <6.1.0` ([its `package.json`](https://github.com/typescript-eslint/typescript-eslint/blob/v8.74.0/packages/typescript-eslint/package.json#L59-L62)).
 
@@ -36,7 +36,7 @@ Options considered:
 - **CI:** CI runs GitHub's [starter Node.js workflow](https://github.com/actions/starter-workflows/blob/1830845916d09bee7327d12cbf1e387edfdb9846/ci/node.js.yml), in which `npm test` runs `npm run check`. It runs on Node 24 only, the container's version, since Node runs only the build and test tools, never the app. It also runs `npm run e2e`, so a broken UI blocks a merge even when a session skipped the browser tests.
 - The other options lose:
   - ESLint would hold TypeScript at 6.0.
-  - A real phone isn't at hand, and the emulator's use without `/dev/kvm` is unknown.
+  - There's no Android phone to check on, and whether the emulator is usable without `/dev/kvm` is unknown.
 
 ## Consequences
 

@@ -40,8 +40,14 @@ Code: `src/core/epub.ts`, `src/core/epub/`, `src/ui/importEpub.ts`. Tests: their
 
 ### An EPUB written with ZIP64 can fail to import
 
-- **What happens:** `zip.ts` reads the central directory's 2- and 4-byte fields, and no ZIP64 records (ADR 0009). A ZIP64 archive sets a field at the end of the central directory to `0xFFFF` or `0xFFFFFFFF` ([APPNOTE.TXT, 4.4.1.4](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L663-L666)). When that field is the count of entries or the directory's offset, `openZip` throws `Bad central directory`. What a ZIP64 field on one entry does is not checked. Not seen in the repo's EPUBs, and no test covers it.
-- **Why it's left:** ADR 0009 gives the reason: a book's EPUB is far below the sizes that need ZIP64. A writer may still use it: "ZIP64 format MAY be used regardless of the size of a file" ([4.3.9.2](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L431-L433)), and EPUB's ZIP containers "MAY use the ZIP64 extensions" ([EPUB 3.3, § 4.3.2](https://www.w3.org/TR/epub-33/#sec-zip-container-zipreqs)). Which tools write ZIP64 for a small EPUB is unknown.
+- **What happens:** `zip.ts` reads the central directory's 2- and 4-byte fields, and no ZIP64 records (ADR 0009). A field too small for its value "SHOULD be set to -1 (0xFFFF or 0xFFFFFFFF)", with a ZIP64 record holding the value ([APPNOTE.TXT, 4.4.1.4](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L663-L666)). And "ZIP64 format MAY be used regardless of the size of a file" ([4.3.9.2](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L431-L434)). Archives built by hand in PR #134 gave:
+  - an end of the central directory with a count of `0xFFFF`, or an offset of `0xFFFFFFFF`: `openZip` throws `Bad central directory`;
+  - an entry whose sizes in the central directory are `0xFFFFFFFF`, with a ZIP64 extra field: reading it throws `Truncated entry`;
+  - a ZIP64 extra field only in the local header, as Python's `zipfile` writes with `force_zip64=True`: the entry reads.
+
+  Not seen in the repo's EPUBs (PR #134), and no test covers it.
+
+- **Why it's left:** ADR 0009 gives the reason. EPUB 3.3 also says EPUB's ZIP containers "MAY use the ZIP64 extensions defined as "Version 1" in section V, subsection G of the application note [zip] and SHOULD use only those extensions when the content requires them" ([§ 4.3.2](https://www.w3.org/TR/epub-33/#sec-zip-container-zipreqs)). Which tools write ZIP64 for a small EPUB is unknown.
 - **Measures:** read the ZIP64 end of central directory record and its locator ([4.3.14 and 4.3.15](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L560-L631)), and the ZIP64 extra field ([4.5.3](https://github.com/bearcove/rc-zip/blob/15fb2e34283104b9b1bcb9396ee71dbc9f89c177/static/appnote.txt#L1148)).
 
 ### A long book keeps the page busy while it's imported and opened

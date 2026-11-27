@@ -9,7 +9,7 @@ Status: Accepted
   - GitHub, npm, Anthropic's API, and a few VS Code and telemetry hosts;
   - DNS and SSH, to any host;
   - Docker's own network.
-- Claude Code's web search works, but reading a page fetches it from the container. So pages outside that list fail. Research fell back to search summaries, and allowing sites one by one was too much work (#71).
+- Claude Code's web search works, but reading a page fetches it from the container. So pages outside that list fail. Research fell back to search summaries (#71).
 - Hosted coding agents start with limited internet access, and let the user allow more:
   - OpenAI's Codex Cloud (Legacy) "blocks internet access during the agent phase" by default. It can allow a list of domains, or all of them. Its listed risks include "Prompt injection from untrusted web content" and "Code or secret exfiltration" ([Codex Cloud (Legacy), internet access](https://learn.chatgpt.com/docs/cloud/internet-access)).
   - GitHub Copilot's coding agent starts behind a firewall with an allowlist. Turning it off "will allow Copilot to connect to any host", "increasing risks of exfiltration of code or other sensitive information" ([Copilot, Customizing the firewall](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-firewall#enabling-or-disabling-the-firewall)).
@@ -39,7 +39,7 @@ Options considered (#71):
 - The other options lose:
   - Allowing sites one by one is too much work (#71).
   - A research container would need a paid API key of its own, and a second container to run.
-  - The owner wouldn't spot a steered session at a prompt either.
+  - A hook's prompt wouldn't stop a steered session, since the owner wouldn't spot one at a prompt.
 
 ## Consequences
 
