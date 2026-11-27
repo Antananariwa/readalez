@@ -33,4 +33,3 @@ Options considered:
 
 - On 2026-11-06, saving a 1,000,013-character generated text took about 1.4 s from Save to the reader in Chromium and 1.1 s in WebKit, in Playwright on the dev container. `splitText` alone took 1.3 s of a Node run on the same text (PR #72). So word splitting, not storage, sets the time of a save. iPhone times are unknown, and #73 holds the performance targets.
 - Node has no IndexedDB, so the unit tests don't cover `src/ui/storage.ts`. The browser tests in `e2e/` do.
-- Revisit `idb` if `src/ui/storage.ts` needs more of IndexedDB than a few calls in promises, such as cursors or indexes.

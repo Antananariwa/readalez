@@ -36,4 +36,3 @@ Options considered: the hosts below, on their free plans, as documented on 2026-
 
 - The Cloudflare account, and its connection to the repo, are the owner's. So are the device checks on a preview.
 - **Main risk:** Cloudflare's Pages docs say "Start new projects with Workers" ([Cloudflare Pages](https://developers.cloudflare.com/pages/)). A static site needs none of the features that only Workers have. Cloudflare documents a move from Pages to Workers: a Wrangler config file in the repo, and new addresses ([migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)). That move is the way out if Cloudflare retires Pages.
-- Revisit if Cloudflare retires Pages or narrows its free plan.

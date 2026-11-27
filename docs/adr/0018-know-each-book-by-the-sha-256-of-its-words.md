@@ -27,4 +27,3 @@ Options considered:
 
 - A book imported on two devices gets the same ID only if both parse it into the same words. A parser change between the two imports gives two books, and the backup file's merge (#21) inherits that.
 - The app never works a stored book's ID out again, so a parser change doesn't change it.
-- Revisit when the backup file's merge (#21) shows how often a parser change splits one book in two.

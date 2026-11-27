@@ -7,9 +7,9 @@ Each ADR follows Michael Nygard's format ([Documenting Architecture Decisions](h
 - **Title:** `# N. The decision, as a short phrase`, in a file named `NNNN-the-decision.md`.
 - **Date:** the day the decision was made.
 - **Status:** `Accepted`. The PR is the proposal, and merging it accepts the ADR, as in the [GDS Way](https://gds-way.digital.cabinet-office.gov.uk/standards/architecture-decisions.html).
-- **Context:** the forces at play when the decision was made, with links to what was read, and the options considered.
+- **Context:** the forces at play when the decision was made, with links to what was read, and the options considered, when there were real ones.
 - **Decision:** what was decided, in full sentences, and why the other options were not chosen.
-- **Consequences:** what follows from the decision, good and bad, and when to revisit it.
+- **Consequences:** what follows from the decision, good and bad, and when to revisit it, when something would call for that.
 
 ## Numbers
 

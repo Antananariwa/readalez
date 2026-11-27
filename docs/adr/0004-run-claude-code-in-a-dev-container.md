@@ -42,4 +42,3 @@ Options considered:
 - No volume holds `gh`'s login, so the token never sits on a volume, and each rebuild needs a new login.
 - A change to `.devcontainer/` takes effect only when the owner rebuilds.
 - Anthropic's later changes to its files don't reach this copy by themselves.
-- Revisit if Claude Code needs a login beyond this repo's token.

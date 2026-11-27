@@ -33,4 +33,3 @@ Options considered:
 - On 2026-11-06, in Node on the dev container, a 481,400-word text took 7 ms to prepare at open, and each save 0.7 to 1.4 ms (`progressTable`, PR #75).
 - After an update that changes the splitting or timing rules, the library shows the progress and time left from the last save until the reader opens the book again ([known issue](../known-issues.md#progress-in-the-library-can-be-out-of-date-after-an-update)).
 - In a merge, "the position from whichever device read it last wins" (SPEC.md feature 9). That needs the time of the last save, which `openedAt` only approximates. #21 decides whether to add one.
-- Revisit if the library entry stops being small, since each save rewrites it.
