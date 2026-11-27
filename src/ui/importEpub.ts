@@ -1,6 +1,6 @@
 // Reading an EPUB on the device (SPEC.md features 2 and 3): Import EPUB on
 // the Add text screen and a built-in book's first open both go through here,
-// so a built-in book is imported as any other (ADR 0013).
+// so a built-in book is imported as any other (ADR 0011).
 
 import { timeWords, type Timing } from "../core/durations.ts";
 import { DrmError, parseEpub, type EpubBook } from "../core/epub.ts";

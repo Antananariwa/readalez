@@ -1,5 +1,5 @@
 // Describes a built-in book's EPUB for the catalog in src/core/builtInBooks.ts
-// (SPEC.md feature 3, ADR 0013). `scripts/build-books.ts` runs it on each
+// (SPEC.md feature 3, ADR 0011). `scripts/build-books.ts` runs it on each
 // book it builds, and `tests/builtInBooks.test.ts` reruns it to check the
 // catalog still matches the files. It uses the same core code as importing
 // an EPUB in the app (`src/ui/importEpub.ts` and `src/ui/App.tsx`).

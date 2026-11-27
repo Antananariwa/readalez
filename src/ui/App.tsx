@@ -73,7 +73,7 @@ export default function App() {
   const reload = useCallback(() => {
     listBooks().then(
       (list) => {
-        // Built-in books show before they're stored (ADR 0013).
+        // Built-in books show before they're stored (ADR 0011).
         setBooks(libraryBooks(list, BUILT_IN_BOOKS));
         setFailed(false);
       },

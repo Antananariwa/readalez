@@ -1,4 +1,4 @@
-// Builds the built-in books (SPEC.md feature 3, ADR 0013): each one's EPUB in
+// Builds the built-in books (SPEC.md feature 3, ADR 0011): each one's EPUB in
 // public/books, from the `src/` folder of a pinned commit of its Standard
 // Ebooks repository on GitHub, without its pictures, and the catalog the
 // library lists them from, src/core/builtInBooks.ts. Run `npm run books`

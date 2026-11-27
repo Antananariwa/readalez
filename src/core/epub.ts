@@ -2,7 +2,7 @@
 // title, author, sections, chapter list and reading flow out. Each spine
 // item is one section, so positions stored by section, paragraph and word
 // (ADR 0008) don't depend on how the chapter list or the reading flow is
-// worked out. The notes follow in one section of their own (ADR 0011).
+// worked out. The notes follow in one section of their own (ADR 0013).
 
 import { emptyContent, readContent, type Content } from "./epub/content.ts";
 import { lockedPaths } from "./epub/encryption.ts";

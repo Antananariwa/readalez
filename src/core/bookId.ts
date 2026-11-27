@@ -1,4 +1,4 @@
-// Book IDs (issue #12, ADR 0007): a book is known by its text, so the same
+// Book IDs (issue #12, ADR 0012): a book is known by its text, so the same
 // text gets the same ID on every device. Later features match books by it: an
 // EPUB imported twice (#16) and backups across devices (#21). The ID is
 // computed once, when the book is added, and stored with it, so later changes

@@ -1,4 +1,4 @@
-// Registers the service worker that vite-plugin-pwa builds (ADR 0006), so the
+// Registers the service worker that vite-plugin-pwa builds (ADR 0014), so the
 // app reloads without a network after the first visit. Production builds only:
 // the dev server has no worker. When a new version applies: SPEC.md feature 12.
 

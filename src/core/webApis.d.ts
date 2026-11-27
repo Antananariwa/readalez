@@ -1,4 +1,4 @@
-// The web APIs `src/core/` may use (ADR 0009). Each one is in WinterTC's
+// The web APIs `src/core/` may use (ADR 0003). Each one is in WinterTC's
 // Minimum Common Web API, so Node has it as well as browsers:
 // https://github.com/WinterTC55/proposal-minimum-common-api/blob/008b840d4eb624c5ab466b069a79cbea67d57c90/index.bs
 // Each is declared here by hand, with only the parts core uses, and with a

@@ -29,7 +29,7 @@ export interface BookInfo {
 /**
  * A built-in book as the generated catalog lists it
  * (`src/core/builtInBooks.ts`, built by `scripts/build-books.ts`), so the
- * library can show it before its text is imported (ADR 0013).
+ * library can show it before its text is imported (ADR 0011).
  */
 export interface BuiltInBook {
   /** The Standard Ebooks repository it's built from; also its file's name. */
@@ -57,7 +57,7 @@ export function bookSource(book: BookInfo): BookSource {
  * The books the library lists: every stored book, then each built-in book
  * that isn't stored yet, so it shows from the first visit. A built-in book
  * counts as stored when a stored book has its slug, or its ID: the same text
- * imported by hand is the same book (ADR 0007). One not stored has no
+ * imported by hand is the same book (ADR 0012). One not stored has no
  * `addedAt` time, so it shows 0.
  */
 export function libraryBooks(

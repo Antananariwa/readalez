@@ -169,8 +169,8 @@ Code: `vite.config.ts`, `src/ui/registerServiceWorker.ts`. Tests: `e2e/pwa.spec.
 ### A restart can still show the old version
 
 - **What happens:** the first launch after a deploy shows the old version and downloads the new one, which shows from the next launch. Seen in desktop Chrome (#40), and in Chromium and WebKit with a relaunched Playwright profile (#46).
-- **Why it's left:** a new service worker waits while a page is open (ADR 0006), so an update never interrupts reading (SPEC.md feature 12, Updates).
-- **Measures:** #22 decides whether to add a notice that reloads into the new version, through the `SKIP_WAITING` message (ADR 0006).
+- **Why it's left:** a new service worker waits while a page is open (ADR 0014), so an update never interrupts reading (SPEC.md feature 12, Updates).
+- **Measures:** #22 decides whether to add a notice that reloads into the new version, through the `SKIP_WAITING` message (ADR 0014).
 
 ## Where to find books
 
@@ -189,7 +189,7 @@ Code: `package.json`, `playwright.config.ts`, `.github/workflows/node.js.yml`. T
 ### Build-time packages have open npm advisories
 
 - **What happens:** on 2026-11-24, `npm audit` reports 4 moderate vulnerabilities: in `glob` and `minimatch`, and in `workbox-build` and `vite-plugin-pwa`, which bring them in.
-- **Why it's left:** they run only during `vite build`, on the project's own config, and none of them ships to readers (ADR 0006). `npm audit fix --force` would move `vite-plugin-pwa` back to 1.1.0, a breaking change.
+- **Why it's left:** they run only during `vite build`, on the project's own config, and none of them ships to readers (ADR 0014). `npm audit fix --force` would move `vite-plugin-pwa` back to 1.1.0, a breaking change.
 - **Measures:** update `vite-plugin-pwa` once `workbox-build` updates them.
 
 ### WebKit tests don't see the service worker's own requests
@@ -223,15 +223,15 @@ Code: `.devcontainer/init-firewall.sh`, `.devcontainer/devcontainer.json`.
 
 ### A web page or an issue can carry instructions for the agent
 
-- **What happens:** the agent reads web pages, and issues and comments that anyone can post on this public repo. Their text can be written to steer it (prompt injection). A steered session could send the GitHub token or the Claude login elsewhere, put a harmful change in a PR, or probably merge one (ADR 0012 lists what it can reach). Not seen in this project so far.
-- **Why it's left:** adding sites one by one was too much work (#71). ADR 0012 rejects two stronger options and gives its reasons.
+- **What happens:** the agent reads web pages, and issues and comments that anyone can post on this public repo. Their text can be written to steer it (prompt injection). A steered session could send the GitHub token or the Claude login elsewhere, put a harmful change in a PR, or probably merge one (ADR 0010 lists what it can reach). Not seen in this project so far.
+- **Why it's left:** adding sites one by one was too much work (#71). ADR 0010 rejects two stronger options and gives its reasons.
 - **Measures:**
-  - ADR 0012's two light checks.
+  - ADR 0010's two light checks.
   - If a session does something unexplained, revoke the GitHub token and log the Claude login out.
-  - Before a rebuild, read `git diff .devcontainer/` on the PC, since `devcontainer.json`'s `initializeCommand` runs there (ADR 0012). Don't run a branch outside the container.
+  - Before a rebuild, read `git diff .devcontainer/` on the PC, since `devcontainer.json`'s `initializeCommand` runs there (ADR 0010). Don't run a branch outside the container.
 
 ### The firewall fails open
 
 - **What happens:** if `init-firewall.sh` fails at start, the container runs without the firewall, and the agent can reach any host (ADR 0004). How often this has happened is unknown.
 - **Why it's left:** it comes with Anthropic's reference container, which ADR 0004 adopts.
-- **Measures:** before starting Claude, check that the start log shows four `Firewall verification passed` lines (ADR 0012).
+- **Measures:** before starting Claude, check that the start log shows four `Firewall verification passed` lines (ADR 0010).

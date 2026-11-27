@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// The installable shell (issue #5, ADR 0006): manifest, icons, offline reload,
+// The installable shell (issue #5, ADR 0014): manifest, icons, offline reload,
 // same-origin requests only, and a sw.js that skips waiting only on SKIP_WAITING
 // and never claims clients.
 

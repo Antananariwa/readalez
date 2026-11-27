@@ -25,7 +25,7 @@ export interface Reading {
   /** True once the Finished card has shown, until Start over. */
   finished: boolean;
   /**
-   * 0 at the reading flow's first word, 1 at the Finished card (ADR 0011):
+   * 0 at the reading flow's first word, 1 at the Finished card (ADR 0008):
    * `flowProgress`.
    */
   progress: number;

@@ -1,5 +1,5 @@
 // Where an EPUB's reading flow starts and ends, and what it skips (SPEC.md
-// feature 2, issue #15, ADR 0011). The book is cut into parts at its
+// feature 2, issue #15, ADR 0013). The book is cut into parts at its
 // chapter-list entries, its headings and where the markup changes role;
 // each part is the author's text or publishing paperwork. The flow runs from
 // the first of the author's parts to the last, skipping paperwork between.
@@ -77,7 +77,7 @@ interface Piece {
 }
 
 /**
- * The book's parts (ADR 0011), from each spine section's content, the
+ * The book's parts (ADR 0013), from each spine section's content, the
  * chapter list's entries and the EPUB 2 guide. Returns no parts when no
  * part is the author's, so the whole book reads.
  *
