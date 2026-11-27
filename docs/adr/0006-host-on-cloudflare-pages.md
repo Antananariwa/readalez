@@ -1,19 +1,17 @@
-# 6. Host on Cloudflare Pages, with a vite-plugin-pwa service worker
+# 6. Host on Cloudflare Pages
 
 Date: 2026-11-01
 Status: Accepted
 
 ## Context
 
-The owner checks features by hand on the iPhone's installed app and in the desktop browsers ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)), and the owner tests each pull request on devices before merging it ([README.md](../../README.md#how-its-built)). So the app needs a host, and a shell that installs. The host must:
+The owner checks features by hand on the iPhone's installed app and in the desktop browsers ([SPEC.md, How features are checked](../../SPEC.md#how-features-are-checked)). The owner also tests on physical devices and merges every pull request ([README.md, How it's built](../../README.md#how-its-built)). So a PR's change has to reach the owner's devices before it merges. The host must:
 
 - serve static files over HTTPS, free for a public repo;
 - deploy `main` to production and give each PR a preview URL;
-- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes the storage format must not touch the owner's real library;
+- give each preview its own origin, so its service worker and storage never touch production's or another preview's. A preview that changes the schema must not touch the owner's real library (ADR 0007);
 - deploy without a workflow file, since CI workflow files need the owner's access ([CLAUDE.md, Limits](../../CLAUDE.md#limits));
 - add no analytics, cookies or scripts, since the app sends no requests to other sites ([SPEC.md feature 13](../../SPEC.md#no-requests-to-other-sites)).
-
-The installed app must reload without a network after the first visit, and a new version must never apply while you read ([SPEC.md feature 12](../../SPEC.md#12-install-offline-and-updates)).
 
 The hosts compared, on their free plans, as documented on 2026-11-01 and read again on 2026-11-26:
 
@@ -26,22 +24,16 @@ The hosts compared, on their free plans, as documented on 2026-11-01 and read ag
 
 ## Decision
 
-- **Host:** Cloudflare Pages hosts the app, connected through Cloudflare's GitHub app.
-  - It meets every requirement without switching anything off. Vercel and Netlify each add their own tool to previews. Netlify also pauses every site once a month's credits are spent. GitHub Pages fails the origin requirement.
-  - Each branch's alias stays the same across pushes, so an app installed from a PR's preview keeps working while the PR changes.
-  - Its build settings live in the owner's Cloudflare dashboard: `npm run build`, output `dist`, `NODE_VERSION=24`. Production is `https://readalez.pages.dev`.
-- **Service worker and manifest:** `vite-plugin-pwa` (MIT, a devDependency) writes both, in `generateSW` mode.
-  - It writes the manifest and the precache list of hashed build files, which a hand-written worker would need a build step of its own for.
-  - The app's own origin serves the generated `sw.js` and its Workbox runtime (MIT).
-- **Update model:** `vite.config.ts` sets `registerType: "prompt"`, and sets `skipWaiting: false` and `clientsClaim: false` explicitly, so a reviewer sees them.
-  - A new version installs in the background and waits while a page is open, as seen in #46. So it never applies while you read.
-  - The generated worker skips waiting only if a page posts `{ type: "SKIP_WAITING" }`, and the app never posts it. #22 decides whether to.
+- Cloudflare Pages hosts the app, connected through Cloudflare's GitHub app. It meets every requirement without switching anything off.
+- Each branch's alias stays the same across pushes, so an app installed from a PR's preview keeps working while the PR changes.
+- Its build settings live in the owner's Cloudflare dashboard: `npm run build`, output `dist`, `NODE_VERSION=24`.
+- The other options lose:
+  - Vercel and Netlify each add their own tool to previews.
+  - Netlify also pauses every site once a month's credits are spent.
+  - GitHub Pages fails the origin requirement.
 
 ## Consequences
 
-- The Cloudflare account, and its connection to the repo, are the owner's. Device checks on a preview are the owner's too. The agent can open deployments, since ADR 0012 opened web ports.
-- **Main risk:** Cloudflare's Pages docs say "Start new projects with Workers" ([Cloudflare Pages](https://developers.cloudflare.com/pages/)). A static site needs none of the features that only Workers have. If Cloudflare retires Pages, it documents a move to Workers: a Wrangler config file in the repo, and new addresses ([migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)).
-- Two tests hold the update model, and code that posts `SKIP_WAITING` (#22) has to change both:
-  - `e2e/pwa.spec.ts` checks that `sw.js` never skips waiting or claims pages outside that listener;
-  - `tests/tooling/service-worker.test.ts` fails if code in `src/` mentions `SKIP_WAITING` or `skipWaiting`.
-- `vite-plugin-pwa` brings in `workbox-build`, whose build-time packages have open npm advisories ([known issue](../known-issues.md#build-time-packages-have-open-npm-advisories)). They run only at build time, on the project's own config, and none of them ships to readers.
+- The Cloudflare account, and its connection to the repo, are the owner's. So are the device checks on a preview.
+- **Main risk:** Cloudflare's Pages docs say "Start new projects with Workers" ([Cloudflare Pages](https://developers.cloudflare.com/pages/)). A static site needs none of the features that only Workers have. Cloudflare documents a move to Workers, for if it retires Pages: a Wrangler config file in the repo, and new addresses ([migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)).
+- Revisit if Cloudflare retires Pages or narrows its free plan.
